@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.lpc_dgv_dbvalue = new System.Windows.Forms.DataGridView();
             this.PROD_C = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PROD_N = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -90,16 +90,19 @@
             this.lpc_rbtn_permanent = new System.Windows.Forms.RadioButton();
             this.lpc_rbtn_temporary = new System.Windows.Forms.RadioButton();
             this.label8 = new System.Windows.Forms.Label();
+            this.panel1 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_dbvalue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_searchbycode)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // lpc_dgv_dbvalue
             // 
             this.lpc_dgv_dbvalue.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.lpc_dgv_dbvalue.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            this.lpc_dgv_dbvalue.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.lpc_dgv_dbvalue.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+            this.lpc_dgv_dbvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lpc_dgv_dbvalue.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.lpc_dgv_dbvalue.BackgroundColor = System.Drawing.Color.White;
@@ -146,20 +149,20 @@
             this.Remarks1,
             this.Remarks2,
             this.btn_addnewp});
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Arial Narrow", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.lpc_dgv_dbvalue.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Arial Narrow", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.lpc_dgv_dbvalue.DefaultCellStyle = dataGridViewCellStyle4;
             this.lpc_dgv_dbvalue.Location = new System.Drawing.Point(10, 273);
             this.lpc_dgv_dbvalue.Name = "lpc_dgv_dbvalue";
             this.lpc_dgv_dbvalue.RowHeadersWidth = 150;
-            this.lpc_dgv_dbvalue.Size = new System.Drawing.Size(1105, 201);
+            this.lpc_dgv_dbvalue.Size = new System.Drawing.Size(1105, 262);
             this.lpc_dgv_dbvalue.TabIndex = 1;
-            this.lpc_dgv_dbvalue.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.lpc_dgv_dbvalue_CellEnter);
+     
             // 
             // PROD_C
             // 
@@ -512,8 +515,10 @@
             // 
             // btnlpcsubmit
             // 
-            this.btnlpcsubmit.Font = new System.Drawing.Font("Arial Unicode MS", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnlpcsubmit.Location = new System.Drawing.Point(993, 498);
+            this.btnlpcsubmit.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnlpcsubmit.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnlpcsubmit.Location = new System.Drawing.Point(988, 3);
             this.btnlpcsubmit.Name = "btnlpcsubmit";
             this.btnlpcsubmit.Size = new System.Drawing.Size(101, 38);
             this.btnlpcsubmit.TabIndex = 11;
@@ -556,16 +561,25 @@
             this.label8.TabIndex = 14;
             this.label8.Text = "Promo Kind :";
             // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.btnlpcsubmit);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel1.Location = new System.Drawing.Point(10, 541);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1108, 67);
+            this.panel1.TabIndex = 15;
+            // 
             // ctrLogPriceChange
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.lpc_rbtn_temporary);
             this.Controls.Add(this.lpc_rbtn_permanent);
-            this.Controls.Add(this.btnlpcsubmit);
             this.Controls.Add(this.lpc_dgv_searchbycode);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.lpc_tb_promotitle);
@@ -583,10 +597,11 @@
             this.Controls.Add(this.lpc_dgv_dbvalue);
             this.Name = "ctrLogPriceChange";
             this.Padding = new System.Windows.Forms.Padding(10);
-            this.Size = new System.Drawing.Size(1128, 558);
+            this.Size = new System.Drawing.Size(1128, 618);
             this.Load += new System.EventHandler(this.ctrLogPriceChange_Load);
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_dbvalue)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_searchbycode)).EndInit();
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -653,5 +668,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Remarks1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Remarks2;
         private System.Windows.Forms.DataGridViewTextBoxColumn btn_addnewp;
+        private System.Windows.Forms.Panel panel1;
     }
 }
