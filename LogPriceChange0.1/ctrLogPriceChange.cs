@@ -22,13 +22,12 @@ namespace LogPriceChange0._1
          string tableName = "MyTable";
          string primaryKeyColumn = "ID"; // Assumes an AutoNumber primary key
          //OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\VisualStudio\LogPriceChange0.1\LogPriceChange0.1\pricematrix.accdb;");
-        OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TAN\Source\Repos\LogPriceChange_Demo\pricematrix.accdb;");
+        OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\VisualStudio\LogPriceChange0.1\LogPriceChange0.1\pricematrix.accdb;");
         DataTable dataTable; // Stores the data displayed in the DataGridView
          OleDbDataAdapter dataAdapter; // Manages data transfer between DB and DataTable
 
         public ctrLogPriceChange()
         {
-            
             InitializeComponent();
             lpc_dtp_enddate.CustomFormat = " ";
         }
@@ -74,51 +73,6 @@ namespace LogPriceChange0._1
 
         }
 
-        private void lpc_tb_searchbycode_TextChanged(object sender, EventArgs e)
-        {
-            // Check if the textbox is empty
-            if (string.IsNullOrEmpty(lpc_tb_searchbycode.Text))
-            {
-                lpc_dgv_searchbycode.Visible = false;
-                return;
-            }
-
-            lpc_dgv_searchbycode.Visible = true;
-
-
-
-            try
-            {
-                connection.Open();
-                string dbsearch = @"SELECT PROD_C, PROD_N, FREE, PLFOB, NWF, NWFR, PC_PF, PC_PFL, PC_RP, PC_PA, PC_PLSRP, PC_LSRP, PC_PPA2LP, PC_LP, PC_PPA2WA, PC_WA, PC_PPA2WB, PC_WB, PC_PPA2WC, PC_WC, PC_PPA2LC, PC_LC, PC_PPA2PG, PC_PG, PC_PPA2PH, PC_PH, PC_PPA2PB, PC_PB, PC_PPA2PD, PC_PD, LPP_AMT, LPP_REF, PC_PPA2PC, PC_PC FROM tbl_billPTMP WHERE PROD_C LIKE @searchText OR PROD_CN LIKE @searchText";
-                using (OleDbCommand cmd = new OleDbCommand(dbsearch, connection))
-                {
-                    cmd.Parameters.AddWithValue("@searchText", "%" + this.lpc_tb_searchbycode.Text + "%");
-                    OleDbDataAdapter da = new OleDbDataAdapter(cmd);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-                    lpc_dgv_searchbycode.DataSource = dt;
-                    //foreach (DataGridViewColumn column in lpc_dgv_searchbycode.Columns)
-                    //{
-                    //    column.Visible = (column.HeaderText == "PROD_C");
-                    //}
-
-                    int lastColumnIndex = lpc_dgv_searchbycode.Columns.Count - 1;
-                    foreach (DataGridViewColumn column in lpc_dgv_searchbycode.Columns)
-                    {
-                        column.AutoSizeMode = (column.Index == lastColumnIndex) ?
-                            DataGridViewAutoSizeColumnMode.Fill :
-                            DataGridViewAutoSizeColumnMode.AllCells;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-            }
-            connection.Close();
-        }
-
         private void lpc_rbtn_permanent_CheckedChanged(object sender, EventArgs e)
         {
 
@@ -140,7 +94,52 @@ namespace LogPriceChange0._1
         private void btnlpcsubmit_Click(object sender, EventArgs e)
 
         {
-            InsertOrUpdateToSupp();
+            //InsertPromo();
+            InsertOrUpdateRow(0);// For the first row
+            InsertOrUpdateRow(1); // For the second row
+            InsertOrUpdateRow(2); // For the third row
+
+
+            MessageBox.Show("Saved");
+        }
+
+        private void lpc_tb_searchbycode_TextChanged(object sender, EventArgs e)
+        {
+            // Check if the textbox is empty
+            if (string.IsNullOrEmpty(lpc_tb_searchbycode.Text))
+            {
+                lpc_dgv_searchbycode.Visible = false;
+                return;
+            }
+
+            lpc_dgv_searchbycode.Visible = true;
+
+            try
+            {
+                connection.Open();
+                string dbsearch = @"SELECT PROD_C, PROD_N, FREE, PLFOB, NWF, NWFR, PC_PF, PC_PFL, PC_RP, PC_PA, PC_PLSRP, PC_LSRP, PC_PPA2LP, PC_LP, PC_PPA2WA, PC_WA, PC_PPA2WB, PC_WB, PC_PPA2WC, PC_WC, PC_PPA2LC, PC_LC, PC_PPA2PG, PC_PG, PC_PPA2PH, PC_PH, PC_PPA2PB, PC_PB, PC_PPA2PD, PC_PD, LPP_AMT, LPP_REF, PC_PPA2PC, PC_PC FROM tbl_billPTMP WHERE PROD_C LIKE @searchText OR PROD_CN LIKE @searchText";
+                using (OleDbCommand cmd = new OleDbCommand(dbsearch, connection))
+                {
+                    cmd.Parameters.AddWithValue("@searchText", "%" + this.lpc_tb_searchbycode.Text + "%");
+                    OleDbDataAdapter da = new OleDbDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+                    lpc_dgv_searchbycode.DataSource = dt;
+
+                    int lastColumnIndex = lpc_dgv_searchbycode.Columns.Count - 1;
+                    foreach (DataGridViewColumn column in lpc_dgv_searchbycode.Columns)
+                    {
+                        column.AutoSizeMode = (column.Index == lastColumnIndex) ?
+                            DataGridViewAutoSizeColumnMode.Fill :
+                            DataGridViewAutoSizeColumnMode.AllCells;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+            connection.Close();
         }
 
         private void lpc_dgv_searchbycode_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -153,7 +152,7 @@ namespace LogPriceChange0._1
             var prodCode = selectedRow.Cells["PROD_C"].Value;
             var productName = selectedRow.Cells["PROD_N"].Value;
 
-            // 🧹 Clear all rows first
+            //// 🧹 Clear all rows first
             lpc_dgv_dbvalue.Rows.Clear();
 
             // 📝 Ensure exactly 3 rows
@@ -180,87 +179,208 @@ namespace LogPriceChange0._1
             {
                 if (!row.IsNewRow)
                 {
-                    //row.Cells[1].ReadOnly = true;
-                    //row.Cells[0].ReadOnly = true;
+                    row.Cells[1].ReadOnly = true;
+                    row.Cells[0].ReadOnly = true;
                 }
             }
-           
+
         }
 
-        private void lpc_btnsup_Click(object sender, DataGridViewCellEventArgs e)
+        void InsertPromo()
         {
-            
-            // check connection state
+            //Insert data to database
             try
             {
                 connection.Open();
-                MessageBox.Show("Connection to database established successfully.");
+                string dbinsert = "INSERT INTO tbl_logPriceChange (TDate,Supplier,PromoTitle,StartDate,EndDate) VALUES (?,?,?,?,?)";
+                OleDbCommand cmd = new OleDbCommand(dbinsert, connection);
+                cmd.Parameters.AddWithValue("?", lpc_dtp_memodate.Value.Date);
+                cmd.Parameters.AddWithValue("?", lpc_tb_supplier.Text);
+                cmd.Parameters.AddWithValue("?", lpc_tb_promotitle.Text);
+                cmd.Parameters.AddWithValue("?", lpc_dtp_startdate.Value.ToString());
+                cmd.Parameters.AddWithValue("?", lpc_dtp_enddate.Value.ToString());
 
-
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("Data Inserted Successfully");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error connecting to database: " + ex.Message, "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message);
             }
             finally
+
             {
-                
-                
+                if (connection.State == ConnectionState.Open)
+                {
                     connection.Close();
-                
+                }
+
             }
         }
 
-        // main entry point
-        void InsertOrUpdateToSupp()
+        /*****************************************************************************Star For DataGridview Insert Update *******************************************************************************************************************************************************************************************************************************************************************************************************************************/
+       
+        
+                
+        
+        string[] GetColumnNames(int rowIndex)
+        {
+            if (rowIndex == 1) // Second row (for 'SUP' columns)
+            {
+                return new string[]
+                {
+                "PROD_C", "PROD_N", "FREE_SUP", "PLFOB_SUP", "NWF_SUP", "NWFR_SUP",
+                "PC_PF_SUP", "PC_PFL_SUP", "PC_RP_SUP", "PC_PA_SUP", "PC_PLSRP_SUP", "PC_LSRP_SUP",
+                "PC_PPA2LP_SUP", "PC_LP_SUP", "PC_PPA2WA_SUP", "PC_WA_SUP", "PC_PPA2WB_SUP", "PC_WB_SUP",
+                "PC_PPA2WC_SUP", "PC_WC_SUP", "PC_PPA2LC_SUP", "PC_LC_SUP", "PC_PPA2PG_SUP", "PC_PG_SUP",
+                "PC_PPA2PH_SUP", "PC_PH_SUP", "PC_PPA2PB_SUP", "PC_PB_SUP", "PC_PPA2PD_SUP", "PC_PD_SUP",
+                "LPP_AMT_SUP", "LPP_REF_SUP", "PC_PPA2PC_SUP", "PC_PC_SUP", "Claim1", "Claim2",
+                "ClaimK1", "ClaimK2", "Remarks1", "Remarks2"
+                };
+            }
+            if (rowIndex == 4) // Second row (for 'SUP' columns)
+            {
+                return new string[]
+                {
+                "PROD_C", "PROD_N", "FREE_SUP", "PLFOB_SUP", "NWF_SUP", "NWFR_SUP",
+                "PC_PF_SUP", "PC_PFL_SUP", "PC_RP_SUP", "PC_PA_SUP", "PC_PLSRP_SUP", "PC_LSRP_SUP",
+                "PC_PPA2LP_SUP", "PC_LP_SUP", "PC_PPA2WA_SUP", "PC_WA_SUP", "PC_PPA2WB_SUP", "PC_WB_SUP",
+                "PC_PPA2WC_SUP", "PC_WC_SUP", "PC_PPA2LC_SUP", "PC_LC_SUP", "PC_PPA2PG_SUP", "PC_PG_SUP",
+                "PC_PPA2PH_SUP", "PC_PH_SUP", "PC_PPA2PB_SUP", "PC_PB_SUP", "PC_PPA2PD_SUP", "PC_PD_SUP",
+                "LPP_AMT_SUP", "LPP_REF_SUP", "PC_PPA2PC_SUP", "PC_PC_SUP", "FREE_USRINT",
+                "PLFOB_USRINT",
+                "NWF_USRINT",
+                "NWFR_USRINT",
+                "PC_PF_USRINT",
+                "PC_PFL_USRINT",
+                "PC_RP_USRINT",
+                "PC_PA_USRINT",
+                "PC_PLSRP_USRINT",
+                "PC_LSRP_USRINT",
+                "PC_PPA2LP_USRINT",
+                "PC_LP_USRINT",
+                "PC_PPA2WA_USRINT",
+                "PC_WA_USRINT",
+                "PC_PPA2WB_USRINT",
+                "PC_WB_USRINT",
+                "PC_PPA2WC_USRINT",
+                "PC_WC_USRINT",
+                "PC_PPA2LC_USRINT",
+                "PC_LC_USRINT",
+                "PC_PPA2PG_USRINT",
+                "PC_PG_USRINT",
+                "PC_PPA2PH_USRINT",
+                "PC_PH_USRINT",
+                "PC_PPA2PB_USRINT",
+                "PC_PB_USRINT",
+                "PC_PPA2P_USRINT",
+                "PC_PD_USRINT",
+                "LPP_AMT_USRINT",
+                "LPP_REF_USRINT",
+                "PC_PPA2PC_USRINT",
+                "PC_PC_USRINT","FREE","PLFOB","NWF","NWFR","PC_PF","PC_PFL","PC_RP","PC_PA","PC_PLSRP","PC_LSRP","PC_PPA2LP","PC_LP","PC_PPA2WA","PC_WA","PC_PPA2WB","PC_WB","PC_PPA2WC","PC_WC","PC_PPA2LC","PC_LC","PC_PPA2PG","PC_PG","PC_PPA2PH","PC_PH","PC_PPA2PB","PC_PB","PC_PPA2PD","PC_PD","LPP_AMT","LPP_REF","PC_PPA2PC","PC_PC",
+                    "Claim1", "Claim2",
+                "ClaimK1", "ClaimK2", "Remarks1", "Remarks2"
+                };
+            }
+            else if (rowIndex == 2) // Third row (for 'USRINT' columns)
+            {
+                return new string[]
+                {
+                "PROD_C",
+                "PROD_N",
+                "FREE_USRINT",
+                "PLFOB_USRINT",
+                "NWF_USRINT",
+                "NWFR_USRINT",
+                "PC_PF_USRINT",
+                "PC_PFL_USRINT",
+                "PC_RP_USRINT",
+                "PC_PA_USRINT",
+                "PC_PLSRP_USRINT",
+                "PC_LSRP_USRINT",
+                "PC_PPA2LP_USRINT",
+                "PC_LP_USRINT",
+                "PC_PPA2WA_USRINT",
+                "PC_WA_USRINT",
+                "PC_PPA2WB_USRINT",
+                "PC_WB_USRINT",
+                "PC_PPA2WC_USRINT",
+                "PC_WC_USRINT",
+                "PC_PPA2LC_USRINT",
+                "PC_LC_USRINT",
+                "PC_PPA2PG_USRINT",
+                "PC_PG_USRINT",
+                "PC_PPA2PH_USRINT",
+                "PC_PH_USRINT",
+                "PC_PPA2PB_USRINT",
+                "PC_PB_USRINT",
+                "PC_PPA2P_USRINT",
+                "PC_PD_USRINT",
+                "LPP_AMT_USRINT",
+                "LPP_REF_USRINT",
+                "PC_PPA2PC_USRINT",
+                "PC_PC_USRINT",
+                "Claim1",
+                "Claim2",
+                "ClaimK1",
+                "ClaimK2",
+                "Remarks1",
+                "Remarks2"
+
+                };
+            }else if (rowIndex == 0)
+            {
+                return new string[]
+                {
+                    "PROD_C","PROD_N","FREE","PLFOB","NWF","NWFR","PC_PF","PC_PFL","PC_RP","PC_PA","PC_PLSRP","PC_LSRP","PC_PPA2LP","PC_LP","PC_PPA2WA","PC_WA","PC_PPA2WB","PC_WB","PC_PPA2WC","PC_WC","PC_PPA2LC","PC_LC","PC_PPA2PG","PC_PG","PC_PPA2PH","PC_PH","PC_PPA2PB","PC_PB","PC_PPA2PD","PC_PD","LPP_AMT","LPP_REF","PC_PPA2PC","PC_PC","Claim1","Claim2","ClaimK1","ClaimK2","Remarks1","Remarks2",
+
+                };
+            }
+            else
+            {
+                // Handle additional rows here if needed
+                throw new ArgumentException("Invalid row index.");
+            }
+        }
+
+        void InsertOrUpdateRow(int rowIndex)
         {
             try
             {
                 connection.Open();
 
-                // Define which columns are numeric by index
-                HashSet<int> numericColumns = new HashSet<int>
-        {
-            3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,32,33,34,35
-        };
-
-                // Define your database column names in the correct order (match DB table)
-                string[] columnNames =
+                // Ensure the row exists in the DataGridView
+                if (lpc_dgv_dbvalue.Rows.Count > rowIndex)
                 {
-            "PROD_C", "PROD_N", "FREE_SUP", "PLFOB_SUP", "NWF_SUP", "NWFR_SUP",
-            "PC_PF_SUP", "PC_PFL_SUP", "PC_RP_SUP", "PC_PA_SUP", "PC_PLSRP_SUP", "PC_LSRP_SUP",
-            "PC_PPA2LP_SUP", "PC_LP_SUP", "PC_PPA2WA_SUP", "PC_WA_SUP", "PC_PPA2WB_SUP", "PC_WB_SUP",
-            "PC_PPA2WC_SUP", "PC_WC_SUP", "PC_PPA2LC_SUP", "PC_LC_SUP", "PC_PPA2PG_SUP", "PC_PG_SUP",
-            "PC_PPA2PH_SUP", "PC_PH_SUP", "PC_PPA2PB_SUP", "PC_PB_SUP", "PC_PPA2PD_SUP", "PC_PD_SUP",
-            "LPP_AMT_SUP", "LPP_REF_SUP", "PC_PPA2PC_SUP", "PC_PC_SUP", "Claim1", "Claim2",
-            "ClaimK1", "ClaimK2", "Remarks1", "Remarks2"
-        };
+                    DataGridViewRow row = lpc_dgv_dbvalue.Rows[rowIndex];
 
-                foreach (DataGridViewRow row in lpc_dgv_dbvalue.Rows)
-                {
-                    if (row.IsNewRow) continue;
+                    // Get column names dynamically based on the row index
+                    string[] columnNames = GetColumnNames(rowIndex);
 
+                    // Check the number of columns in the DataGridView row
+                    if (row.Cells.Count != columnNames.Length)
+                    {
+                        MessageBox.Show($"Mismatch in column count: Expected {columnNames.Length}, but found {row.Cells.Count}.");
+                        return;
+                    }
+
+                    // Collect values from the row's cells
                     List<object> values = new List<object>();
-
                     for (int i = 0; i < columnNames.Length; i++)
                     {
                         var cellValue = row.Cells[i].Value;
-
-                        if (numericColumns.Contains(i))
-                            values.Add(GetDoubleOrDefault(cellValue));
-                        else
-                            values.Add(GetStringOrDefault(cellValue));
+                        values.Add(cellValue != null ? cellValue.ToString().Trim() : string.Empty);
                     }
 
-                    string PROD_C = values[0].ToString();
-                    string FREE_SUP = values[2].ToString();
+                    // Debugging: Log the values being passed
+                    Console.WriteLine($"Inserting or Updating Row at Index {rowIndex}");
+                    Console.WriteLine($"Columns: {string.Join(", ", columnNames)}");
+                    Console.WriteLine($"Values: {string.Join(", ", values.Select(v => v?.ToString() ?? "NULL"))}");
 
-                    if (string.IsNullOrWhiteSpace(FREE_SUP))
-                    {
-                        MessageBox.Show("Product Name cannot be empty for a row.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        continue;
-                    }
+                    string PROD_C = values[0].ToString(); // Unique identifier
 
+                    // Check if the record with PROD_C already exists
                     string checkQuery = "SELECT COUNT(*) FROM tbl_logpricechange WHERE PROD_C = ?";
                     using (OleDbCommand checkCmd = new OleDbCommand(checkQuery, connection))
                     {
@@ -268,15 +388,25 @@ namespace LogPriceChange0._1
 
                         int exists = Convert.ToInt32(checkCmd.ExecuteScalar());
                         if (exists > 0)
+                        {
+                            // If exists, update the record
                             UpdateRow(PROD_C, columnNames, values);
+                        }
                         else
+                        {
+                            // If doesn't exist, insert the record
                             InsertRow(columnNames, values);
+                        }
                     }
+                }
+                else
+                {
+                    MessageBox.Show($"Row at index {rowIndex} does not exist.");
                 }
             }
             catch (Exception ex)
             {
-                //MessageBox.Show("Error: " + ex.Message);
+                MessageBox.Show($"Error: {ex.Message}");
             }
             finally
             {
@@ -285,37 +415,133 @@ namespace LogPriceChange0._1
             }
         }
 
+        void InsertRow(string[] cols, List<object> vals)
+        {
+            
+            // Build column list and placeholders
+            string colList = string.Join(", ", cols);  // Column names
+            string placeholders = string.Join(", ", cols.Select(c => "?"));  // Placeholders for parameters
+
+            // Construct the SQL insert query
+            string insertQuery = $"INSERT INTO tbl_logpricechange (TDate, Supplier, PromoTitle, StartDate, EndDate,{colList}) VALUES (@TDate, @Supplier, @PromoTitle, @StartDate, @EndDate,{placeholders})";
+
+            // Debugging: Log the query being constructed
+            Console.WriteLine("Insert Query: " + insertQuery);
+            Console.WriteLine("Columns: " + string.Join(", ", cols));
+            Console.WriteLine("Values: " + string.Join(", ", vals.Select(v => v?.ToString() ?? "NULL")));
+
+            // Create the command object with the insert query
+            using (OleDbCommand cmd = new OleDbCommand(insertQuery, connection))
+            {
+                cmd.Parameters.AddWithValue("@TDate", lpc_dtp_memodate.Value.Date);  // TDate
+                cmd.Parameters.AddWithValue("@Supplier", lpc_tb_supplier.Text);         // Supplier
+                cmd.Parameters.AddWithValue("@PromoTitle", lpc_tb_promotitle.Text);       // PromoTitle
+                cmd.Parameters.AddWithValue("@StartDate", lpc_dtp_startdate.Value);      // StartDate
+                cmd.Parameters.AddWithValue("@EndDate", lpc_dtp_enddate.Value);
+                for (int i = 0; i < vals.Count; i++)
+                {
+                    // Check if the value is null or empty and handle accordingly
+                    var value = vals[i] == null || string.IsNullOrWhiteSpace(vals[i]?.ToString())
+                                    ? DBNull.Value
+                                    : vals[i];
+
+                    cmd.Parameters.AddWithValue("?", value); // Add the value as a parameter
+
+                    // Debugging: Log each parameter added
+                    Console.WriteLine($"Parameter {i + 1}: {value}");
+                }
+                
+                // Execute the query
+                cmd.ExecuteNonQuery();
+            }
+
+            // Optional: Show a message after inserting
+            MessageBox.Show($"Inserted: {vals[0]}");
+
+         
+        }
 
         void UpdateRow(string prodC, string[] cols, List<object> vals)
         {
-            string setClause = string.Join(", ", cols.Skip(1).Select(c => $"{c}=?")); // skip PROD_C for SET
-            string updateQuery = $"UPDATE tbl_logpricechange SET {setClause} WHERE PROD_C = ?";
-            using (OleDbCommand cmd = new OleDbCommand(updateQuery, connection))
+            // Build the SELECT query to get the current values from the database
+            string selectQuery = $"SELECT {string.Join(", ", cols.Skip(1))} FROM tbl_logpricechange WHERE PROD_C = ?";
+
+            // Debugging: Log the SELECT query
+            Console.WriteLine("Select Query: " + selectQuery);
+            Console.WriteLine($"PROD_C: {prodC}");
+
+            object[] dbValues = null;
+            using (OleDbCommand selectCmd = new OleDbCommand(selectQuery, connection))
             {
-                // Add all except PROD_C for SET
-                for (int i = 1; i < vals.Count; i++)
-                    cmd.Parameters.AddWithValue("?", vals[i]);
+                selectCmd.Parameters.AddWithValue("?", prodC);
 
-                cmd.Parameters.AddWithValue("?", prodC); // WHERE
+                // Execute the SELECT query and read the current row
+                using (OleDbDataReader reader = selectCmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        dbValues = new object[cols.Length - 1];
+                        for (int i = 1; i < cols.Length; i++)
+                            dbValues[i - 1] = reader.GetValue(i - 1);
+                    }
+                }
+            }
 
-                cmd.ExecuteNonQuery();
+            // Compare values and prepare the UPDATE query if necessary
+            bool hasChanges = false;
+            List<object> updateValues = new List<object>();
+
+            for (int i = 1; i < vals.Count; i++)
+            {
+                var inputValue = vals[i];
+                var dbValue = dbValues[i - 1];
+
+                // Check for differences and add updated values
+                if (!object.Equals(inputValue, dbValue) && !string.IsNullOrWhiteSpace(inputValue?.ToString()))
+                {
+                    hasChanges = true;
+                    updateValues.Add(inputValue ?? DBNull.Value);  // Use DBNull if value is null
+                }
+                else
+                {
+                    updateValues.Add(dbValue ?? DBNull.Value);  // Use database value if no change
+                }
+            }
+
+            if (hasChanges)
+            {
+                // Build the UPDATE query with placeholders for parameters
+                string setClause = string.Join(", ", cols.Skip(1).Select((c, i) => $"{c} = ?"));
+                string updateQuery = $"UPDATE tbl_logpricechange SET {setClause} WHERE PROD_C = ?";
+
+                // Debugging: Log the UPDATE query
+                Console.WriteLine("Update Query: " + updateQuery);
+                Console.WriteLine("Values to Update: " + string.Join(", ", updateValues.Select(v => v?.ToString() ?? "NULL")));
+
+                using (OleDbCommand cmd = new OleDbCommand(updateQuery, connection))
+                {
+                    // Add parameters for updated columns
+                    for (int i = 0; i < updateValues.Count; i++)
+                    {
+                        cmd.Parameters.AddWithValue("?", updateValues[i]);
+
+                        // Debugging: Log each parameter being added
+                        Console.WriteLine($"Update Parameter {i + 1}: {updateValues[i]}");
+                    }
+
+                    // Add PROD_C as the WHERE condition
+                    cmd.Parameters.AddWithValue("?", prodC);
+
+                    // Execute the UPDATE query
+                    cmd.ExecuteNonQuery();
+                }
+
+                // Inform the user
                 MessageBox.Show($"Updated: {prodC}");
             }
-        }
-
-        void InsertRow(string[] cols, List<object> vals)
-        {
-            string colList = string.Join(", ", cols);
-            string placeholders = string.Join(", ", cols.Select(c => "?"));
-            string insertQuery = $"INSERT INTO tbl_logpricechange ({colList}) VALUES ({placeholders})";
-
-            using (OleDbCommand cmd = new OleDbCommand(insertQuery, connection))
+            else
             {
-                foreach (var val in vals)
-                    cmd.Parameters.AddWithValue("?", val);
-
-                cmd.ExecuteNonQuery();
-                MessageBox.Show($"Inserted: {vals[0]}");
+                MessageBox.Show($"No changes detected for {prodC}");
             }
         }
 
@@ -332,6 +558,11 @@ namespace LogPriceChange0._1
 
         string GetStringOrDefault(object value, string defaultValue = "") =>
             value?.ToString()?.Trim() ?? defaultValue;
+
+
+/*****************************************************************************End For DataGridview Insert Update *******************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+
 
     }
 }
