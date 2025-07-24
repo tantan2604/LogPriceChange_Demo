@@ -52,19 +52,19 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.PROD_C = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PROD_N = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SFree = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.FREE = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PLFOB = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.NWF = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.NWFR = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DFP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LDFP = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PC_PF = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PC_PFL = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_RP = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PA = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_LSRP = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PLSRP = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_LP = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2LP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.WA1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.WA = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2WA = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_WB = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2WB = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -109,19 +109,19 @@
             this.lpc_dgv_dbvalue.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.PROD_C,
             this.PROD_N,
-            this.SFree,
+            this.FREE,
             this.PLFOB,
             this.NWF,
             this.NWFR,
-            this.DFP,
-            this.LDFP,
+            this.PC_PF,
+            this.PC_PFL,
             this.PC_RP,
             this.PC_PA,
             this.PC_LSRP,
             this.PC_PLSRP,
             this.PC_LP,
             this.PC_PPA2LP,
-            this.WA1,
+            this.WA,
             this.PC_PPA2WA,
             this.PC_WB,
             this.PC_PPA2WB,
@@ -372,10 +372,10 @@
             this.PROD_N.HeaderText = "MName";
             this.PROD_N.Name = "PROD_N";
             // 
-            // SFree
+            // FREE
             // 
-            this.SFree.HeaderText = "SFree";
-            this.SFree.Name = "SFree";
+            this.FREE.HeaderText = "FREE";
+            this.FREE.Name = "FREE";
             // 
             // PLFOB
             // 
@@ -392,15 +392,15 @@
             this.NWFR.HeaderText = "NWFR";
             this.NWFR.Name = "NWFR";
             // 
-            // DFP
+            // PC_PF
             // 
-            this.DFP.HeaderText = "DFP";
-            this.DFP.Name = "DFP";
+            this.PC_PF.HeaderText = "PC_PF";
+            this.PC_PF.Name = "PC_PF";
             // 
-            // LDFP
+            // PC_PFL
             // 
-            this.LDFP.HeaderText = "LDFP";
-            this.LDFP.Name = "LDFP";
+            this.PC_PFL.HeaderText = "PC_PFL";
+            this.PC_PFL.Name = "PC_PFL";
             // 
             // PC_RP
             // 
@@ -432,10 +432,10 @@
             this.PC_PPA2LP.HeaderText = "MP_Rate";
             this.PC_PPA2LP.Name = "PC_PPA2LP";
             // 
-            // WA1
+            // WA
             // 
-            this.WA1.HeaderText = "WA1";
-            this.WA1.Name = "WA1";
+            this.WA.HeaderText = "WA1";
+            this.WA.Name = "WA";
             // 
             // PC_PPA2WA
             // 
@@ -622,19 +622,19 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.DataGridViewTextBoxColumn PROD_C;
         private System.Windows.Forms.DataGridViewTextBoxColumn PROD_N;
-        private System.Windows.Forms.DataGridViewTextBoxColumn SFree;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FREE;
         private System.Windows.Forms.DataGridViewTextBoxColumn PLFOB;
         private System.Windows.Forms.DataGridViewTextBoxColumn NWF;
         private System.Windows.Forms.DataGridViewTextBoxColumn NWFR;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DFP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn LDFP;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PF;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PFL;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_RP;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PA;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_LSRP;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PLSRP;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_LP;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2LP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn WA1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn WA;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2WA;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_WB;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2WB;

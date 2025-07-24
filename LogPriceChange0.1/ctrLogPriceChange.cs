@@ -12,19 +12,21 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace LogPriceChange0._1
 {
     public partial class ctrLogPriceChange : UserControl
     {
-       
-         string tableName = "MyTable";
-         string primaryKeyColumn = "ID"; // Assumes an AutoNumber primary key
-         //OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\VisualStudio\LogPriceChange0.1\LogPriceChange0.1\pricematrix.accdb;");
+        private static Dictionary<string, int> lastNumbers = new Dictionary<string, int>();
+
+
+        
+        string primaryKeyColumn = "ID";
         OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\VisualStudio\LogPriceChange0.1\LogPriceChange0.1\pricematrix.accdb;");
-        DataTable dataTable; // Stores the data displayed in the DataGridView
-         OleDbDataAdapter dataAdapter; // Manages data transfer between DB and DataTable
+        DataTable dataTable;
+        OleDbDataAdapter dataAdapter;
 
         public ctrLogPriceChange()
         {
@@ -35,7 +37,7 @@ namespace LogPriceChange0._1
         {
             try
             {
-                
+
                 connection.Open(); // Open the database connection
 
                 string query = @"SELECT ID, PROD_C, PROD_N, FREE, PLFOB, NWF, NWFR, PC_PF, PC_PFL, PC_RP, PC_PA, PC_PLSRP, PC_LSRP, PC_PPA2LP, PC_LP, PC_PPA2WA, PC_WA, PC_PPA2WB, PC_WB, PC_PPA2WC, PC_WC, PC_PPA2LC, PC_LC, PC_PPA2PG, PC_PG, PC_PPA2PH, PC_PH, PC_PPA2PB, PC_PB, PC_PPA2PD, PC_PD, LPP_AMT, LPP_REF, PC_PPA2PC, PC_PC FROM tbl_billPTMP";
@@ -94,13 +96,8 @@ namespace LogPriceChange0._1
         private void btnlpcsubmit_Click(object sender, EventArgs e)
 
         {
-            //InsertPromo();
-            InsertOrUpdateRow(0);// For the first row
-            InsertOrUpdateRow(1); // For the second row
-            InsertOrUpdateRow(2); // For the third row
+            InsertData();
 
-
-            MessageBox.Show("Saved");
         }
 
         private void lpc_tb_searchbycode_TextChanged(object sender, EventArgs e)
@@ -142,427 +139,238 @@ namespace LogPriceChange0._1
             connection.Close();
         }
 
+        /*****************************************************************************Star For DataGridview Insert Update *******************************************************************************************************************************************************************************************************************************************************************************************************************************/
         private void lpc_dgv_searchbycode_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Ignore header click
-            if (e.RowIndex < 0) return;
-
-            DataGridViewRow selectedRow = lpc_dgv_searchbycode.Rows[e.RowIndex];
-
-            var prodCode = selectedRow.Cells["PROD_C"].Value;
-            var productName = selectedRow.Cells["PROD_N"].Value;
-
-            //// 🧹 Clear all rows first
-            lpc_dgv_dbvalue.Rows.Clear();
-
-            // 📝 Ensure exactly 3 rows
-            for (int i = 0; i < 3; i++)
-            {
-                lpc_dgv_dbvalue.Rows.Add();
-            }
-
-            // 🚀 Row 0 → full data
-            for (int col = 0; col < selectedRow.Cells.Count; col++)
-            {
-                if (col >= lpc_dgv_dbvalue.Columns.Count) break; // safety
-                lpc_dgv_dbvalue.Rows[0].Cells[col].Value = selectedRow.Cells[col].Value;
-            }
-
-            // 🚀 Row 1 & 2 → ProductName in column 1
-            lpc_dgv_dbvalue.Rows[1].Cells[1].Value = productName;
-            lpc_dgv_dbvalue.Rows[2].Cells[1].Value = productName;
-            lpc_dgv_dbvalue.Rows[1].Cells[0].Value = prodCode;
-            lpc_dgv_dbvalue.Rows[2].Cells[0].Value = prodCode;
-
-            // 🔒 Make column 1 readonly in all rows
-            foreach (DataGridViewRow row in lpc_dgv_dbvalue.Rows)
-            {
-                if (!row.IsNewRow)
-                {
-                    row.Cells[1].ReadOnly = true;
-                    row.Cells[0].ReadOnly = true;
-                }
-            }
-
-        }
-
-        void InsertPromo()
-        {
-            //Insert data to database
             try
             {
                 connection.Open();
-                string dbinsert = "INSERT INTO tbl_logPriceChange (TDate,Supplier,PromoTitle,StartDate,EndDate) VALUES (?,?,?,?,?)";
-                OleDbCommand cmd = new OleDbCommand(dbinsert, connection);
-                cmd.Parameters.AddWithValue("?", lpc_dtp_memodate.Value.Date);
-                cmd.Parameters.AddWithValue("?", lpc_tb_supplier.Text);
-                cmd.Parameters.AddWithValue("?", lpc_tb_promotitle.Text);
-                cmd.Parameters.AddWithValue("?", lpc_dtp_startdate.Value.ToString());
-                cmd.Parameters.AddWithValue("?", lpc_dtp_enddate.Value.ToString());
+                string query = "SELECT * FROM tbl_billptmp";
+                OleDbDataAdapter da = new OleDbDataAdapter(query, connection);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
 
-                cmd.ExecuteNonQuery();
-                MessageBox.Show("Data Inserted Successfully");
+                if (e.RowIndex >= 0)
+                {
+                    DataGridViewRow selectedRow = lpc_dgv_searchbycode.Rows[e.RowIndex];
+
+
+                    // Create three rows
+                    int mainRowIndex = lpc_dgv_dbvalue.Rows.Add();
+                    int suppRowIndex = lpc_dgv_dbvalue.Rows.Add();
+                    int promoRowIndex = lpc_dgv_dbvalue.Rows.Add();
+
+                    // Fill mainRow with selected data
+                    DataGridViewRow mainRow = lpc_dgv_dbvalue.Rows[mainRowIndex];
+                    for (int i = 0; i < selectedRow.Cells.Count && i < lpc_dgv_dbvalue.Columns.Count; i++)
+                    {
+                        mainRow.Cells[i].Value = selectedRow.Cells[i].Value;
+                    }
+
+                    // Set row header labels
+                    lpc_dgv_dbvalue.Rows[mainRowIndex].HeaderCell.Value = "Database Value";
+                    lpc_dgv_dbvalue.Rows[suppRowIndex].HeaderCell.Value = "Supplier Price";
+                    lpc_dgv_dbvalue.Rows[promoRowIndex].HeaderCell.Value = "Promo Value";
+
+                    // Optionally make main row read-only
+                    lpc_dgv_dbvalue.Rows[mainRowIndex].ReadOnly = true;
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("An error occurred: " + ex.Message);
             }
             finally
-
             {
                 if (connection.State == ConnectionState.Open)
                 {
                     connection.Close();
                 }
-
             }
-        }
 
-        /*****************************************************************************Star For DataGridview Insert Update *******************************************************************************************************************************************************************************************************************************************************************************************************************************/
-       
-        
-                
-        
-        string[] GetColumnNames(int rowIndex)
+
+        }  
+        public void InsertData()
         {
-            if (rowIndex == 1) // Second row (for 'SUP' columns)
-            {
-                return new string[]
-                {
-                "PROD_C", "PROD_N", "FREE_SUP", "PLFOB_SUP", "NWF_SUP", "NWFR_SUP",
-                "PC_PF_SUP", "PC_PFL_SUP", "PC_RP_SUP", "PC_PA_SUP", "PC_PLSRP_SUP", "PC_LSRP_SUP",
-                "PC_PPA2LP_SUP", "PC_LP_SUP", "PC_PPA2WA_SUP", "PC_WA_SUP", "PC_PPA2WB_SUP", "PC_WB_SUP",
-                "PC_PPA2WC_SUP", "PC_WC_SUP", "PC_PPA2LC_SUP", "PC_LC_SUP", "PC_PPA2PG_SUP", "PC_PG_SUP",
-                "PC_PPA2PH_SUP", "PC_PH_SUP", "PC_PPA2PB_SUP", "PC_PB_SUP", "PC_PPA2PD_SUP", "PC_PD_SUP",
-                "LPP_AMT_SUP", "LPP_REF_SUP", "PC_PPA2PC_SUP", "PC_PC_SUP", "Claim1", "Claim2",
-                "ClaimK1", "ClaimK2", "Remarks1", "Remarks2"
-                };
-            }
-            if (rowIndex == 4) // Second row (for 'SUP' columns)
-            {
-                return new string[]
-                {
-                "PROD_C", "PROD_N", "FREE_SUP", "PLFOB_SUP", "NWF_SUP", "NWFR_SUP",
-                "PC_PF_SUP", "PC_PFL_SUP", "PC_RP_SUP", "PC_PA_SUP", "PC_PLSRP_SUP", "PC_LSRP_SUP",
-                "PC_PPA2LP_SUP", "PC_LP_SUP", "PC_PPA2WA_SUP", "PC_WA_SUP", "PC_PPA2WB_SUP", "PC_WB_SUP",
-                "PC_PPA2WC_SUP", "PC_WC_SUP", "PC_PPA2LC_SUP", "PC_LC_SUP", "PC_PPA2PG_SUP", "PC_PG_SUP",
-                "PC_PPA2PH_SUP", "PC_PH_SUP", "PC_PPA2PB_SUP", "PC_PB_SUP", "PC_PPA2PD_SUP", "PC_PD_SUP",
-                "LPP_AMT_SUP", "LPP_REF_SUP", "PC_PPA2PC_SUP", "PC_PC_SUP", "FREE_USRINT",
-                "PLFOB_USRINT",
-                "NWF_USRINT",
-                "NWFR_USRINT",
-                "PC_PF_USRINT",
-                "PC_PFL_USRINT",
-                "PC_RP_USRINT",
-                "PC_PA_USRINT",
-                "PC_PLSRP_USRINT",
-                "PC_LSRP_USRINT",
-                "PC_PPA2LP_USRINT",
-                "PC_LP_USRINT",
-                "PC_PPA2WA_USRINT",
-                "PC_WA_USRINT",
-                "PC_PPA2WB_USRINT",
-                "PC_WB_USRINT",
-                "PC_PPA2WC_USRINT",
-                "PC_WC_USRINT",
-                "PC_PPA2LC_USRINT",
-                "PC_LC_USRINT",
-                "PC_PPA2PG_USRINT",
-                "PC_PG_USRINT",
-                "PC_PPA2PH_USRINT",
-                "PC_PH_USRINT",
-                "PC_PPA2PB_USRINT",
-                "PC_PB_USRINT",
-                "PC_PPA2P_USRINT",
-                "PC_PD_USRINT",
-                "LPP_AMT_USRINT",
-                "LPP_REF_USRINT",
-                "PC_PPA2PC_USRINT",
-                "PC_PC_USRINT","FREE","PLFOB","NWF","NWFR","PC_PF","PC_PFL","PC_RP","PC_PA","PC_PLSRP","PC_LSRP","PC_PPA2LP","PC_LP","PC_PPA2WA","PC_WA","PC_PPA2WB","PC_WB","PC_PPA2WC","PC_WC","PC_PPA2LC","PC_LC","PC_PPA2PG","PC_PG","PC_PPA2PH","PC_PH","PC_PPA2PB","PC_PB","PC_PPA2PD","PC_PD","LPP_AMT","LPP_REF","PC_PPA2PC","PC_PC",
-                    "Claim1", "Claim2",
-                "ClaimK1", "ClaimK2", "Remarks1", "Remarks2"
-                };
-            }
-            else if (rowIndex == 2) // Third row (for 'USRINT' columns)
-            {
-                return new string[]
-                {
-                "PROD_C",
-                "PROD_N",
-                "FREE_USRINT",
-                "PLFOB_USRINT",
-                "NWF_USRINT",
-                "NWFR_USRINT",
-                "PC_PF_USRINT",
-                "PC_PFL_USRINT",
-                "PC_RP_USRINT",
-                "PC_PA_USRINT",
-                "PC_PLSRP_USRINT",
-                "PC_LSRP_USRINT",
-                "PC_PPA2LP_USRINT",
-                "PC_LP_USRINT",
-                "PC_PPA2WA_USRINT",
-                "PC_WA_USRINT",
-                "PC_PPA2WB_USRINT",
-                "PC_WB_USRINT",
-                "PC_PPA2WC_USRINT",
-                "PC_WC_USRINT",
-                "PC_PPA2LC_USRINT",
-                "PC_LC_USRINT",
-                "PC_PPA2PG_USRINT",
-                "PC_PG_USRINT",
-                "PC_PPA2PH_USRINT",
-                "PC_PH_USRINT",
-                "PC_PPA2PB_USRINT",
-                "PC_PB_USRINT",
-                "PC_PPA2P_USRINT",
-                "PC_PD_USRINT",
-                "LPP_AMT_USRINT",
-                "LPP_REF_USRINT",
-                "PC_PPA2PC_USRINT",
-                "PC_PC_USRINT",
-                "Claim1",
-                "Claim2",
-                "ClaimK1",
-                "ClaimK2",
-                "Remarks1",
-                "Remarks2"
 
-                };
-            }else if (rowIndex == 0)
-            {
-                return new string[]
-                {
-                    "PROD_C","PROD_N","FREE","PLFOB","NWF","NWFR","PC_PF","PC_PFL","PC_RP","PC_PA","PC_PLSRP","PC_LSRP","PC_PPA2LP","PC_LP","PC_PPA2WA","PC_WA","PC_PPA2WB","PC_WB","PC_PPA2WC","PC_WC","PC_PPA2LC","PC_LC","PC_PPA2PG","PC_PG","PC_PPA2PH","PC_PH","PC_PPA2PB","PC_PB","PC_PPA2PD","PC_PD","LPP_AMT","LPP_REF","PC_PPA2PC","PC_PC","Claim1","Claim2","ClaimK1","ClaimK2","Remarks1","Remarks2",
-
-                };
-            }
-            else
-            {
-                // Handle additional rows here if needed
-                throw new ArgumentException("Invalid row index.");
-            }
-        }
-
-        void InsertOrUpdateRow(int rowIndex)
-        {
             try
             {
+                string promoDate = DateTime.Now.ToString("yyyyMM");
+                int docIdstart = 1;
+
+                string maxSequenceIdQuery = "SELECT MAX(CInt(Mid(DocID, 8))) FROM tbl_logpricechange WHERE DocID LIKE @promoDate";
+                using (OleDbCommand maxCmd = new OleDbCommand(maxSequenceIdQuery, connection))
+                {
+                    connection.Open();
+                    maxCmd.Parameters.AddWithValue("@promoDate", promoDate + "-%");
+                    object result = maxCmd.ExecuteScalar();
+
+                    if (result != DBNull.Value && result != null)
+                    {
+
+                        docIdstart = Convert.ToInt32(result) + 1;
+                    }
+                    connection.Close();
+                }
+
+                string formattedSequenceId = docIdstart.ToString("D6");
+                string docId = $"{promoDate}-{formattedSequenceId}";
+
+                string insQuery = "INSERT INTO  tbl_logpricechange" +
+                           "(TDate, Supplier, PromoTitle,  PROD_C, PROD_N, FREE, FREE_SUP, FREE_USRINT, PLFOB, PLFOB_SUP, PLFOB_USRINT, NWF, NWF_SUP, NWF_USRINT, NWFR, PC_PF, PC_PF_SUP, PC_PF_USRINT, PC_PFL, PC_PFL_SUP, PC_PFL_USRINT, PC_RP, PC_RP_SUP, PC_RP_USRINT, PC_PA, PC_PA_SUP, PC_PA_USRINT, PC_PLSRP, PC_PLSRP_SUP, PC_PLSRP_USRINT, PC_LSRP, PC_LSRP_SUP, PC_LSRP_USRINT, PC_PPA2LP, PC_PPA2LP_SUP, PC_PPA2LP_USRINT, PC_LP, PC_LP_SUP, PC_LP_USRINT, PC_PPA2WA, PC_PPA2WA_SUP, PC_PPA2WA_USRINT, PC_WA, PC_WA_SUP, PC_WA_USRINT, PC_PPA2WB, PC_PPA2WB_SUP, PC_PPA2WB_USRINT, PC_WB, PC_WB_SUP, PC_WB_USRINT, PC_PPA2WC, PC_PPA2WC_SUP, PC_PPA2WC_USRINT, PC_WC, PC_WC_SUP, PC_WC_USRINT, PC_PPA2LC, PC_PPA2LC_SUP, PC_PPA2LC_USRINT, PC_LC, PC_LC_SUP, PC_LC_USRINT, PC_PPA2PG, PC_PPA2PG_SUP, PC_PPA2PG_USRINT, PC_PG, PC_PG_SUP, PC_PG_USRINT, PC_PPA2PH, PC_PPA2PH_SUP, PC_PPA2PH_USRINT, PC_PH, PC_PH_SUP, PC_PH_USRINT, PC_PPA2PB, PC_PPA2PB_SUP, PC_PPA2PB_USRINT, PC_PB, PC_PB_SUP, PC_PB_USRINT, PC_PPA2PD, PC_PPA2PD_SUP, PC_PPA2P_USRINT, PC_PD, PC_PD_SUP, PC_PD_USRINT, LPP_AMT, LPP_AMT_SUP, LPP_AMT_USRINT, LPP_REF, LPP_REF_SUP, LPP_REF_USRINT, PC_PPA2PC, PC_PPA2PC_SUP, PC_PPA2PC_USRINT, PC_PC, PC_PC_SUP, PC_PC_USRINT, Claim1, Claim2, ClaimK1, ClaimK2, Remarks1, Remarks2, DocID, CreatedDate ) " +
+                    "VALUES (@TDate,@Supplier,@PromoTitle, @PROD_C,@PROD_N,@FREE,@FREE_SUP,@FREE_USRINT,@PLFOB,@PLFOB_SUP,@PLFOB_USRINT,@NWF,@NWF_SUP,@NWF_USRINT,@NWFR,@PC_PF,@PC_PF_SUP,@PC_PF_USRINT,@PC_PFL,@PC_PFL_SUP,@PC_PFL_USRINT,@PC_RP,@PC_RP_SUP,@PC_RP_USRINT,@PC_PA,@PC_PA_SUP,@PC_PA_USRINT,@PC_PLSRP,@PC_PLSRP_SUP,@PC_PLSRP_USRINT,@PC_LSRP,@PC_LSRP_SUP,@PC_LSRP_USRINT,@PC_PPA2LP,@PC_PPA2LP_SUP,@PC_PPA2LP_USRINT,@PC_LP,@PC_LP_SUP,@PC_LP_USRINT,@PC_PPA2WA,@PC_PPA2WA_SUP,@PC_PPA2WA_USRINT,@PC_WA,@PC_WA_SUP,@PC_WA_USRINT,@PC_PPA2WB,@PC_PPA2WB_SUP,@PC_PPA2WB_USRINT,@PC_WB,@PC_WB_SUP,@PC_WB_USRINT,@PC_PPA2WC,@PC_PPA2WC_SUP,@PC_PPA2WC_USRINT,@PC_WC,@PC_WC_SUP,@PC_WC_USRINT,@PC_PPA2LC,@PC_PPA2LC_SUP,@PC_PPA2LC_USRINT,@PC_LC,@PC_LC_SUP,@PC_LC_USRINT,@PC_PPA2PG,@PC_PPA2PG_SUP,@PC_PPA2PG_USRINT,@PC_PG,@PC_PG_SUP,@PC_PG_USRINT,@PC_PPA2PH,@PC_PPA2PH_SUP,@PC_PPA2PH_USRINT,@PC_PH,@PC_PH_SUP,@PC_PH_USRINT,@PC_PPA2PB,@PC_PPA2PB_SUP,@PC_PPA2PB_USRINT,@PC_PB,@PC_PB_SUP,@PC_PB_USRINT,@PC_PPA2PD,@PC_PPA2PD_SUP,@PC_PPA2P_USRINT,@PC_PD,@PC_PD_SUP,@PC_PD_USRINT,@LPP_AMT,@LPP_AMT_SUP,@LPP_AMT_USRINT,@LPP_REF,@LPP_REF_SUP,@LPP_REF_USRINT,@PC_PPA2PC,@PC_PPA2PC_SUP,@PC_PPA2PC_USRINT,@PC_PC,@PC_PC_SUP,@PC_PC_USRINT,@Claim1,@Claim2,@ClaimK1,@ClaimK2,@Remarks1,@Remarks2, @DocID , @CreatedDate)";
                 connection.Open();
-
-                // Ensure the row exists in the DataGridView
-                if (lpc_dgv_dbvalue.Rows.Count > rowIndex)
+                OleDbCommand cmd = new OleDbCommand(insQuery, connection);
+                object GetCellValue(int rowIndex, string columnHeader)
                 {
-                    DataGridViewRow row = lpc_dgv_dbvalue.Rows[rowIndex];
-
-                    // Get column names dynamically based on the row index
-                    string[] columnNames = GetColumnNames(rowIndex);
-
-                    // Check the number of columns in the DataGridView row
-                    if (row.Cells.Count != columnNames.Length)
+                    if (rowIndex < 0 || rowIndex >= lpc_dgv_dbvalue.Rows.Count)
                     {
-                        MessageBox.Show($"Mismatch in column count: Expected {columnNames.Length}, but found {row.Cells.Count}.");
-                        return;
+                        return DBNull.Value;
                     }
-
-                    // Collect values from the row's cells
-                    List<object> values = new List<object>();
-                    for (int i = 0; i < columnNames.Length; i++)
+                    if (!lpc_dgv_dbvalue.Columns.Contains(columnHeader))
                     {
-                        var cellValue = row.Cells[i].Value;
-                        values.Add(cellValue != null ? cellValue.ToString().Trim() : string.Empty);
+                        return DBNull.Value;
                     }
-
-                    // Debugging: Log the values being passed
-                    Console.WriteLine($"Inserting or Updating Row at Index {rowIndex}");
-                    Console.WriteLine($"Columns: {string.Join(", ", columnNames)}");
-                    Console.WriteLine($"Values: {string.Join(", ", values.Select(v => v?.ToString() ?? "NULL"))}");
-
-                    string PROD_C = values[0].ToString(); // Unique identifier
-
-                    // Check if the record with PROD_C already exists
-                    string checkQuery = "SELECT COUNT(*) FROM tbl_logpricechange WHERE PROD_C = ?";
-                    using (OleDbCommand checkCmd = new OleDbCommand(checkQuery, connection))
+                    var cell = lpc_dgv_dbvalue.Rows[rowIndex].Cells[columnHeader];
+                    if (cell == null || cell.Value == null || (cell.Value is string s && string.IsNullOrEmpty(s)))
                     {
-                        checkCmd.Parameters.AddWithValue("?", PROD_C);
-
-                        int exists = Convert.ToInt32(checkCmd.ExecuteScalar());
-                        if (exists > 0)
-                        {
-                            // If exists, update the record
-                            UpdateRow(PROD_C, columnNames, values);
-                        }
-                        else
-                        {
-                            // If doesn't exist, insert the record
-                            InsertRow(columnNames, values);
-                        }
+                        return DBNull.Value;
                     }
+                    return cell.Value;
                 }
-                else
-                {
-                    MessageBox.Show($"Row at index {rowIndex} does not exist.");
-                }
+                //TEXBOX & DATETIME PICKER
+                cmd.Parameters.AddWithValue("@TDate", lpc_dtp_memodate.Value.Date);
+                cmd.Parameters.AddWithValue("@Supplier", string.IsNullOrEmpty(lpc_tb_supplier.Text) ? (object)DBNull.Value : lpc_tb_supplier.Text);
+                cmd.Parameters.AddWithValue("@PromoTitle", string.IsNullOrEmpty(lpc_tb_promotitle.Text) ? (object)DBNull.Value : lpc_tb_promotitle.Text);
+                //cmd.Parameters.AddWithValue("@StartDate", string.IsNullOrEmpty(lpc_dtp_startdate.Text) ? (object)DBNull.Value : lpc_dtp_startdate.Text);
+                //cmd.Parameters.AddWithValue("@EndDate", string.IsNullOrEmpty(lpc_dtp_enddate.Text) ? (object)DBNull.Value : lpc_dtp_enddate.Text);
+
+                //DATAGRIDVIEW
+                cmd.Parameters.AddWithValue("@PROD_C", GetCellValue(0, "PROD_C"));
+                cmd.Parameters.AddWithValue("@PROD_N", GetCellValue(0, "PROD_N"));
+                cmd.Parameters.AddWithValue("@FREE", GetCellValue(0, "SFREE"));
+                cmd.Parameters.AddWithValue("@FREE_SUP", GetCellValue(1, "FREE"));
+                cmd.Parameters.AddWithValue("@FREE_USRINT", GetCellValue(2, "FREE"));
+                cmd.Parameters.AddWithValue("@PLFOB", GetCellValue(0, "PLFOB"));
+                cmd.Parameters.AddWithValue("@PLFOB_SUP", GetCellValue(1, "PLFOB"));
+                cmd.Parameters.AddWithValue("@PLFOB_USRINT", GetCellValue(2, "PLFOB"));
+                cmd.Parameters.AddWithValue("@NWF", GetCellValue(0, "NWF"));
+                cmd.Parameters.AddWithValue("@NWF_SUP", GetCellValue(1, "NWF"));
+                cmd.Parameters.AddWithValue("@NWF_USRINT", GetCellValue(2, "NWF"));
+                cmd.Parameters.AddWithValue("@NWFR", GetCellValue(0, "NWFR"));
+                cmd.Parameters.AddWithValue("@PC_PF", GetCellValue(0, "PC_PF"));
+                cmd.Parameters.AddWithValue("@PC_PF_SUP", GetCellValue(1, "PC_PF"));
+                cmd.Parameters.AddWithValue("@PC_PF_USRINT", GetCellValue(2, "PC_PF"));
+                cmd.Parameters.AddWithValue("@PC_PFL", GetCellValue(0, "PC_PFL"));
+                cmd.Parameters.AddWithValue("@PC_PFL_SUP", GetCellValue(1, "PC_PFL"));
+                cmd.Parameters.AddWithValue("@PC_PFL_USRINT", GetCellValue(2, "PC_PFL"));
+                cmd.Parameters.AddWithValue("@PC_RP", GetCellValue(0, "PC_RP"));
+                cmd.Parameters.AddWithValue("@PC_RP_SUP", GetCellValue(1, "PC_RP"));
+                cmd.Parameters.AddWithValue("@PC_RP_USRINT", GetCellValue(2, "PC_RP"));
+                cmd.Parameters.AddWithValue("@PC_PA", GetCellValue(0, "PC_PA"));
+                cmd.Parameters.AddWithValue("@PC_PA_SUP", GetCellValue(1, "PC_PA"));
+                cmd.Parameters.AddWithValue("@PC_PA_USRINT", GetCellValue(2, "PC_PA"));
+                cmd.Parameters.AddWithValue("@PC_PLSRP", GetCellValue(0, "PC_PLSRP"));
+                cmd.Parameters.AddWithValue("@PC_PLSRP_SUP", GetCellValue(1, "PC_PLSRP"));
+                cmd.Parameters.AddWithValue("@PC_PLSRP_USRINT", GetCellValue(2, "PC_PLSRP"));
+                cmd.Parameters.AddWithValue("@PC_LSRP", GetCellValue(0, "PC_LSRP"));
+                cmd.Parameters.AddWithValue("@PC_LSRP_SUP", GetCellValue(1, "PC_LSRP"));
+                cmd.Parameters.AddWithValue("@PC_LSRP_USRINT", GetCellValue(2, "PC_LSRP"));
+                cmd.Parameters.AddWithValue("@PC_PPA2LP", GetCellValue(0, "PC_PPA2LP"));
+                cmd.Parameters.AddWithValue("@PC_PPA2LP_SUP", GetCellValue(1, "PC_PPA2LP"));
+                cmd.Parameters.AddWithValue("@PC_PPA2LP_USRINT", GetCellValue(2, "PC_PPA2LP"));
+                cmd.Parameters.AddWithValue("@PC_LP", GetCellValue(0, "PC_LP"));
+                cmd.Parameters.AddWithValue("@PC_LP_SUP", GetCellValue(1, "PC_LP"));
+                cmd.Parameters.AddWithValue("@PC_LP_USRINT", GetCellValue(2, "PC_LP"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WA", GetCellValue(0, "PC_PPA2WA"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WA_SUP", GetCellValue(1, "PC_PPA2WA"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WA_USRINT", GetCellValue(2, "PC_PPA2WA"));
+                cmd.Parameters.AddWithValue("@PC_WA", GetCellValue(0, "PC_WA"));
+                cmd.Parameters.AddWithValue("@PC_WA_SUP", GetCellValue(1, "PC_WA"));
+                cmd.Parameters.AddWithValue("@PC_WA_USRINT", GetCellValue(2, "PC_WA"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WB", GetCellValue(0, "PC_PPA2WB"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WB_SUP", GetCellValue(1, "PC_PPA2WB"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WB_USRINT", GetCellValue(2, "PC_PPA2WB"));
+                cmd.Parameters.AddWithValue("@PC_WB", GetCellValue(0, "PC_WB"));
+                cmd.Parameters.AddWithValue("@PC_WB_SUP", GetCellValue(1, "PC_WB"));
+                cmd.Parameters.AddWithValue("@PC_WB_USRINT", GetCellValue(2, "PC_WB"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WC", GetCellValue(0, "PC_PPA2WC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WC_SUP", GetCellValue(1, "PC_PPA2WC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WC_USRINT", GetCellValue(2, "PC_PPA2WC"));
+                cmd.Parameters.AddWithValue("@PC_WC", GetCellValue(0, "PC_WC"));
+                cmd.Parameters.AddWithValue("@PC_WC_SUP", GetCellValue(1, "PC_WC"));
+                cmd.Parameters.AddWithValue("@PC_WC_USRINT", GetCellValue(2, "PC_WC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2LC", GetCellValue(0, "PC_PPA2LC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2LC_SUP", GetCellValue(1, "PC_PPA2LC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2LC_USRINT", GetCellValue(2, "PC_PPA2LC"));
+                cmd.Parameters.AddWithValue("@PC_LC", GetCellValue(0, "PC_LC"));
+                cmd.Parameters.AddWithValue("@PC_LC_SUP", GetCellValue(1, "PC_LC"));
+                cmd.Parameters.AddWithValue("@PC_LC_USRINT", GetCellValue(2, "PC_LC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PG", GetCellValue(0, "PC_PPA2PG"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PG_SUP", GetCellValue(1, "PC_PPA2PG"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PG_USRINT", GetCellValue(2, "PC_PPA2PG"));
+                cmd.Parameters.AddWithValue("@PC_PG", GetCellValue(0, "PC_PG"));
+                cmd.Parameters.AddWithValue("@PC_PG_SUP", GetCellValue(1, "PC_PG"));
+                cmd.Parameters.AddWithValue("@PC_PG_USRINT", GetCellValue(2, "PC_PG"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PH", GetCellValue(0, "PC_PPA2PH"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PH_SUP", GetCellValue(1, "PC_PPA2PH"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PH_USRINT", GetCellValue(2, "PC_PPA2PH"));
+                cmd.Parameters.AddWithValue("@PC_PH", GetCellValue(0, "PC_PH"));
+                cmd.Parameters.AddWithValue("@PC_PH_SUP", GetCellValue(1, "PC_PH"));
+                cmd.Parameters.AddWithValue("@PC_PH_USRINT", GetCellValue(2, "PC_PH"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PB", GetCellValue(0, "PC_PPA2PB"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PB_SUP", GetCellValue(1, "PC_PPA2PB"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PB_USRINT", GetCellValue(2, "PC_PPA2PB"));
+                cmd.Parameters.AddWithValue("@PC_PB", GetCellValue(0, "PC_PB"));
+                cmd.Parameters.AddWithValue("@PC_PB_SUP", GetCellValue(1, "PC_PB"));
+                cmd.Parameters.AddWithValue("@PC_PB_USRINT", GetCellValue(2, "PC_PB"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PD", GetCellValue(0, "PC_PPA2PD"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PD_SUP", GetCellValue(1, "PC_PPA2PD"));
+                cmd.Parameters.AddWithValue("@PC_PPA2P_USRINT", GetCellValue(2, "PC_PPA2P"));
+                cmd.Parameters.AddWithValue("@PC_PD", GetCellValue(0, "PC_PD"));
+                cmd.Parameters.AddWithValue("@PC_PD_SUP", GetCellValue(1, "PC_PD"));
+                cmd.Parameters.AddWithValue("@PC_PD_USRINT", GetCellValue(2, "PC_PD"));
+                cmd.Parameters.AddWithValue("@LPP_AMT", GetCellValue(0, "LPP_AMT"));
+                cmd.Parameters.AddWithValue("@LPP_AMT_SUP", GetCellValue(1, "LPP_AMT"));
+                cmd.Parameters.AddWithValue("@LPP_AMT_USRINT", GetCellValue(2, "LPP_AMT"));
+                cmd.Parameters.AddWithValue("@LPP_REF", GetCellValue(0, "LPP_REF"));
+                cmd.Parameters.AddWithValue("@LPP_REF_SUP", GetCellValue(1, "LPP_REF"));
+                cmd.Parameters.AddWithValue("@LPP_REF_USRINT", GetCellValue(2, "LPP_REF"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PC", GetCellValue(0, "PC_PPA2PC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PC_SUP", GetCellValue(1, "PC_PPA2PC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PC_USRINT", GetCellValue(2, "PC_PPA2PC"));
+                cmd.Parameters.AddWithValue("@PC_PC", GetCellValue(0, "PC_PC"));
+                cmd.Parameters.AddWithValue("@PC_PC_SUP", GetCellValue(1, "PC_PC"));
+                cmd.Parameters.AddWithValue("@PC_PC_USRINT", GetCellValue(2, "PC_PC"));
+                cmd.Parameters.AddWithValue("@Claim1", GetCellValue(1, "Claim1"));
+                cmd.Parameters.AddWithValue("@Claim2", GetCellValue(2, "Claim2"));
+                cmd.Parameters.AddWithValue("@ClaimK1", GetCellValue(1, "ClaimK1"));
+                cmd.Parameters.AddWithValue("@ClaimK2", GetCellValue(2, "ClaimK2"));
+                cmd.Parameters.AddWithValue("@Remarks1", GetCellValue(1, "Remarks1"));
+                cmd.Parameters.AddWithValue("@Remarks2", GetCellValue(2, "Remarks2"));
+                cmd.Parameters.AddWithValue("@DocID", docId);
+                cmd.Parameters.AddWithValue("@CreatedDate", DateTime.Now.ToString("yyyy/MM/dd/HH:mm"));
+
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("Data inserted successfully.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}");
+                MessageBox.Show("Error Inserting: " + ex.Message);
             }
             finally
             {
                 if (connection.State == ConnectionState.Open)
+                {
                     connection.Close();
+                }
             }
+
+
+
         }
-
-        void InsertRow(string[] cols, List<object> vals)
-        {
-            
-            // Build column list and placeholders
-            string colList = string.Join(", ", cols);  // Column names
-            string placeholders = string.Join(", ", cols.Select(c => "?"));  // Placeholders for parameters
-
-            // Construct the SQL insert query
-            string insertQuery = $"INSERT INTO tbl_logpricechange (TDate, Supplier, PromoTitle, StartDate, EndDate,{colList}) VALUES (@TDate, @Supplier, @PromoTitle, @StartDate, @EndDate,{placeholders})";
-
-            // Debugging: Log the query being constructed
-            Console.WriteLine("Insert Query: " + insertQuery);
-            Console.WriteLine("Columns: " + string.Join(", ", cols));
-            Console.WriteLine("Values: " + string.Join(", ", vals.Select(v => v?.ToString() ?? "NULL")));
-
-            // Create the command object with the insert query
-            using (OleDbCommand cmd = new OleDbCommand(insertQuery, connection))
-            {
-                cmd.Parameters.AddWithValue("@TDate", lpc_dtp_memodate.Value.Date);  // TDate
-                cmd.Parameters.AddWithValue("@Supplier", lpc_tb_supplier.Text);         // Supplier
-                cmd.Parameters.AddWithValue("@PromoTitle", lpc_tb_promotitle.Text);       // PromoTitle
-                cmd.Parameters.AddWithValue("@StartDate", lpc_dtp_startdate.Value);      // StartDate
-                cmd.Parameters.AddWithValue("@EndDate", lpc_dtp_enddate.Value);
-                for (int i = 0; i < vals.Count; i++)
-                {
-                    // Check if the value is null or empty and handle accordingly
-                    var value = vals[i] == null || string.IsNullOrWhiteSpace(vals[i]?.ToString())
-                                    ? DBNull.Value
-                                    : vals[i];
-
-                    cmd.Parameters.AddWithValue("?", value); // Add the value as a parameter
-
-                    // Debugging: Log each parameter added
-                    Console.WriteLine($"Parameter {i + 1}: {value}");
-                }
-                
-                // Execute the query
-                cmd.ExecuteNonQuery();
-            }
-
-            // Optional: Show a message after inserting
-            MessageBox.Show($"Inserted: {vals[0]}");
-
-         
-        }
-
-        void UpdateRow(string prodC, string[] cols, List<object> vals)
-        {
-            // Build the SELECT query to get the current values from the database
-            string selectQuery = $"SELECT {string.Join(", ", cols.Skip(1))} FROM tbl_logpricechange WHERE PROD_C = ?";
-
-            // Debugging: Log the SELECT query
-            Console.WriteLine("Select Query: " + selectQuery);
-            Console.WriteLine($"PROD_C: {prodC}");
-
-            object[] dbValues = null;
-            using (OleDbCommand selectCmd = new OleDbCommand(selectQuery, connection))
-            {
-                selectCmd.Parameters.AddWithValue("?", prodC);
-
-                // Execute the SELECT query and read the current row
-                using (OleDbDataReader reader = selectCmd.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        dbValues = new object[cols.Length - 1];
-                        for (int i = 1; i < cols.Length; i++)
-                            dbValues[i - 1] = reader.GetValue(i - 1);
-                    }
-                }
-            }
-
-            // Compare values and prepare the UPDATE query if necessary
-            bool hasChanges = false;
-            List<object> updateValues = new List<object>();
-
-            for (int i = 1; i < vals.Count; i++)
-            {
-                var inputValue = vals[i];
-                var dbValue = dbValues[i - 1];
-
-                // Check for differences and add updated values
-                if (!object.Equals(inputValue, dbValue) && !string.IsNullOrWhiteSpace(inputValue?.ToString()))
-                {
-                    hasChanges = true;
-                    updateValues.Add(inputValue ?? DBNull.Value);  // Use DBNull if value is null
-                }
-                else
-                {
-                    updateValues.Add(dbValue ?? DBNull.Value);  // Use database value if no change
-                }
-            }
-
-            if (hasChanges)
-            {
-                // Build the UPDATE query with placeholders for parameters
-                string setClause = string.Join(", ", cols.Skip(1).Select((c, i) => $"{c} = ?"));
-                string updateQuery = $"UPDATE tbl_logpricechange SET {setClause} WHERE PROD_C = ?";
-
-                // Debugging: Log the UPDATE query
-                Console.WriteLine("Update Query: " + updateQuery);
-                Console.WriteLine("Values to Update: " + string.Join(", ", updateValues.Select(v => v?.ToString() ?? "NULL")));
-
-                using (OleDbCommand cmd = new OleDbCommand(updateQuery, connection))
-                {
-                    // Add parameters for updated columns
-                    for (int i = 0; i < updateValues.Count; i++)
-                    {
-                        cmd.Parameters.AddWithValue("?", updateValues[i]);
-
-                        // Debugging: Log each parameter being added
-                        Console.WriteLine($"Update Parameter {i + 1}: {updateValues[i]}");
-                    }
-
-                    // Add PROD_C as the WHERE condition
-                    cmd.Parameters.AddWithValue("?", prodC);
-
-                    // Execute the UPDATE query
-                    cmd.ExecuteNonQuery();
-                }
-
-                // Inform the user
-                MessageBox.Show($"Updated: {prodC}");
-            }
-            else
-            {
-                MessageBox.Show($"No changes detected for {prodC}");
-            }
-        }
-
-        double GetDoubleOrDefault(object value, double defaultValue = 0.00)
-        {
-            if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
-                return defaultValue;
-
-            if (double.TryParse(value.ToString(), out double result))
-                return result;
-
-            return defaultValue;
-        }
-
-        string GetStringOrDefault(object value, string defaultValue = "") =>
-            value?.ToString()?.Trim() ?? defaultValue;
-
-
-/*****************************************************************************End For DataGridview Insert Update *******************************************************************************************************************************************************************************************************************************************************************************************************************************/
-
-
+        /*****************************************************************************End For DataGridview Insert Update *******************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
     }
 }
+
