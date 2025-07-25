@@ -23,6 +23,8 @@ namespace LogPriceChange0._1
         {    
 
             InitializeComponent();
+            
+           
         }
 
         private void MainForm_Load(object sender, EventArgs e)

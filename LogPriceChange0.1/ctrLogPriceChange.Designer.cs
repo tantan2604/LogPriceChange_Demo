@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.lpc_dgv_dbvalue = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -64,7 +64,7 @@
             this.PC_PLSRP = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_LP = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2LP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.WA = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PC_WA = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2WA = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_WB = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2WB = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -81,7 +81,7 @@
             this.PC_PD = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2PD = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LPP_AMT = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LPP_REP = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.LPP_REf = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PC = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2PC = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Claim1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -90,6 +90,7 @@
             this.ClaimK2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Remarks1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Remarks2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.lblMessage = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_dbvalue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_searchbycode)).BeginInit();
             this.panel1.SuspendLayout();
@@ -97,9 +98,10 @@
             // 
             // lpc_dgv_dbvalue
             // 
+            this.lpc_dgv_dbvalue.AllowUserToAddRows = false;
             this.lpc_dgv_dbvalue.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.lpc_dgv_dbvalue.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.lpc_dgv_dbvalue.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
             this.lpc_dgv_dbvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -121,7 +123,7 @@
             this.PC_PLSRP,
             this.PC_LP,
             this.PC_PPA2LP,
-            this.WA,
+            this.PC_WA,
             this.PC_PPA2WA,
             this.PC_WB,
             this.PC_PPA2WB,
@@ -138,7 +140,7 @@
             this.PC_PD,
             this.PC_PPA2PD,
             this.LPP_AMT,
-            this.LPP_REP,
+            this.LPP_REf,
             this.PC_PC,
             this.PC_PPA2PC,
             this.Claim1,
@@ -147,18 +149,18 @@
             this.ClaimK2,
             this.Remarks1,
             this.Remarks2});
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Arial Narrow", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.lpc_dgv_dbvalue.DefaultCellStyle = dataGridViewCellStyle2;
-            this.lpc_dgv_dbvalue.Location = new System.Drawing.Point(0, 273);
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Arial Narrow", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.lpc_dgv_dbvalue.DefaultCellStyle = dataGridViewCellStyle4;
+            this.lpc_dgv_dbvalue.Location = new System.Drawing.Point(10, 273);
             this.lpc_dgv_dbvalue.Name = "lpc_dgv_dbvalue";
             this.lpc_dgv_dbvalue.RowHeadersWidth = 150;
-            this.lpc_dgv_dbvalue.Size = new System.Drawing.Size(1105, 262);
+            this.lpc_dgv_dbvalue.Size = new System.Drawing.Size(1108, 262);
             this.lpc_dgv_dbvalue.TabIndex = 1;
             // 
             // label1
@@ -242,7 +244,7 @@
             // 
             // lpc_dtp_enddate
             // 
-            this.lpc_dtp_enddate.CustomFormat = "";
+            this.lpc_dtp_enddate.CustomFormat = "MM/dd/yyyy hh:mm:ss tt";
             this.lpc_dtp_enddate.Enabled = false;
             this.lpc_dtp_enddate.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lpc_dtp_enddate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
@@ -349,9 +351,9 @@
             this.label8.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.Location = new System.Drawing.Point(62, 143);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(80, 20);
+            this.label8.Size = new System.Drawing.Size(83, 20);
             this.label8.TabIndex = 14;
-            this.label8.Text = "Promo Kind :";
+            this.label8.Text = "Promo Type :";
             // 
             // panel1
             // 
@@ -432,10 +434,10 @@
             this.PC_PPA2LP.HeaderText = "MP_Rate";
             this.PC_PPA2LP.Name = "PC_PPA2LP";
             // 
-            // WA
+            // PC_WA
             // 
-            this.WA.HeaderText = "WA1";
-            this.WA.Name = "WA";
+            this.PC_WA.HeaderText = "WA";
+            this.PC_WA.Name = "PC_WA";
             // 
             // PC_PPA2WA
             // 
@@ -517,10 +519,10 @@
             this.LPP_AMT.HeaderText = "LPP";
             this.LPP_AMT.Name = "LPP_AMT";
             // 
-            // LPP_REP
+            // LPP_REf
             // 
-            this.LPP_REP.HeaderText = "LPP_Ref";
-            this.LPP_REP.Name = "LPP_REP";
+            this.LPP_REf.HeaderText = "LPP_Ref";
+            this.LPP_REf.Name = "LPP_REf";
             // 
             // PC_PC
             // 
@@ -562,12 +564,21 @@
             this.Remarks2.HeaderText = "Remarks2";
             this.Remarks2.Name = "Remarks2";
             // 
+            // lblMessage
+            // 
+            this.lblMessage.AutoSize = true;
+            this.lblMessage.Location = new System.Drawing.Point(180, 229);
+            this.lblMessage.Name = "lblMessage";
+            this.lblMessage.Size = new System.Drawing.Size(0, 13);
+            this.lblMessage.TabIndex = 16;
+            // 
             // ctrLogPriceChange
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(this.lblMessage);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.lpc_rbtn_temporary);
@@ -634,7 +645,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PLSRP;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_LP;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2LP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn WA;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PC_WA;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2WA;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_WB;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2WB;
@@ -651,7 +662,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PD;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2PD;
         private System.Windows.Forms.DataGridViewTextBoxColumn LPP_AMT;
-        private System.Windows.Forms.DataGridViewTextBoxColumn LPP_REP;
+        private System.Windows.Forms.DataGridViewTextBoxColumn LPP_REf;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PC;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2PC;
         private System.Windows.Forms.DataGridViewTextBoxColumn Claim1;
@@ -660,5 +671,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ClaimK2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Remarks1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Remarks2;
+        private System.Windows.Forms.Label lblMessage;
     }
 }
