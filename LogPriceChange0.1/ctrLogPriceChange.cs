@@ -32,6 +32,8 @@ namespace LogPriceChange0._1
         {
             InitializeComponent();
             lpc_dtp_enddate.CustomFormat = " ";
+            
+
         }
         public void LoadData()
         {
@@ -474,7 +476,58 @@ namespace LogPriceChange0._1
                 }
             }
         }
+        private void UpdateLSRPValues(int rowIndex, string columnName)
+        {
+            if (rowIndex < 0 || rowIndex >= lpc_dgv_dbvalue.Rows.Count)
+                return;
+
+            var row = lpc_dgv_dbvalue.Rows[rowIndex];
+
+            if (!decimal.TryParse(row.Cells["PC_PA"].Value?.ToString(), out decimal pc_pa) || pc_pa == 0)
+                return;
+
+            if (columnName == "PC_LSRP")
+            {
+                if (decimal.TryParse(row.Cells["PC_LSRP"].Value?.ToString(), out decimal pc_lsrp))
+                {
+                    decimal rate = pc_lsrp / pc_pa  ;
+                    row.Cells["PC_PLSRP"].Value = rate.ToString("0.00");
+                }
+            }
+            else if (columnName == "PC_PLSRP")
+            {
+                if (decimal.TryParse(row.Cells["PC_PLSRP"].Value?.ToString(), out decimal rate))
+                {
+                    decimal pc_lsrp = (pc_pa * rate) ;
+                    row.Cells["PC_LSRP"].Value = pc_lsrp.ToString("0.00");
+                }
+            }
+        }
 
 
+
+        private void lpc_dgv_dbvalue_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+
+            string columnName = lpc_dgv_dbvalue.Columns[e.ColumnIndex].Name;
+            UpdateLSRPValues(e.RowIndex, columnName);
+        }
+
+
+        private void lpc_dgv_dbvalue_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            //if (e.RowIndex < 0) return;
+
+            //var dgv = lpc_dgv_dbvalue;
+
+            //// Only proceed if not in edit mode to avoid partial data
+            //if (dgv.IsCurrentCellInEditMode) return;
+
+            //var row = dgv.Rows[e.RowIndex];
+            //string changedColumn = dgv.Columns[e.ColumnIndex].Name;
+
+            //CalculateLSRPValues(row, changedColumn);
+        }
     }
 }

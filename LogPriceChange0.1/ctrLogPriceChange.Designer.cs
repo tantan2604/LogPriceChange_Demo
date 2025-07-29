@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.lpc_dgv_dbvalue = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -50,6 +50,7 @@
             this.lpc_rbtn_temporary = new System.Windows.Forms.RadioButton();
             this.label8 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lblMessage = new System.Windows.Forms.Label();
             this.PROD_C = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PROD_N = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FREE = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -90,7 +91,6 @@
             this.ClaimK2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Remarks1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Remarks2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.lblMessage = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_dbvalue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_searchbycode)).BeginInit();
             this.panel1.SuspendLayout();
@@ -100,8 +100,8 @@
             // 
             this.lpc_dgv_dbvalue.AllowUserToAddRows = false;
             this.lpc_dgv_dbvalue.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.lpc_dgv_dbvalue.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.lpc_dgv_dbvalue.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.lpc_dgv_dbvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -149,19 +149,21 @@
             this.ClaimK2,
             this.Remarks1,
             this.Remarks2});
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Arial Narrow", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.lpc_dgv_dbvalue.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Arial Narrow", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.lpc_dgv_dbvalue.DefaultCellStyle = dataGridViewCellStyle2;
             this.lpc_dgv_dbvalue.Location = new System.Drawing.Point(10, 273);
             this.lpc_dgv_dbvalue.Name = "lpc_dgv_dbvalue";
             this.lpc_dgv_dbvalue.RowHeadersWidth = 150;
             this.lpc_dgv_dbvalue.Size = new System.Drawing.Size(1108, 262);
             this.lpc_dgv_dbvalue.TabIndex = 1;
+            this.lpc_dgv_dbvalue.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.lpc_dgv_dbvalue_CellEndEdit);
+            this.lpc_dgv_dbvalue.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.lpc_dgv_dbvalue_CellValueChanged);
             // 
             // label1
             // 
@@ -364,34 +366,42 @@
             this.panel1.Size = new System.Drawing.Size(1108, 67);
             this.panel1.TabIndex = 15;
             // 
+            // lblMessage
+            // 
+            this.lblMessage.AutoSize = true;
+            this.lblMessage.Location = new System.Drawing.Point(180, 229);
+            this.lblMessage.Name = "lblMessage";
+            this.lblMessage.Size = new System.Drawing.Size(0, 13);
+            this.lblMessage.TabIndex = 16;
+            // 
             // PROD_C
             // 
-            this.PROD_C.HeaderText = "MCode";
+            this.PROD_C.HeaderText = "OLDCODE";
             this.PROD_C.Name = "PROD_C";
             // 
             // PROD_N
             // 
-            this.PROD_N.HeaderText = "MName";
+            this.PROD_N.HeaderText = "MODELNAME";
             this.PROD_N.Name = "PROD_N";
             // 
             // FREE
             // 
-            this.FREE.HeaderText = "FREE";
+            this.FREE.HeaderText = "SELLINGFREEBIEGUIDE";
             this.FREE.Name = "FREE";
             // 
             // PLFOB
             // 
-            this.PLFOB.HeaderText = "PLFOB";
+            this.PLFOB.HeaderText = "FOBORIGCURRENCY";
             this.PLFOB.Name = "PLFOB";
             // 
             // NWF
             // 
-            this.NWF.HeaderText = "PLFOBVAT";
+            this.NWF.HeaderText = "FOBPESOVAT";
             this.NWF.Name = "NWF";
             // 
             // NWFR
             // 
-            this.NWFR.HeaderText = "NWFR";
+            this.NWFR.HeaderText = "HISTORY";
             this.NWFR.Name = "NWFR";
             // 
             // PC_PF
@@ -406,7 +416,7 @@
             // 
             // PC_RP
             // 
-            this.PC_RP.HeaderText = "RP";
+            this.PC_RP.HeaderText = "LISTSRP";
             this.PC_RP.Name = "PC_RP";
             // 
             // PC_PA
@@ -416,7 +426,7 @@
             // 
             // PC_LSRP
             // 
-            this.PC_LSRP.HeaderText = "LSRP";
+            this.PC_LSRP.HeaderText = "LASTSRP";
             this.PC_LSRP.Name = "PC_LSRP";
             // 
             // PC_PLSRP
@@ -426,7 +436,7 @@
             // 
             // PC_LP
             // 
-            this.PC_LP.HeaderText = "MP";
+            this.PC_LP.HeaderText = "PREVSRP";
             this.PC_LP.Name = "PC_LP";
             // 
             // PC_PPA2LP
@@ -451,7 +461,7 @@
             // 
             // PC_PPA2WB
             // 
-            this.PC_PPA2WB.HeaderText = "WB_Rate";
+            this.PC_PPA2WB.HeaderText = "DISCWB";
             this.PC_PPA2WB.Name = "PC_PPA2WB";
             // 
             // PC_WC
@@ -466,7 +476,7 @@
             // 
             // PC_LC
             // 
-            this.PC_LC.HeaderText = "LCASH";
+            this.PC_LC.HeaderText = "LOWESTCASH";
             this.PC_LC.Name = "PC_LC";
             // 
             // PC_PPA2LC
@@ -496,7 +506,7 @@
             // 
             // PC_PB
             // 
-            this.PC_PB.HeaderText = "DP";
+            this.PC_PB.HeaderText = "WHOLESALE";
             this.PC_PB.Name = "PC_PB";
             // 
             // PC_PPA2PB
@@ -506,7 +516,7 @@
             // 
             // PC_PD
             // 
-            this.PC_PD.HeaderText = "AP";
+            this.PC_PD.HeaderText = "SP";
             this.PC_PD.Name = "PC_PD";
             // 
             // PC_PPA2PD
@@ -516,7 +526,7 @@
             // 
             // LPP_AMT
             // 
-            this.LPP_AMT.HeaderText = "LPP";
+            this.LPP_AMT.HeaderText = "PREVSP";
             this.LPP_AMT.Name = "LPP_AMT";
             // 
             // LPP_REf
@@ -563,14 +573,6 @@
             // 
             this.Remarks2.HeaderText = "Remarks2";
             this.Remarks2.Name = "Remarks2";
-            // 
-            // lblMessage
-            // 
-            this.lblMessage.AutoSize = true;
-            this.lblMessage.Location = new System.Drawing.Point(180, 229);
-            this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(0, 13);
-            this.lblMessage.TabIndex = 16;
             // 
             // ctrLogPriceChange
             // 
@@ -631,6 +633,7 @@
         private System.Windows.Forms.RadioButton lpc_rbtn_temporary;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label lblMessage;
         private System.Windows.Forms.DataGridViewTextBoxColumn PROD_C;
         private System.Windows.Forms.DataGridViewTextBoxColumn PROD_N;
         private System.Windows.Forms.DataGridViewTextBoxColumn FREE;
@@ -671,6 +674,5 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ClaimK2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Remarks1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Remarks2;
-        private System.Windows.Forms.Label lblMessage;
     }
 }
