@@ -41,7 +41,6 @@
             this.dashb_lbl_userlogged = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pnl_main = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
             this.pnl_sidebar.SuspendLayout();
             this.panel7.SuspendLayout();
             this.panel4.SuspendLayout();
@@ -70,7 +69,6 @@
             // pnl_sidebar
             // 
             this.pnl_sidebar.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.pnl_sidebar.Controls.Add(this.label1);
             this.pnl_sidebar.Controls.Add(this.panel7);
             this.pnl_sidebar.Controls.Add(this.panel4);
             this.pnl_sidebar.Controls.Add(this.panel6);
@@ -165,12 +163,11 @@
             // 
             this.dashb_lbl_userlogged.AutoSize = true;
             this.dashb_lbl_userlogged.Font = new System.Drawing.Font("Arial Rounded MT Bold", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dashb_lbl_userlogged.Location = new System.Drawing.Point(66, 150);
+            this.dashb_lbl_userlogged.Location = new System.Drawing.Point(44, 155);
             this.dashb_lbl_userlogged.Name = "dashb_lbl_userlogged";
             this.dashb_lbl_userlogged.Size = new System.Drawing.Size(80, 18);
             this.dashb_lbl_userlogged.TabIndex = 1;
             this.dashb_lbl_userlogged.Text = "AHAHAH";
-            this.dashb_lbl_userlogged.Click += new System.EventHandler(this.dashb_lbl_userlogged_Click);
             // 
             // pictureBox1
             // 
@@ -189,15 +186,6 @@
             this.pnl_main.Size = new System.Drawing.Size(1012, 558);
             this.pnl_main.TabIndex = 3;
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(87, 372);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(37, 13);
-            this.label1.TabIndex = 7;
-            this.label1.Text = "BAGO";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -213,7 +201,6 @@
             this.Text = "Dashboard";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.pnl_sidebar.ResumeLayout(false);
-            this.pnl_sidebar.PerformLayout();
             this.panel7.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
@@ -239,7 +226,6 @@
         public System.Windows.Forms.Label dashb_lbl_userlogged;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel pnl_main;
-        private System.Windows.Forms.Label label1;
     }
 }
 

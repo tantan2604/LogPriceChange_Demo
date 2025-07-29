@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace LogPriceChange0._1
 {
@@ -31,8 +32,9 @@ namespace LogPriceChange0._1
 
         }
         private void logf_btn_login_Click(object sender, EventArgs e)
+
         {
-            
+          
             try
             {
                 conn.Open();
@@ -44,8 +46,9 @@ namespace LogPriceChange0._1
                     MainForm mainForm = new MainForm();
 
                     mainForm.Show();
-
-                    mainForm.dashb_lbl_userlogged.Text =dr["Firstname"].ToString() +" "+ dr["Lastname"].ToString(); // Display the logged-in user
+                    string username = mainForm.dashb_lbl_userlogged.Text = dr["Lastname"].ToString() + " " + dr["Firstname"].ToString(); 
+                    UserSession.Username = username;
+                    this.DialogResult = DialogResult.OK; // Let Program.cs know login succeeded
                 }
                 else
                 {
@@ -63,6 +66,8 @@ namespace LogPriceChange0._1
             {
                 conn.Close();
             }
+            
+            
         }
         private void TogglePasswordVisibility(object sender, EventArgs e)
         {

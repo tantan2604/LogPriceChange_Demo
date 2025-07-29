@@ -19,19 +19,19 @@ namespace LogPriceChange0._1
         private OleDbDataAdapter dataAdapter;
         private DataTable dataTable;
         private string primaryKeyColumn = "ID"; // Assuming PROD_C is the primary key column
+        
+
         public MainForm()
         {    
 
             InitializeComponent();
-            
            
         }
 
         private void MainForm_Load(object sender, EventArgs e)
-        {   
+        {
+            dashb_lbl_userlogged.Text = $"Welcome, {UserSession.Username}!";
         }
-
-        
 
 
         // Event handlers for button clicks to load different user controls
@@ -65,10 +65,7 @@ namespace LogPriceChange0._1
 
         }
 
-        private void dashb_lbl_userlogged_Click(object sender, EventArgs e)
-        {
-
-        }
+       
         // End of event handlers for button clicks loading different user controls
     }
 }
