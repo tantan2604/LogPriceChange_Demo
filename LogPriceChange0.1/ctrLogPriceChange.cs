@@ -19,20 +19,38 @@ namespace LogPriceChange0._1
 {
     public partial class ctrLogPriceChange : UserControl
     {
-        private static Dictionary<string, int> lastNumbers = new Dictionary<string, int>();
-
-        
-
         string primaryKeyColumn = "ID";
         OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\VisualStudio\LogPriceChange0.1\LogPriceChange0.1\pricematrix.accdb;");
         DataTable dataTable;
         OleDbDataAdapter dataAdapter;
+        private static Dictionary<string, int> lastNumbers = new Dictionary<string, int>();
+
+//************************************************Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
+        private class ColumnMapping
+        {
+            public string BaseColumn { get; set; }
+            public string ValueColumn { get; set; }
+            public string RateColumn { get; set; }
+        }
+
+        private readonly List<ColumnMapping> columnMappings = new List<ColumnMapping>
+    {
+        new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LSRP", RateColumn = "PC_PLSRP" },
+        new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_WA", RateColumn = "PC_PPA2WA" }
+        // Add more mappings here if needed
+    };
+
+//************************************************End Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
+
+
+       
 
         public ctrLogPriceChange()
         {
             InitializeComponent();
             lpc_dtp_enddate.CustomFormat = " ";
-            
+            this.lpc_dgv_dbvalue.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.lpc_dgv_dbvalue_CellEndEdit);
+
 
         }
         public void LoadData()
@@ -476,45 +494,49 @@ namespace LogPriceChange0._1
                 }
             }
         }
-        private void UpdateLSRPValues(int rowIndex, string columnName)
+        private void UpdateDependentValues(int rowIndex, string editedColumnName)
         {
             if (rowIndex < 0 || rowIndex >= lpc_dgv_dbvalue.Rows.Count)
                 return;
 
             var row = lpc_dgv_dbvalue.Rows[rowIndex];
 
-            if (!decimal.TryParse(row.Cells["PC_PA"].Value?.ToString(), out decimal pc_pa) || pc_pa == 0)
-                return;
+            foreach (var mapping in columnMappings)
+            {
+                if (editedColumnName != mapping.ValueColumn && editedColumnName != mapping.RateColumn)
+                    continue;
 
-            if (columnName == "PC_LSRP")
-            {
-                if (decimal.TryParse(row.Cells["PC_LSRP"].Value?.ToString(), out decimal pc_lsrp))
+                if (!decimal.TryParse(row.Cells[mapping.BaseColumn]?.Value?.ToString(), out decimal baseValue) || baseValue == 0)
+                    return;
+
+                if (editedColumnName == mapping.ValueColumn)
                 {
-                    decimal rate = pc_lsrp / pc_pa  ;
-                    row.Cells["PC_PLSRP"].Value = rate.ToString("0.00");
+                    if (decimal.TryParse(row.Cells[mapping.ValueColumn]?.Value?.ToString(), out decimal val))
+                    {
+                        decimal rate = val / baseValue;
+                        row.Cells[mapping.RateColumn].Value = rate.ToString("0.00");
+                    }
                 }
-            }
-            else if (columnName == "PC_PLSRP")
-            {
-                if (decimal.TryParse(row.Cells["PC_PLSRP"].Value?.ToString(), out decimal rate))
+                else if (editedColumnName == mapping.RateColumn)
                 {
-                    decimal pc_lsrp = (pc_pa * rate) ;
-                    row.Cells["PC_LSRP"].Value = pc_lsrp.ToString("0.00");
+                    if (decimal.TryParse(row.Cells[mapping.RateColumn]?.Value?.ToString(), out decimal rate))
+                    {
+                        decimal val = baseValue * rate;
+                        row.Cells[mapping.ValueColumn].Value = val.ToString("0.00");
+                    }
                 }
+
+                break;
             }
         }
-
-
-
         private void lpc_dgv_dbvalue_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+            if (e.RowIndex < 0 || e.ColumnIndex < 0)
+                return;
 
             string columnName = lpc_dgv_dbvalue.Columns[e.ColumnIndex].Name;
-            UpdateLSRPValues(e.RowIndex, columnName);
+            UpdateDependentValues(e.RowIndex, columnName);
         }
-
-
         private void lpc_dgv_dbvalue_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             //if (e.RowIndex < 0) return;
