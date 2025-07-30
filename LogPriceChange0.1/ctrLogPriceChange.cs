@@ -25,7 +25,7 @@ namespace LogPriceChange0._1
         OleDbDataAdapter dataAdapter;
         private static Dictionary<string, int> lastNumbers = new Dictionary<string, int>();
 
-//************************************************Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
+        //************************************************Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
         private class ColumnMapping
         {
             public string BaseColumn { get; set; }
@@ -35,15 +35,24 @@ namespace LogPriceChange0._1
 
         private readonly List<ColumnMapping> columnMappings = new List<ColumnMapping>
     {
-        new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LSRP", RateColumn = "PC_PLSRP" },
-        new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_WA", RateColumn = "PC_PPA2WA" }
+      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LSRP", RateColumn = "PC_PLSRP"},
+      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LP", RateColumn = "PC_PPA2LP"},
+      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_WA", RateColumn = "PC_PPA2WA"},
+      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_WB", RateColumn = "PC_PPA2WB"},
+      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_WC", RateColumn = "PC_PPA2WC"},
+      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LC", RateColumn = "PC_PPA2LC"},
+      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PG", RateColumn = "PC_PPA2PG"},
+      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PH", RateColumn = "PC_PPA2PH"},
+      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PB", RateColumn = "PC_PPA2PB"},
+      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PD", RateColumn = "PC_PPA2PD"},
+      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PC", RateColumn = "PC_PPA2PC"}
         // Add more mappings here if needed
     };
 
-//************************************************End Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
+        //************************************************End Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
 
 
-       
+
 
         public ctrLogPriceChange()
         {
@@ -243,7 +252,6 @@ namespace LogPriceChange0._1
             {
                 string promoName = lpc_tb_promotitle.Text.Trim();
                 string promoType = "";
-                string supplier = "";
                 string loggedUser = UserSession.Username;
                 //string user = mainForm.dashb_lbl_userlogged.Text;
                 DateTime startDate = lpc_dtp_startdate.Value;
@@ -273,10 +281,10 @@ namespace LogPriceChange0._1
                     MessageBox.Show("Please select a Promotion Type.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-               
-               
-                
-               
+
+
+
+
 
                 // 1. Generate DocID once for all products
                 string promoDate = DateTime.Now.ToString("yyyyMM");
@@ -328,7 +336,7 @@ namespace LogPriceChange0._1
                         {
                             return DBNull.Value;
                         }
-                       
+
                         var cell = lpc_dgv_dbvalue.Rows[rowIndex].Cells[columnHeader];
                         if (cell == null || cell.Value == null || (cell.Value is string s && string.IsNullOrEmpty(s)))
                         {
@@ -357,7 +365,7 @@ namespace LogPriceChange0._1
                         //ApprovedBy
                         //ApprovedDate
                         cmd.Parameters.AddWithValue("@TDate", lpc_dtp_memodate.Value.Date);
-                        cmd.Parameters.AddWithValue("@Supplier", string.IsNullOrEmpty(lpc_tb_supplier.Text) ? (object)DBNull.Value : lpc_tb_supplier.Text); 
+                        cmd.Parameters.AddWithValue("@Supplier", string.IsNullOrEmpty(lpc_tb_supplier.Text) ? (object)DBNull.Value : lpc_tb_supplier.Text);
                         cmd.Parameters.AddWithValue("@PromoTitle", promoName);
                         cmd.Parameters.AddWithValue("@StartDate", startDate);
                         cmd.Parameters.AddWithValue("@EndDate", (promoType == "Permanent") ? (object)DBNull.Value : endDate);
@@ -466,7 +474,7 @@ namespace LogPriceChange0._1
                         cmd.Parameters.AddWithValue("@ClaimK2", GetCellValue(promoValueRowIndex, "ClaimK2"));
                         cmd.Parameters.AddWithValue("@Remarks1", GetCellValue(suppPriceRowIndex, "Remarks1"));
                         cmd.Parameters.AddWithValue("@Remarks2", GetCellValue(promoValueRowIndex, "Remarks2"));
-                       
+
 
 
                         cmd.ExecuteNonQuery();
@@ -482,14 +490,14 @@ namespace LogPriceChange0._1
             }
             finally
             {
-                
+
                 lpc_dtp_startdate.Value = DateTime.Now; // Reset to current date/time
                 lpc_dtp_startdate.Checked = true; // Reset to default permanent selection
                 lpc_tb_promotitle.Clear();
                 lpc_tb_supplier.Clear();
                 if (connection.State == ConnectionState.Open)
                 {
-                    
+
                     connection.Close();
                 }
             }

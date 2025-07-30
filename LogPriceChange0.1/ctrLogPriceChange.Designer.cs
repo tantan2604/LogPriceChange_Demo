@@ -61,30 +61,30 @@
             this.PC_PFL = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_RP = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PA = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_LSRP = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PLSRP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_LP = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PC_LSRP = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2LP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_WA = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PC_LP = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2WA = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_WB = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PC_WA = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2WB = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_WC = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PC_WB = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2WC = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_LC = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PC_WC = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2LC = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PG = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PC_LC = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2PG = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PH = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PC_PG = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2PH = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PB = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PC_PH = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2PB = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PD = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PC_PB = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2PD = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PC_PD = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LPP_AMT = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LPP_REf = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PC = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PC_PPA2PC = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PC_PC = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Claim1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Claim2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ClaimK1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -102,8 +102,8 @@
             this.lpc_dgv_dbvalue.AllowUserToDeleteRows = false;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.lpc_dgv_dbvalue.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            this.lpc_dgv_dbvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.lpc_dgv_dbvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lpc_dgv_dbvalue.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.lpc_dgv_dbvalue.BackgroundColor = System.Drawing.Color.White;
@@ -119,30 +119,30 @@
             this.PC_PFL,
             this.PC_RP,
             this.PC_PA,
-            this.PC_LSRP,
             this.PC_PLSRP,
-            this.PC_LP,
+            this.PC_LSRP,
             this.PC_PPA2LP,
-            this.PC_WA,
+            this.PC_LP,
             this.PC_PPA2WA,
-            this.PC_WB,
+            this.PC_WA,
             this.PC_PPA2WB,
-            this.PC_WC,
+            this.PC_WB,
             this.PC_PPA2WC,
-            this.PC_LC,
+            this.PC_WC,
             this.PC_PPA2LC,
-            this.PC_PG,
+            this.PC_LC,
             this.PC_PPA2PG,
-            this.PC_PH,
+            this.PC_PG,
             this.PC_PPA2PH,
-            this.PC_PB,
+            this.PC_PH,
             this.PC_PPA2PB,
-            this.PC_PD,
+            this.PC_PB,
             this.PC_PPA2PD,
+            this.PC_PD,
             this.LPP_AMT,
             this.LPP_REf,
-            this.PC_PC,
             this.PC_PPA2PC,
+            this.PC_PC,
             this.Claim1,
             this.Claim2,
             this.ClaimK1,
@@ -296,7 +296,7 @@
             // 
             this.lpc_dgv_searchbycode.AllowUserToAddRows = false;
             this.lpc_dgv_searchbycode.AllowUserToDeleteRows = false;
-            this.lpc_dgv_searchbycode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lpc_dgv_searchbycode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lpc_dgv_searchbycode.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.lpc_dgv_searchbycode.BackgroundColor = System.Drawing.Color.White;
@@ -311,7 +311,7 @@
             // 
             // btnlpcsubmit
             // 
-            this.btnlpcsubmit.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.btnlpcsubmit.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnlpcsubmit.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnlpcsubmit.Location = new System.Drawing.Point(988, 3);
@@ -376,157 +376,157 @@
             // 
             // PROD_C
             // 
-            this.PROD_C.HeaderText = "OLDCODE";
+            this.PROD_C.HeaderText = "MCode";
             this.PROD_C.Name = "PROD_C";
             // 
             // PROD_N
             // 
-            this.PROD_N.HeaderText = "MODELNAME";
+            this.PROD_N.HeaderText = "MName";
             this.PROD_N.Name = "PROD_N";
             // 
             // FREE
             // 
-            this.FREE.HeaderText = "SELLINGFREEBIEGUIDE";
+            this.FREE.HeaderText = "SFree1";
             this.FREE.Name = "FREE";
             // 
             // PLFOB
             // 
-            this.PLFOB.HeaderText = "FOBORIGCURRENCY";
+            this.PLFOB.HeaderText = "PLFOB1";
             this.PLFOB.Name = "PLFOB";
             // 
             // NWF
             // 
-            this.NWF.HeaderText = "FOBPESOVAT";
+            this.NWF.HeaderText = "PLFOBVAT1";
             this.NWF.Name = "NWF";
             // 
             // NWFR
             // 
-            this.NWFR.HeaderText = "HISTORY";
+            this.NWFR.HeaderText = "NWFR";
             this.NWFR.Name = "NWFR";
             // 
             // PC_PF
             // 
-            this.PC_PF.HeaderText = "PC_PF";
+            this.PC_PF.HeaderText = "DFP1";
             this.PC_PF.Name = "PC_PF";
             // 
             // PC_PFL
             // 
-            this.PC_PFL.HeaderText = "PC_PFL";
+            this.PC_PFL.HeaderText = "LDFP1";
             this.PC_PFL.Name = "PC_PFL";
             // 
             // PC_RP
             // 
-            this.PC_RP.HeaderText = "LISTSRP";
+            this.PC_RP.HeaderText = "RP1";
             this.PC_RP.Name = "PC_RP";
             // 
             // PC_PA
             // 
-            this.PC_PA.HeaderText = "SRP";
+            this.PC_PA.HeaderText = "SRP1";
             this.PC_PA.Name = "PC_PA";
-            // 
-            // PC_LSRP
-            // 
-            this.PC_LSRP.HeaderText = "LASTSRP";
-            this.PC_LSRP.Name = "PC_LSRP";
             // 
             // PC_PLSRP
             // 
-            this.PC_PLSRP.HeaderText = "LSRP_Rate";
+            this.PC_PLSRP.HeaderText = "%LSRP";
             this.PC_PLSRP.Name = "PC_PLSRP";
             // 
-            // PC_LP
+            // PC_LSRP
             // 
-            this.PC_LP.HeaderText = "PREVSRP";
-            this.PC_LP.Name = "PC_LP";
+            this.PC_LSRP.HeaderText = "LSRP1";
+            this.PC_LSRP.Name = "PC_LSRP";
             // 
             // PC_PPA2LP
             // 
-            this.PC_PPA2LP.HeaderText = "MP_Rate";
+            this.PC_PPA2LP.HeaderText = "%MP_Rate";
             this.PC_PPA2LP.Name = "PC_PPA2LP";
+            // 
+            // PC_LP
+            // 
+            this.PC_LP.HeaderText = "MP1";
+            this.PC_LP.Name = "PC_LP";
+            // 
+            // PC_PPA2WA
+            // 
+            this.PC_PPA2WA.HeaderText = "%WA";
+            this.PC_PPA2WA.Name = "PC_PPA2WA";
             // 
             // PC_WA
             // 
             this.PC_WA.HeaderText = "WA";
             this.PC_WA.Name = "PC_WA";
             // 
-            // PC_PPA2WA
+            // PC_PPA2WB
             // 
-            this.PC_PPA2WA.HeaderText = "WA_Rate";
-            this.PC_PPA2WA.Name = "PC_PPA2WA";
+            this.PC_PPA2WB.HeaderText = "%WB";
+            this.PC_PPA2WB.Name = "PC_PPA2WB";
             // 
             // PC_WB
             // 
             this.PC_WB.HeaderText = "WB";
             this.PC_WB.Name = "PC_WB";
             // 
-            // PC_PPA2WB
+            // PC_PPA2WC
             // 
-            this.PC_PPA2WB.HeaderText = "DISCWB";
-            this.PC_PPA2WB.Name = "PC_PPA2WB";
+            this.PC_PPA2WC.HeaderText = "%WC";
+            this.PC_PPA2WC.Name = "PC_PPA2WC";
             // 
             // PC_WC
             // 
             this.PC_WC.HeaderText = "WC";
             this.PC_WC.Name = "PC_WC";
             // 
-            // PC_PPA2WC
+            // PC_PPA2LC
             // 
-            this.PC_PPA2WC.HeaderText = "WC_Rate";
-            this.PC_PPA2WC.Name = "PC_PPA2WC";
+            this.PC_PPA2LC.HeaderText = "%LCASH";
+            this.PC_PPA2LC.Name = "PC_PPA2LC";
             // 
             // PC_LC
             // 
-            this.PC_LC.HeaderText = "LOWESTCASH";
+            this.PC_LC.HeaderText = "LCASH";
             this.PC_LC.Name = "PC_LC";
             // 
-            // PC_PPA2LC
+            // PC_PPA2PG
             // 
-            this.PC_PPA2LC.HeaderText = "LCASH_Rate";
-            this.PC_PPA2LC.Name = "PC_PPA2LC";
+            this.PC_PPA2PG.HeaderText = "%AUTH";
+            this.PC_PPA2PG.Name = "PC_PPA2PG";
             // 
             // PC_PG
             // 
             this.PC_PG.HeaderText = "AUTH";
             this.PC_PG.Name = "PC_PG";
             // 
-            // PC_PPA2PG
+            // PC_PPA2PH
             // 
-            this.PC_PPA2PG.HeaderText = "AUTH_Rate";
-            this.PC_PPA2PG.Name = "PC_PPA2PG";
+            this.PC_PPA2PH.HeaderText = "%APPV";
+            this.PC_PPA2PH.Name = "PC_PPA2PH";
             // 
             // PC_PH
             // 
             this.PC_PH.HeaderText = "APPV";
             this.PC_PH.Name = "PC_PH";
             // 
-            // PC_PPA2PH
+            // PC_PPA2PB
             // 
-            this.PC_PPA2PH.HeaderText = "APPV_Rate";
-            this.PC_PPA2PH.Name = "PC_PPA2PH";
+            this.PC_PPA2PB.HeaderText = "%DP";
+            this.PC_PPA2PB.Name = "PC_PPA2PB";
             // 
             // PC_PB
             // 
-            this.PC_PB.HeaderText = "WHOLESALE";
+            this.PC_PB.HeaderText = "DP1";
             this.PC_PB.Name = "PC_PB";
-            // 
-            // PC_PPA2PB
-            // 
-            this.PC_PPA2PB.HeaderText = "DP_Rate";
-            this.PC_PPA2PB.Name = "PC_PPA2PB";
-            // 
-            // PC_PD
-            // 
-            this.PC_PD.HeaderText = "SP";
-            this.PC_PD.Name = "PC_PD";
             // 
             // PC_PPA2PD
             // 
-            this.PC_PPA2PD.HeaderText = "AP_Rate";
+            this.PC_PPA2PD.HeaderText = "%AP";
             this.PC_PPA2PD.Name = "PC_PPA2PD";
+            // 
+            // PC_PD
+            // 
+            this.PC_PD.HeaderText = "AP";
+            this.PC_PD.Name = "PC_PD";
             // 
             // LPP_AMT
             // 
-            this.LPP_AMT.HeaderText = "PREVSP";
+            this.LPP_AMT.HeaderText = "LPP1";
             this.LPP_AMT.Name = "LPP_AMT";
             // 
             // LPP_REf
@@ -534,15 +534,15 @@
             this.LPP_REf.HeaderText = "LPP_Ref";
             this.LPP_REf.Name = "LPP_REf";
             // 
+            // PC_PPA2PC
+            // 
+            this.PC_PPA2PC.HeaderText = "%LB";
+            this.PC_PPA2PC.Name = "PC_PPA2PC";
+            // 
             // PC_PC
             // 
             this.PC_PC.HeaderText = "LB";
             this.PC_PC.Name = "PC_PC";
-            // 
-            // PC_PPA2PC
-            // 
-            this.PC_PPA2PC.HeaderText = "LB_Rate";
-            this.PC_PPA2PC.Name = "PC_PPA2PC";
             // 
             // Claim1
             // 
@@ -644,30 +644,30 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PFL;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_RP;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PA;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_LSRP;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PLSRP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_LP;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PC_LSRP;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2LP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_WA;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PC_LP;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2WA;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_WB;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PC_WA;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2WB;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_WC;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PC_WB;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2WC;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_LC;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PC_WC;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2LC;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PG;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PC_LC;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2PG;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PH;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PG;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2PH;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PB;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PH;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2PB;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PD;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PB;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2PD;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PD;
         private System.Windows.Forms.DataGridViewTextBoxColumn LPP_AMT;
         private System.Windows.Forms.DataGridViewTextBoxColumn LPP_REf;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PC;
         private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2PC;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PC;
         private System.Windows.Forms.DataGridViewTextBoxColumn Claim1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Claim2;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClaimK1;
