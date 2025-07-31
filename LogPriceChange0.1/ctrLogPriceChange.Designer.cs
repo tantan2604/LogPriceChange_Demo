@@ -28,29 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.lpc_dgv_dbvalue = new System.Windows.Forms.DataGridView();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.lpc_dtp_memodate = new System.Windows.Forms.DateTimePicker();
-            this.lpc_dtp_startdate = new System.Windows.Forms.DateTimePicker();
-            this.lpc_dtp_enddate = new System.Windows.Forms.DateTimePicker();
-            this.lpc_tb_supplier = new System.Windows.Forms.TextBox();
-            this.lpc_tb_promotitle = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.lpc_tb_searchbycode = new System.Windows.Forms.TextBox();
-            this.lpc_dgv_searchbycode = new System.Windows.Forms.DataGridView();
-            this.btnlpcsubmit = new System.Windows.Forms.Button();
-            this.lpc_rbtn_permanent = new System.Windows.Forms.RadioButton();
-            this.lpc_rbtn_temporary = new System.Windows.Forms.RadioButton();
-            this.label8 = new System.Windows.Forms.Label();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.lblMessage = new System.Windows.Forms.Label();
             this.PROD_C = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PROD_N = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FREE = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -91,7 +72,30 @@
             this.ClaimK2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Remarks1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Remarks2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cmsRemoveGroup = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.cmsRemoveGroupItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.lpc_dtp_memodate = new System.Windows.Forms.DateTimePicker();
+            this.lpc_dtp_startdate = new System.Windows.Forms.DateTimePicker();
+            this.lpc_dtp_enddate = new System.Windows.Forms.DateTimePicker();
+            this.lpc_tb_supplier = new System.Windows.Forms.TextBox();
+            this.lpc_tb_promotitle = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.lpc_tb_searchbycode = new System.Windows.Forms.TextBox();
+            this.lpc_dgv_searchbycode = new System.Windows.Forms.DataGridView();
+            this.btnlpcsubmit = new System.Windows.Forms.Button();
+            this.lpc_rbtn_permanent = new System.Windows.Forms.RadioButton();
+            this.lpc_rbtn_temporary = new System.Windows.Forms.RadioButton();
+            this.label8 = new System.Windows.Forms.Label();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.lblMessage = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_dbvalue)).BeginInit();
+            this.cmsRemoveGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_searchbycode)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -102,8 +106,8 @@
             this.lpc_dgv_dbvalue.AllowUserToDeleteRows = false;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.lpc_dgv_dbvalue.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            this.lpc_dgv_dbvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.lpc_dgv_dbvalue.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lpc_dgv_dbvalue.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.lpc_dgv_dbvalue.BackgroundColor = System.Drawing.Color.White;
@@ -149,6 +153,7 @@
             this.ClaimK2,
             this.Remarks1,
             this.Remarks2});
+            this.lpc_dgv_dbvalue.ContextMenuStrip = this.cmsRemoveGroup;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Arial Narrow", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -161,242 +166,33 @@
             this.lpc_dgv_dbvalue.Name = "lpc_dgv_dbvalue";
             this.lpc_dgv_dbvalue.RowHeadersWidth = 150;
             this.lpc_dgv_dbvalue.Size = new System.Drawing.Size(1108, 262);
-            this.lpc_dgv_dbvalue.TabIndex = 1;
+            this.lpc_dgv_dbvalue.TabIndex = 7;
             this.lpc_dgv_dbvalue.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.lpc_dgv_dbvalue_CellEndEdit);
-            this.lpc_dgv_dbvalue.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.lpc_dgv_dbvalue_CellValueChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Arial Rounded MT Bold", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(34, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(172, 22);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Log Price Change";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(64, 61);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(74, 20);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Date            :";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(64, 88);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(76, 20);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Supplier      :";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(64, 114);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(80, 20);
-            this.label4.TabIndex = 3;
-            this.label4.Text = "Promo Title :";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(64, 175);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(75, 20);
-            this.label5.TabIndex = 3;
-            this.label5.Text = "Start Date   :";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(64, 201);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(75, 20);
-            this.label6.TabIndex = 3;
-            this.label6.Text = "End Date    :";
-            // 
-            // lpc_dtp_memodate
-            // 
-            this.lpc_dtp_memodate.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lpc_dtp_memodate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.lpc_dtp_memodate.Location = new System.Drawing.Point(161, 57);
-            this.lpc_dtp_memodate.Name = "lpc_dtp_memodate";
-            this.lpc_dtp_memodate.Size = new System.Drawing.Size(209, 25);
-            this.lpc_dtp_memodate.TabIndex = 4;
-            // 
-            // lpc_dtp_startdate
-            // 
-            this.lpc_dtp_startdate.CustomFormat = "MM/dd/yyyy hh:mm:ss tt";
-            this.lpc_dtp_startdate.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lpc_dtp_startdate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.lpc_dtp_startdate.Location = new System.Drawing.Point(160, 171);
-            this.lpc_dtp_startdate.Name = "lpc_dtp_startdate";
-            this.lpc_dtp_startdate.Size = new System.Drawing.Size(209, 25);
-            this.lpc_dtp_startdate.TabIndex = 5;
-            // 
-            // lpc_dtp_enddate
-            // 
-            this.lpc_dtp_enddate.CustomFormat = "MM/dd/yyyy hh:mm:ss tt";
-            this.lpc_dtp_enddate.Enabled = false;
-            this.lpc_dtp_enddate.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lpc_dtp_enddate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.lpc_dtp_enddate.Location = new System.Drawing.Point(160, 197);
-            this.lpc_dtp_enddate.Name = "lpc_dtp_enddate";
-            this.lpc_dtp_enddate.Size = new System.Drawing.Size(209, 25);
-            this.lpc_dtp_enddate.TabIndex = 6;
-            this.lpc_dtp_enddate.Value = new System.DateTime(2025, 7, 16, 10, 1, 31, 0);
-            // 
-            // lpc_tb_supplier
-            // 
-            this.lpc_tb_supplier.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lpc_tb_supplier.Location = new System.Drawing.Point(161, 84);
-            this.lpc_tb_supplier.Name = "lpc_tb_supplier";
-            this.lpc_tb_supplier.Size = new System.Drawing.Size(209, 25);
-            this.lpc_tb_supplier.TabIndex = 7;
-            // 
-            // lpc_tb_promotitle
-            // 
-            this.lpc_tb_promotitle.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lpc_tb_promotitle.Location = new System.Drawing.Point(161, 110);
-            this.lpc_tb_promotitle.Name = "lpc_tb_promotitle";
-            this.lpc_tb_promotitle.Size = new System.Drawing.Size(209, 25);
-            this.lpc_tb_promotitle.TabIndex = 8;
-            // 
-            // label7
-            // 
-            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Arial Rounded MT Bold", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(503, 41);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(131, 17);
-            this.label7.TabIndex = 9;
-            this.label7.Text = "Search by code :";
-            // 
-            // lpc_tb_searchbycode
-            // 
-            this.lpc_tb_searchbycode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-            this.lpc_tb_searchbycode.Location = new System.Drawing.Point(640, 41);
-            this.lpc_tb_searchbycode.Name = "lpc_tb_searchbycode";
-            this.lpc_tb_searchbycode.Size = new System.Drawing.Size(209, 20);
-            this.lpc_tb_searchbycode.TabIndex = 7;
-            this.lpc_tb_searchbycode.TextChanged += new System.EventHandler(this.lpc_tb_searchbycode_TextChanged);
-            // 
-            // lpc_dgv_searchbycode
-            // 
-            this.lpc_dgv_searchbycode.AllowUserToAddRows = false;
-            this.lpc_dgv_searchbycode.AllowUserToDeleteRows = false;
-            this.lpc_dgv_searchbycode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lpc_dgv_searchbycode.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.lpc_dgv_searchbycode.BackgroundColor = System.Drawing.Color.White;
-            this.lpc_dgv_searchbycode.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.lpc_dgv_searchbycode.Location = new System.Drawing.Point(559, 67);
-            this.lpc_dgv_searchbycode.Name = "lpc_dgv_searchbycode";
-            this.lpc_dgv_searchbycode.ReadOnly = true;
-            this.lpc_dgv_searchbycode.Size = new System.Drawing.Size(555, 200);
-            this.lpc_dgv_searchbycode.TabIndex = 10;
-            this.lpc_dgv_searchbycode.Visible = false;
-            this.lpc_dgv_searchbycode.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.lpc_dgv_searchbycode_CellContentClick);
-            // 
-            // btnlpcsubmit
-            // 
-            this.btnlpcsubmit.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnlpcsubmit.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnlpcsubmit.Location = new System.Drawing.Point(988, 3);
-            this.btnlpcsubmit.Name = "btnlpcsubmit";
-            this.btnlpcsubmit.Size = new System.Drawing.Size(101, 38);
-            this.btnlpcsubmit.TabIndex = 11;
-            this.btnlpcsubmit.Text = "Submit";
-            this.btnlpcsubmit.UseVisualStyleBackColor = true;
-            this.btnlpcsubmit.Click += new System.EventHandler(this.btnlpcsubmit_Click);
-            // 
-            // lpc_rbtn_permanent
-            // 
-            this.lpc_rbtn_permanent.AutoSize = true;
-            this.lpc_rbtn_permanent.Checked = true;
-            this.lpc_rbtn_permanent.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lpc_rbtn_permanent.Location = new System.Drawing.Point(160, 142);
-            this.lpc_rbtn_permanent.Name = "lpc_rbtn_permanent";
-            this.lpc_rbtn_permanent.Size = new System.Drawing.Size(88, 24);
-            this.lpc_rbtn_permanent.TabIndex = 12;
-            this.lpc_rbtn_permanent.TabStop = true;
-            this.lpc_rbtn_permanent.Text = "Permanent";
-            this.lpc_rbtn_permanent.UseVisualStyleBackColor = true;
-            this.lpc_rbtn_permanent.CheckedChanged += new System.EventHandler(this.lpc_rbtn_permanent_CheckedChanged);
-            // 
-            // lpc_rbtn_temporary
-            // 
-            this.lpc_rbtn_temporary.AutoSize = true;
-            this.lpc_rbtn_temporary.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lpc_rbtn_temporary.Location = new System.Drawing.Point(275, 142);
-            this.lpc_rbtn_temporary.Name = "lpc_rbtn_temporary";
-            this.lpc_rbtn_temporary.Size = new System.Drawing.Size(88, 24);
-            this.lpc_rbtn_temporary.TabIndex = 13;
-            this.lpc_rbtn_temporary.Text = "Temporary";
-            this.lpc_rbtn_temporary.UseVisualStyleBackColor = true;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(62, 143);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(83, 20);
-            this.label8.TabIndex = 14;
-            this.label8.Text = "Promo Type :";
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.btnlpcsubmit);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(10, 541);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1108, 67);
-            this.panel1.TabIndex = 15;
-            // 
-            // lblMessage
-            // 
-            this.lblMessage.AutoSize = true;
-            this.lblMessage.Location = new System.Drawing.Point(180, 229);
-            this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(0, 13);
-            this.lblMessage.TabIndex = 16;
+            this.lpc_dgv_dbvalue.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lpc_dgv_dbvalue_CellMouseDown);
             // 
             // PROD_C
             // 
-            this.PROD_C.HeaderText = "MCode";
+            this.PROD_C.HeaderText = "MODEL CODE";
             this.PROD_C.Name = "PROD_C";
             // 
             // PROD_N
             // 
-            this.PROD_N.HeaderText = "MName";
+            this.PROD_N.HeaderText = "MODEL NAME";
             this.PROD_N.Name = "PROD_N";
             // 
             // FREE
             // 
-            this.FREE.HeaderText = "SFree1";
+            this.FREE.HeaderText = "FREE";
             this.FREE.Name = "FREE";
             // 
             // PLFOB
             // 
-            this.PLFOB.HeaderText = "PLFOB1";
+            this.PLFOB.HeaderText = "PLFOB";
             this.PLFOB.Name = "PLFOB";
             // 
             // NWF
             // 
-            this.NWF.HeaderText = "PLFOBVAT1";
+            this.NWF.HeaderText = "PLFOBVAT";
             this.NWF.Name = "NWF";
             // 
             // NWFR
@@ -406,22 +202,22 @@
             // 
             // PC_PF
             // 
-            this.PC_PF.HeaderText = "DFP1";
+            this.PC_PF.HeaderText = "DFP";
             this.PC_PF.Name = "PC_PF";
             // 
             // PC_PFL
             // 
-            this.PC_PFL.HeaderText = "LDFP1";
+            this.PC_PFL.HeaderText = "LDFP";
             this.PC_PFL.Name = "PC_PFL";
             // 
             // PC_RP
             // 
-            this.PC_RP.HeaderText = "RP1";
+            this.PC_RP.HeaderText = "RP";
             this.PC_RP.Name = "PC_RP";
             // 
             // PC_PA
             // 
-            this.PC_PA.HeaderText = "SRP1";
+            this.PC_PA.HeaderText = "SRP";
             this.PC_PA.Name = "PC_PA";
             // 
             // PC_PLSRP
@@ -431,17 +227,17 @@
             // 
             // PC_LSRP
             // 
-            this.PC_LSRP.HeaderText = "LSRP1";
+            this.PC_LSRP.HeaderText = "LSRP";
             this.PC_LSRP.Name = "PC_LSRP";
             // 
             // PC_PPA2LP
             // 
-            this.PC_PPA2LP.HeaderText = "%MP_Rate";
+            this.PC_PPA2LP.HeaderText = "%MP";
             this.PC_PPA2LP.Name = "PC_PPA2LP";
             // 
             // PC_LP
             // 
-            this.PC_LP.HeaderText = "MP1";
+            this.PC_LP.HeaderText = "MP";
             this.PC_LP.Name = "PC_LP";
             // 
             // PC_PPA2WA
@@ -511,7 +307,7 @@
             // 
             // PC_PB
             // 
-            this.PC_PB.HeaderText = "DP1";
+            this.PC_PB.HeaderText = "DP";
             this.PC_PB.Name = "PC_PB";
             // 
             // PC_PPA2PD
@@ -526,7 +322,7 @@
             // 
             // LPP_AMT
             // 
-            this.LPP_AMT.HeaderText = "LPP1";
+            this.LPP_AMT.HeaderText = "LPP";
             this.LPP_AMT.Name = "LPP_AMT";
             // 
             // LPP_REf
@@ -574,6 +370,229 @@
             this.Remarks2.HeaderText = "Remarks2";
             this.Remarks2.Name = "Remarks2";
             // 
+            // cmsRemoveGroup
+            // 
+            this.cmsRemoveGroup.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmsRemoveGroupItem});
+            this.cmsRemoveGroup.Name = "cmsRemoveGroup";
+            this.cmsRemoveGroup.Size = new System.Drawing.Size(199, 26);
+            this.cmsRemoveGroup.Opening += new System.ComponentModel.CancelEventHandler(this.cmsRemoveGroup_Opening);
+            // 
+            // cmsRemoveGroupItem
+            // 
+            this.cmsRemoveGroupItem.Name = "cmsRemoveGroupItem";
+            this.cmsRemoveGroupItem.Size = new System.Drawing.Size(198, 22);
+            this.cmsRemoveGroupItem.Text = "Remove Product Group";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Arial Rounded MT Bold", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(34, 20);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(172, 22);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Log Price Change";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(64, 61);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(74, 20);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Date            :";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(64, 88);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(76, 20);
+            this.label3.TabIndex = 3;
+            this.label3.Text = "Supplier      :";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(64, 114);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(80, 20);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Promo Title :";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(64, 175);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(75, 20);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "Start Date   :";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(64, 201);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(75, 20);
+            this.label6.TabIndex = 3;
+            this.label6.Text = "End Date    :";
+            // 
+            // lpc_dtp_memodate
+            // 
+            this.lpc_dtp_memodate.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lpc_dtp_memodate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.lpc_dtp_memodate.Location = new System.Drawing.Point(161, 57);
+            this.lpc_dtp_memodate.Name = "lpc_dtp_memodate";
+            this.lpc_dtp_memodate.Size = new System.Drawing.Size(209, 25);
+            this.lpc_dtp_memodate.TabIndex = 1;
+            // 
+            // lpc_dtp_startdate
+            // 
+            this.lpc_dtp_startdate.CustomFormat = "MM/dd/yyyy hh:mm:ss tt";
+            this.lpc_dtp_startdate.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lpc_dtp_startdate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.lpc_dtp_startdate.Location = new System.Drawing.Point(160, 171);
+            this.lpc_dtp_startdate.Name = "lpc_dtp_startdate";
+            this.lpc_dtp_startdate.Size = new System.Drawing.Size(209, 25);
+            this.lpc_dtp_startdate.TabIndex = 4;
+            // 
+            // lpc_dtp_enddate
+            // 
+            this.lpc_dtp_enddate.CustomFormat = "MM/dd/yyyy hh:mm:ss tt";
+            this.lpc_dtp_enddate.Enabled = false;
+            this.lpc_dtp_enddate.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lpc_dtp_enddate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.lpc_dtp_enddate.Location = new System.Drawing.Point(160, 197);
+            this.lpc_dtp_enddate.Name = "lpc_dtp_enddate";
+            this.lpc_dtp_enddate.Size = new System.Drawing.Size(209, 25);
+            this.lpc_dtp_enddate.TabIndex = 5;
+            this.lpc_dtp_enddate.Value = new System.DateTime(2025, 7, 16, 10, 1, 31, 0);
+            // 
+            // lpc_tb_supplier
+            // 
+            this.lpc_tb_supplier.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lpc_tb_supplier.Location = new System.Drawing.Point(161, 84);
+            this.lpc_tb_supplier.Name = "lpc_tb_supplier";
+            this.lpc_tb_supplier.Size = new System.Drawing.Size(209, 25);
+            this.lpc_tb_supplier.TabIndex = 2;
+            // 
+            // lpc_tb_promotitle
+            // 
+            this.lpc_tb_promotitle.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lpc_tb_promotitle.Location = new System.Drawing.Point(161, 110);
+            this.lpc_tb_promotitle.Name = "lpc_tb_promotitle";
+            this.lpc_tb_promotitle.Size = new System.Drawing.Size(209, 25);
+            this.lpc_tb_promotitle.TabIndex = 3;
+            // 
+            // label7
+            // 
+            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Arial Rounded MT Bold", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(503, 41);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(131, 17);
+            this.label7.TabIndex = 9;
+            this.label7.Text = "Search by code :";
+            // 
+            // lpc_tb_searchbycode
+            // 
+            this.lpc_tb_searchbycode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.lpc_tb_searchbycode.Location = new System.Drawing.Point(640, 41);
+            this.lpc_tb_searchbycode.Name = "lpc_tb_searchbycode";
+            this.lpc_tb_searchbycode.Size = new System.Drawing.Size(209, 20);
+            this.lpc_tb_searchbycode.TabIndex = 6;
+            this.lpc_tb_searchbycode.TextChanged += new System.EventHandler(this.lpc_tb_searchbycode_TextChanged);
+            // 
+            // lpc_dgv_searchbycode
+            // 
+            this.lpc_dgv_searchbycode.AllowUserToAddRows = false;
+            this.lpc_dgv_searchbycode.AllowUserToDeleteRows = false;
+            this.lpc_dgv_searchbycode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lpc_dgv_searchbycode.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.lpc_dgv_searchbycode.BackgroundColor = System.Drawing.Color.White;
+            this.lpc_dgv_searchbycode.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.lpc_dgv_searchbycode.Location = new System.Drawing.Point(559, 67);
+            this.lpc_dgv_searchbycode.Name = "lpc_dgv_searchbycode";
+            this.lpc_dgv_searchbycode.ReadOnly = true;
+            this.lpc_dgv_searchbycode.Size = new System.Drawing.Size(555, 200);
+            this.lpc_dgv_searchbycode.TabIndex = 10;
+            this.lpc_dgv_searchbycode.Visible = false;
+            this.lpc_dgv_searchbycode.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.lpc_dgv_searchbycode_CellContentClick);
+            // 
+            // btnlpcsubmit
+            // 
+            this.btnlpcsubmit.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnlpcsubmit.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnlpcsubmit.Location = new System.Drawing.Point(988, 3);
+            this.btnlpcsubmit.Name = "btnlpcsubmit";
+            this.btnlpcsubmit.Size = new System.Drawing.Size(101, 38);
+            this.btnlpcsubmit.TabIndex = 0;
+            this.btnlpcsubmit.Text = "Submit";
+            this.btnlpcsubmit.UseVisualStyleBackColor = true;
+            this.btnlpcsubmit.Click += new System.EventHandler(this.btnlpcsubmit_Click);
+            // 
+            // lpc_rbtn_permanent
+            // 
+            this.lpc_rbtn_permanent.AutoSize = true;
+            this.lpc_rbtn_permanent.Checked = true;
+            this.lpc_rbtn_permanent.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lpc_rbtn_permanent.Location = new System.Drawing.Point(160, 142);
+            this.lpc_rbtn_permanent.Name = "lpc_rbtn_permanent";
+            this.lpc_rbtn_permanent.Size = new System.Drawing.Size(88, 24);
+            this.lpc_rbtn_permanent.TabIndex = 12;
+            this.lpc_rbtn_permanent.TabStop = true;
+            this.lpc_rbtn_permanent.Text = "Permanent";
+            this.lpc_rbtn_permanent.UseVisualStyleBackColor = true;
+            this.lpc_rbtn_permanent.CheckedChanged += new System.EventHandler(this.lpc_rbtn_permanent_CheckedChanged);
+            // 
+            // lpc_rbtn_temporary
+            // 
+            this.lpc_rbtn_temporary.AutoSize = true;
+            this.lpc_rbtn_temporary.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lpc_rbtn_temporary.Location = new System.Drawing.Point(275, 142);
+            this.lpc_rbtn_temporary.Name = "lpc_rbtn_temporary";
+            this.lpc_rbtn_temporary.Size = new System.Drawing.Size(88, 24);
+            this.lpc_rbtn_temporary.TabIndex = 13;
+            this.lpc_rbtn_temporary.Text = "Temporary";
+            this.lpc_rbtn_temporary.UseVisualStyleBackColor = true;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(62, 143);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(83, 20);
+            this.label8.TabIndex = 14;
+            this.label8.Text = "Promo Type :";
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.btnlpcsubmit);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel1.Location = new System.Drawing.Point(10, 541);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1108, 67);
+            this.panel1.TabIndex = 15;
+            // 
+            // lblMessage
+            // 
+            this.lblMessage.AutoSize = true;
+            this.lblMessage.Location = new System.Drawing.Point(180, 229);
+            this.lblMessage.Name = "lblMessage";
+            this.lblMessage.Size = new System.Drawing.Size(0, 13);
+            this.lblMessage.TabIndex = 16;
+            // 
             // ctrLogPriceChange
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -603,8 +622,8 @@
             this.Name = "ctrLogPriceChange";
             this.Padding = new System.Windows.Forms.Padding(10);
             this.Size = new System.Drawing.Size(1128, 618);
-            this.Load += new System.EventHandler(this.ctrLogPriceChange_Load);
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_dbvalue)).EndInit();
+            this.cmsRemoveGroup.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_searchbycode)).EndInit();
             this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -674,5 +693,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ClaimK2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Remarks1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Remarks2;
+        private System.Windows.Forms.ContextMenuStrip cmsRemoveGroup;
+        private System.Windows.Forms.ToolStripMenuItem cmsRemoveGroupItem;
     }
 }

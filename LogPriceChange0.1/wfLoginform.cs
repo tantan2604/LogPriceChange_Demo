@@ -16,7 +16,7 @@ namespace LogPriceChange0._1
     {
         OleDbConnection conn = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\VisualStudio\LogPriceChange0.1\LogPriceChange0.1\pricematrix.accdb;");
         ctrLogPriceChange ctrLogPriceChange = new ctrLogPriceChange();
-
+        
 
         public wfLoginform()
         {
@@ -29,34 +29,43 @@ namespace LogPriceChange0._1
         }
         private void wfLoginform_Load(object sender, EventArgs e)
         {
-
+            
         }
         private void logf_btn_login_Click(object sender, EventArgs e)
-
         {
-          
             try
             {
                 conn.Open();
-                OleDbCommand cmd = new OleDbCommand("SELECT * FROM tbl_employee WHERE EmployeeUsername='" + logf_tb_username.Text + "'AND EmployeePassword='" + logf_tb_password.Text + "'", conn); // Use Check if userName and Password are correct or stored in the database
-                OleDbDataReader dr = cmd.ExecuteReader();
-                if (dr.Read())
+
+                // Case-sensitive comparison
+                string query = "SELECT * FROM tbl_employee WHERE StrComp(EmployeeUsername, ?, 0) = 0 AND StrComp(EmployeePassword, ?, 0) = 0";
+
+                using (OleDbCommand cmd = new OleDbCommand(query, conn))
                 {
-                    this.Hide();
-                    MainForm mainForm = new MainForm();
+                    // Leave input as-is — no .ToLower() or case normalization
+                    cmd.Parameters.AddWithValue("?", logf_tb_username.Text.Trim());
+                    cmd.Parameters.AddWithValue("?", logf_tb_password.Text);
 
-                    mainForm.Show();
-                    string username = mainForm.dashb_lbl_userlogged.Text = dr["Lastname"].ToString() + " " + dr["Firstname"].ToString(); 
-                    UserSession.Username = username;
-                    this.DialogResult = DialogResult.OK; // Let Program.cs know login succeeded
+                    using (OleDbDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (dr.Read())
+                        {
+
+                            this.Hide();
+                            MainForm mainForm = new MainForm();
+                            string username = dr["Lastname"].ToString() + " " + dr["Firstname"].ToString();
+                            mainForm.dashb_lbl_userlogged.Text = username;
+                            UserSession.Username = username;
+
+                            mainForm.Show();
+                            this.DialogResult = DialogResult.OK;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Login failed. Please check your username and password.");
+                        }
+                    }
                 }
-                else
-                {
-                    MessageBox.Show("Login Failed. Please check your username and password.");
-                }
-
-
-
             }
             catch (Exception ex)
             {
@@ -66,9 +75,9 @@ namespace LogPriceChange0._1
             {
                 conn.Close();
             }
-            
-            
         }
+
+
         private void TogglePasswordVisibility(object sender, EventArgs e)
         {
             

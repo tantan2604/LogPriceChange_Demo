@@ -45,7 +45,7 @@
             this.logf_tb_username.Location = new System.Drawing.Point(295, 147);
             this.logf_tb_username.Name = "logf_tb_username";
             this.logf_tb_username.Size = new System.Drawing.Size(248, 29);
-            this.logf_tb_username.TabIndex = 0;
+            this.logf_tb_username.TabIndex = 1;
             // 
             // logf_tb_password
             // 
@@ -53,7 +53,7 @@
             this.logf_tb_password.Location = new System.Drawing.Point(295, 185);
             this.logf_tb_password.Name = "logf_tb_password";
             this.logf_tb_password.Size = new System.Drawing.Size(248, 29);
-            this.logf_tb_password.TabIndex = 0;
+            this.logf_tb_password.TabIndex = 2;
             // 
             // logf_btn_login
             // 
@@ -61,7 +61,7 @@
             this.logf_btn_login.Location = new System.Drawing.Point(349, 221);
             this.logf_btn_login.Name = "logf_btn_login";
             this.logf_btn_login.Size = new System.Drawing.Size(150, 35);
-            this.logf_btn_login.TabIndex = 1;
+            this.logf_btn_login.TabIndex = 3;
             this.logf_btn_login.Text = "Login";
             this.logf_btn_login.UseVisualStyleBackColor = true;
             this.logf_btn_login.Click += new System.EventHandler(this.logf_btn_login_Click);
@@ -95,7 +95,6 @@
             this.logf_pb_eyeopen.Size = new System.Drawing.Size(24, 24);
             this.logf_pb_eyeopen.TabIndex = 5;
             this.logf_pb_eyeopen.TabStop = false;
-     
             // 
             // logf_pb_eyeclose
             // 
@@ -106,7 +105,6 @@
             this.logf_pb_eyeclose.Size = new System.Drawing.Size(24, 24);
             this.logf_pb_eyeclose.TabIndex = 4;
             this.logf_pb_eyeclose.TabStop = false;
-         
             // 
             // wfLoginform
             // 

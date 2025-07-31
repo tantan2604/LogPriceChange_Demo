@@ -24,8 +24,80 @@ namespace LogPriceChange0._1
         DataTable dataTable;
         OleDbDataAdapter dataAdapter;
         private static Dictionary<string, int> lastNumbers = new Dictionary<string, int>();
+        private ContextMenuStrip contextMenuStrip;
+        private ToolStripMenuItem removeMenuItem;
+        private DataGridViewRow rightClickedRow;
+
+
+
+        public ctrLogPriceChange()
+        {
+            InitializeComponent();
+
+            // Set custom format for your DateTimePicker
+            lpc_dtp_enddate.CustomFormat = " ";
+
+            // Hook up events
+            this.lpc_dgv_dbvalue.CellEndEdit += lpc_dgv_dbvalue_CellEndEdit;
+            this.lpc_dgv_dbvalue.CellMouseDown += lpc_dgv_dbvalue_CellMouseDown;
+
+            // Ensure context menu item is connected
+            cmsRemoveGroupItem.Click += cmsRemoveGroupItem_Click;
+            cmsRemoveGroup.Opening += cmsRemoveGroup_Opening;
+
+            // Assign the ContextMenuStrip to the DataGridView (if not done in designer)
+            lpc_dgv_dbvalue.ContextMenuStrip = cmsRemoveGroup;
+        }
+        //***********************************************Remove Rows in datagridview**********************************************************************************************************************************************************************************************
+        #region RightClick remove in lpc_dgv_dbvalue 
+        private void lpc_dgv_dbvalue_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right && e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                rightClickedRow = lpc_dgv_dbvalue.Rows[e.RowIndex];
+                lpc_dgv_dbvalue.ClearSelection();
+                lpc_dgv_dbvalue.CurrentCell = rightClickedRow.Cells[e.ColumnIndex];
+                rightClickedRow.Selected = true;
+            }
+        }
+
+        private void cmsRemoveGroup_Opening(object sender, CancelEventArgs e)
+        {
+            // Disable context menu if no valid row was right-clicked
+            if (rightClickedRow == null)
+                e.Cancel = true;
+        }
+
+        private void cmsRemoveGroupItem_Click(object sender, EventArgs e)
+        {
+            if (rightClickedRow == null)
+                return;
+
+            int rowIndex = rightClickedRow.Index;
+            int groupStart = rowIndex - (rowIndex % 3);
+
+            // Safety: Ensure 3 rows exist in group
+            if (groupStart + 2 >= lpc_dgv_dbvalue.Rows.Count)
+            {
+                MessageBox.Show("Unable to remove group. Not enough rows.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Remove from bottom up to avoid index shifting
+            for (int i = 2; i >= 0; i--)
+            {
+                int rowToRemove = groupStart + i;
+                if (rowToRemove < lpc_dgv_dbvalue.Rows.Count)
+                    lpc_dgv_dbvalue.Rows.RemoveAt(rowToRemove);
+            }
+
+            rightClickedRow = null;
+        }
+        #endregion 
+        //***********************************************End of Remove Rows in datagridview*************************************************************************************************************************************************************************************************************************
 
         //************************************************Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
+        #region ColumnMapping for Auto Compute
         private class ColumnMapping
         {
             public string BaseColumn { get; set; }
@@ -48,20 +120,10 @@ namespace LogPriceChange0._1
       new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PC", RateColumn = "PC_PPA2PC"}
         // Add more mappings here if needed
     };
-
+       
+        #endregion
         //************************************************End Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
-
-
-
-
-        public ctrLogPriceChange()
-        {
-            InitializeComponent();
-            lpc_dtp_enddate.CustomFormat = " ";
-            this.lpc_dgv_dbvalue.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.lpc_dgv_dbvalue_CellEndEdit);
-
-
-        }
+  
         public void LoadData()
         {
             try
@@ -97,11 +159,6 @@ namespace LogPriceChange0._1
                     connection.Close();
                 }
             }
-        }
-
-        private void ctrLogPriceChange_Load(object sender, EventArgs e)
-        {
-
         }
 
         private void lpc_rbtn_permanent_CheckedChanged(object sender, EventArgs e)
@@ -245,7 +302,9 @@ namespace LogPriceChange0._1
                 }
             }
         }
-        /*****************************************************************************Start For DataGridview Insert Update *******************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+        /**************************************************Start For DataGridview Insert Update *******************************************************************************************************************************************************************************************************************************************************************************************************************************/
+       
         public void InsertData()
         {
             try
@@ -502,6 +561,7 @@ namespace LogPriceChange0._1
                 }
             }
         }
+        
         private void UpdateDependentValues(int rowIndex, string editedColumnName)
         {
             if (rowIndex < 0 || rowIndex >= lpc_dgv_dbvalue.Rows.Count)
@@ -521,22 +581,25 @@ namespace LogPriceChange0._1
                 {
                     if (decimal.TryParse(row.Cells[mapping.ValueColumn]?.Value?.ToString(), out decimal val))
                     {
-                        decimal rate = val / baseValue;
-                        row.Cells[mapping.RateColumn].Value = rate.ToString("0.00");
+                        decimal rate = val / baseValue * 100;
+                        int roundedRate = (int)Math.Round(rate);
+                        row.Cells[mapping.RateColumn].Value = roundedRate.ToString();
                     }
                 }
                 else if (editedColumnName == mapping.RateColumn)
                 {
                     if (decimal.TryParse(row.Cells[mapping.RateColumn]?.Value?.ToString(), out decimal rate))
                     {
-                        decimal val = baseValue * rate;
-                        row.Cells[mapping.ValueColumn].Value = val.ToString("0.00");
+                        decimal val = (baseValue * rate) / 100;
+                        int roundedVal = (int)Math.Round(val);
+                        row.Cells[mapping.ValueColumn].Value = roundedVal.ToString();
                     }
                 }
 
                 break;
             }
         }
+
         private void lpc_dgv_dbvalue_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0)
@@ -545,19 +608,7 @@ namespace LogPriceChange0._1
             string columnName = lpc_dgv_dbvalue.Columns[e.ColumnIndex].Name;
             UpdateDependentValues(e.RowIndex, columnName);
         }
-        private void lpc_dgv_dbvalue_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            //if (e.RowIndex < 0) return;
 
-            //var dgv = lpc_dgv_dbvalue;
-
-            //// Only proceed if not in edit mode to avoid partial data
-            //if (dgv.IsCurrentCellInEditMode) return;
-
-            //var row = dgv.Rows[e.RowIndex];
-            //string changedColumn = dgv.Columns[e.ColumnIndex].Name;
-
-            //CalculateLSRPValues(row, changedColumn);
-        }
+       
     }
 }

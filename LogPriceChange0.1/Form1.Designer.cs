@@ -51,7 +51,7 @@
             // 
             // pnl_navbar
             // 
-            this.pnl_navbar.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.pnl_navbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
             this.pnl_navbar.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnl_navbar.Location = new System.Drawing.Point(0, 0);
             this.pnl_navbar.Name = "pnl_navbar";
@@ -64,11 +64,11 @@
             this.pnl_footer.Location = new System.Drawing.Point(0, 601);
             this.pnl_footer.Name = "pnl_footer";
             this.pnl_footer.Size = new System.Drawing.Size(1233, 30);
-            this.pnl_footer.TabIndex = 1;
+            this.pnl_footer.TabIndex = 0;
             // 
             // pnl_sidebar
             // 
-            this.pnl_sidebar.BackColor = System.Drawing.SystemColors.AppWorkspace;
+            this.pnl_sidebar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(15)))), ((int)(((byte)(255)))));
             this.pnl_sidebar.Controls.Add(this.panel7);
             this.pnl_sidebar.Controls.Add(this.panel4);
             this.pnl_sidebar.Controls.Add(this.panel6);
@@ -77,7 +77,7 @@
             this.pnl_sidebar.Location = new System.Drawing.Point(0, 43);
             this.pnl_sidebar.Name = "pnl_sidebar";
             this.pnl_sidebar.Size = new System.Drawing.Size(221, 558);
-            this.pnl_sidebar.TabIndex = 2;
+            this.pnl_sidebar.TabIndex = 0;
             // 
             // panel7
             // 
@@ -97,7 +97,7 @@
             this.btn_claimbyinventory.Location = new System.Drawing.Point(0, 0);
             this.btn_claimbyinventory.Name = "btn_claimbyinventory";
             this.btn_claimbyinventory.Size = new System.Drawing.Size(221, 45);
-            this.btn_claimbyinventory.TabIndex = 1;
+            this.btn_claimbyinventory.TabIndex = 0;
             this.btn_claimbyinventory.Text = "Claim By Inventory";
             this.btn_claimbyinventory.UseVisualStyleBackColor = true;
             this.btn_claimbyinventory.Click += new System.EventHandler(this.btn_claimbyinventory_Click);
@@ -120,7 +120,7 @@
             this.btn_claimbysellout.Location = new System.Drawing.Point(0, 0);
             this.btn_claimbysellout.Name = "btn_claimbysellout";
             this.btn_claimbysellout.Size = new System.Drawing.Size(221, 45);
-            this.btn_claimbysellout.TabIndex = 1;
+            this.btn_claimbysellout.TabIndex = 0;
             this.btn_claimbysellout.Text = "Claim By Sell Out";
             this.btn_claimbysellout.UseVisualStyleBackColor = true;
             this.btn_claimbysellout.Click += new System.EventHandler(this.btn_claimbysellout_Click);
@@ -157,7 +157,7 @@
             this.panel5.Margin = new System.Windows.Forms.Padding(3, 3, 3, 15);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(221, 185);
-            this.panel5.TabIndex = 4;
+            this.panel5.TabIndex = 0;
             // 
             // dashb_lbl_userlogged
             // 
@@ -166,11 +166,12 @@
             this.dashb_lbl_userlogged.Location = new System.Drawing.Point(44, 155);
             this.dashb_lbl_userlogged.Name = "dashb_lbl_userlogged";
             this.dashb_lbl_userlogged.Size = new System.Drawing.Size(80, 18);
-            this.dashb_lbl_userlogged.TabIndex = 1;
+            this.dashb_lbl_userlogged.TabIndex = 0;
             this.dashb_lbl_userlogged.Text = "AHAHAH";
             // 
             // pictureBox1
             // 
+            this.pictureBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.pictureBox1.Image = global::LogPriceChange0._1.Properties.Resources.group;
             this.pictureBox1.Location = new System.Drawing.Point(47, 8);
             this.pictureBox1.Name = "pictureBox1";
@@ -184,7 +185,7 @@
             this.pnl_main.Location = new System.Drawing.Point(221, 43);
             this.pnl_main.Name = "pnl_main";
             this.pnl_main.Size = new System.Drawing.Size(1012, 558);
-            this.pnl_main.TabIndex = 3;
+            this.pnl_main.TabIndex = 1;
             // 
             // MainForm
             // 

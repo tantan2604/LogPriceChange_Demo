@@ -16,7 +16,11 @@ namespace LogPriceChange0._1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new wfLoginform());
+            wfLoginform loginForm = new wfLoginform();
+            if (loginForm.ShowDialog() == DialogResult.OK)
+            {
+                Application.Run(new MainForm());
+            }
         }
     }
 }
