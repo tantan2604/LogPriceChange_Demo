@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
@@ -8,6 +9,7 @@ using System.Data.OleDb;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,8 +26,6 @@ namespace LogPriceChange0._1
         DataTable dataTable;
         OleDbDataAdapter dataAdapter;
         private static Dictionary<string, int> lastNumbers = new Dictionary<string, int>();
-        private ContextMenuStrip contextMenuStrip;
-        private ToolStripMenuItem removeMenuItem;
         private DataGridViewRow rightClickedRow;
 
 
@@ -179,7 +179,8 @@ namespace LogPriceChange0._1
 
         private void btnlpcsubmit_Click(object sender, EventArgs e)
         {
-            InsertData();
+            // InsertData();
+            InsertData(); 
         }
 
         private void lpc_tb_searchbycode_TextChanged(object sender, EventArgs e)
@@ -305,262 +306,257 @@ namespace LogPriceChange0._1
 
         /**************************************************Start For DataGridview Insert Update *******************************************************************************************************************************************************************************************************************************************************************************************************************************/
        
-        public void InsertData()
-        {
-            try
-            {
-                string promoName = lpc_tb_promotitle.Text.Trim();
-                string promoType = "";
-                string loggedUser = UserSession.Username;
-                //string user = mainForm.dashb_lbl_userlogged.Text;
-                DateTime startDate = lpc_dtp_startdate.Value;
-                DateTime endDate = lpc_dtp_enddate.Value;
+        //public void InsertData()
+        //{
+        //    try
+        //    {
+        //        string promoName = lpc_tb_promotitle.Text.Trim();
+        //        string promoType = "";
+        //        string loggedUser = UserSession.Username;
+        //        //string user = mainForm.dashb_lbl_userlogged.Text;
+        //        DateTime startDate = lpc_dtp_startdate.Value;
+        //        DateTime endDate = lpc_dtp_enddate.Value;
 
-                // Validate Promo Name
-                if (string.IsNullOrEmpty(promoName))
-                {
-                    MessageBox.Show("Please enter a Promo Name.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-
-                // Determine Promo Type and End Date
-                if (lpc_rbtn_permanent.Checked)
-                {
-                    promoType = "Permanent";
-                }
-                else if (lpc_rbtn_temporary.Checked)
-                {
-                    promoType = "Temporary";
-                    endDate = lpc_dtp_enddate.Value; // Get value from enabled DateTimePicker
-                }
-                else
-                {
-                    // This case should ideally not happen if one radio button is always checked
-                    MessageBox.Show("Please select a Promotion Type.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+        //        // Validate Promo Name
+        //        if (string.IsNullOrEmpty(promoName))
+        //        {
+        //            MessageBox.Show("Please enter a Promo Name.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //            return;
+        //        }
 
 
+        //        // Determine Promo Type and End Date
+        //        if (lpc_rbtn_permanent.Checked)
+        //        {
+        //            promoType = "Permanent";
+        //        }
+        //        else if (lpc_rbtn_temporary.Checked)
+        //        {
+        //            promoType = "Temporary";
+        //            endDate = lpc_dtp_enddate.Value; // Get value from enabled DateTimePicker
+        //        }
+        //        else
+        //        {
+        //            // This case should ideally not happen if one radio button is always checked
+        //            MessageBox.Show("Please select a Promotion Type.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //            return;
+        //        }
+
+        //        // 1. Generate DocID once for all products
+        //        string promoDate = DateTime.Now.ToString("yyyyMM");
+        //        int docIdSequence = 1;
+
+        //        if (connection.State == ConnectionState.Open)
+        //        {
+        //            connection.Close();
+        //        }
+
+        //        connection.Open();
+        //        string maxSequenceIdQuery = "SELECT MAX(CInt(Mid(DocID, 8))) FROM tbl_logpricechange WHERE DocID LIKE @promoDate";
+        //        using (OleDbCommand maxCmd = new OleDbCommand(maxSequenceIdQuery, connection))
+        //        {
+        //            maxCmd.Parameters.AddWithValue("@promoDate", promoDate + "-%");
+        //            object result = maxCmd.ExecuteScalar();
+
+        //            if (result != DBNull.Value && result != null)
+        //            {
+        //                docIdSequence = Convert.ToInt32(result) + 1;
+        //            }
+        //        }
+        //        connection.Close();
+
+        //        string formattedSequenceId = docIdSequence.ToString("D6");
+        //        string commonDocId = $"{promoDate}-{formattedSequenceId}"; // This is the common DocID
+
+        //        //*****************************************RADIO BUTTON*****************************************************************************************************
+
+        //        // Check if there are any rows to insert
+        //        if (lpc_dgv_dbvalue.Rows.Count == 0)
+        //        {
+        //            MessageBox.Show("No products to insert. Please add products to the grid.", "No Data", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        //            return;
+        //        }
 
 
+        //        for (int i = 0; i <= lpc_dgv_dbvalue.Rows.Count - 2; i += 3)
+        //        {
 
-                // 1. Generate DocID once for all products
-                string promoDate = DateTime.Now.ToString("yyyyMM");
-                int docIdSequence = 1;
+        //            int dbValueRowIndex = i;
+        //            int suppPriceRowIndex = i + 1;
+        //            int promoValueRowIndex = i + 2;
 
+        //            object GetCellValue(int rowIndex, string columnHeader)
+        //            {
+        //                if (rowIndex < 0 || rowIndex >= lpc_dgv_dbvalue.Rows.Count)
+        //                {
+        //                    return DBNull.Value;
+        //                }
 
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
+        //                var cell = lpc_dgv_dbvalue.Rows[rowIndex].Cells[columnHeader];
+        //                if (cell == null || cell.Value == null || (cell.Value is string s && string.IsNullOrEmpty(s)))
+        //                {
+        //                    return DBNull.Value;
+        //                }
+        //                return cell.Value;
+        //            }
 
-                connection.Open();
-                string maxSequenceIdQuery = "SELECT MAX(CInt(Mid(DocID, 8))) FROM tbl_logpricechange WHERE DocID LIKE @promoDate";
-                using (OleDbCommand maxCmd = new OleDbCommand(maxSequenceIdQuery, connection))
-                {
-                    maxCmd.Parameters.AddWithValue("@promoDate", promoDate + "-%");
-                    object result = maxCmd.ExecuteScalar();
-
-                    if (result != DBNull.Value && result != null)
-                    {
-                        docIdSequence = Convert.ToInt32(result) + 1;
-                    }
-                }
-                connection.Close();
-
-                string formattedSequenceId = docIdSequence.ToString("D6");
-                string commonDocId = $"{promoDate}-{formattedSequenceId}"; // This is the common DocID
-
-                //*****************************************RADIO BUTTON*****************************************************************************************************
-
-                // Check if there are any rows to insert
-                if (lpc_dgv_dbvalue.Rows.Count == 0)
-                {
-                    MessageBox.Show("No products to insert. Please add products to the grid.", "No Data", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
+        //            string insQuery = "INSERT INTO tbl_logpricechange" +
+        //                              "(DocID,CreatedBy,  CreatedDate, TDate, Supplier, PromoTitle, StartDate, EndDate, Promotype, PROD_C, PROD_N, FREE, FREE_SUP, FREE_USRINT, PLFOB, PLFOB_SUP, PLFOB_USRINT, NWF, NWF_SUP, NWF_USRINT, NWFR, PC_PF, PC_PF_SUP, PC_PF_USRINT, PC_PFL, PC_PFL_SUP, PC_PFL_USRINT, PC_RP, PC_RP_SUP, PC_RP_USRINT, PC_PA, PC_PA_SUP, PC_PA_USRINT, PC_PLSRP, PC_PLSRP_SUP, PC_PLSRP_USRINT, PC_LSRP, PC_LSRP_SUP, PC_LSRP_USRINT, PC_PPA2LP, PC_PPA2LP_SUP, PC_PPA2LP_USRINT, PC_LP, PC_LP_SUP, PC_LP_USRINT, PC_PPA2WA, PC_PPA2WA_SUP, PC_PPA2WA_USRINT, PC_WA, PC_WA_SUP, PC_WA_USRINT, PC_PPA2WB, PC_PPA2WB_SUP, PC_PPA2WB_USRINT, PC_WB, PC_WB_SUP, PC_WB_USRINT, PC_PPA2WC, PC_PPA2WC_SUP, PC_PPA2WC_USRINT, PC_WC, PC_WC_SUP, PC_WC_USRINT, PC_PPA2LC, PC_PPA2LC_SUP, PC_PPA2LC_USRINT, PC_LC, PC_LC_SUP, PC_LC_USRINT, PC_PPA2PG, PC_PPA2PG_SUP, PC_PPA2PG_USRINT, PC_PG, PC_PG_SUP, PC_PG_USRINT, PC_PPA2PH, PC_PPA2PH_SUP, PC_PPA2PH_USRINT, PC_PH, PC_PH_SUP, PC_PH_USRINT, PC_PPA2PB, PC_PPA2PB_SUP, PC_PPA2PB_USRINT, PC_PB, PC_PB_SUP, PC_PB_USRINT, PC_PPA2PD, PC_PPA2PD_SUP, PC_PPA2P_USRINT, PC_PD, PC_PD_SUP, PC_PD_USRINT, LPP_AMT, LPP_AMT_SUP, LPP_AMT_USRINT, LPP_REF, LPP_REF_SUP, LPP_REF_USRINT, PC_PPA2PC, PC_PPA2PC_SUP, PC_PPA2PC_USRINT, PC_PC, PC_PC_SUP, PC_PC_USRINT, Claim1, Claim2, ClaimK1, ClaimK2, Remarks1, Remarks2) " +
+        //                              "VALUES ( @DocID, @CreatedBy, @CreatedDate, @TDate,@Supplier, @PromoTitle, @StartDate, @EndDate, @Promotype,  @PROD_C,@PROD_N,@FREE,@FREE_SUP,@FREE_USRINT,@PLFOB,@PLFOB_SUP,@PLFOB_USRINT,@NWF,@NWF_SUP,@NWF_USRINT,@NWFR,@PC_PF,@PC_PF_SUP,@PC_PF_USRINT,@PC_PFL,@PC_PFL_SUP,@PC_PFL_USRINT,@PC_RP,@PC_RP_SUP,@PC_RP_USRINT,@PC_PA,@PC_PA_SUP,@PC_PA_USRINT,@PC_PLSRP,@PC_PLSRP_SUP,@PC_PLSRP_USRINT,@PC_LSRP,@PC_LSRP_SUP,@PC_LSRP_USRINT,@PC_PPA2LP,@PC_PPA2LP_SUP,@PC_PPA2LP_USRINT,@PC_LP,@PC_LP_SUP,@PC_LP_USRINT,@PC_PPA2WA,@PC_PPA2WA_SUP,@PC_PPA2WA_USRINT,@PC_WA,@PC_WA_SUP,@PC_WA_USRINT,@PC_PPA2WB,@PC_PPA2WB_SUP,@PC_PPA2WB_USRINT,@PC_WB,@PC_WB_SUP,@PC_WB_USRINT,@PC_PPA2WC,@PC_PPA2WC_SUP,@PC_PPA2WC_USRINT,@PC_WC,@PC_WC_SUP,@PC_WC_USRINT,@PC_PPA2LC,@PC_PPA2LC_SUP,@PC_PPA2LC_USRINT,@PC_LC,@PC_LC_SUP,@PC_LC_USRINT,@PC_PPA2PG,@PC_PPA2PG_SUP,@PC_PPA2PG_USRINT,@PC_PG,@PC_PG_SUP,@PC_PG_USRINT,@PC_PPA2PH,@PC_PPA2PH_SUP,@PC_PPA2PH_USRINT,@PC_PH,@PC_PH_SUP,@PC_PH_USRINT,@PC_PPA2PB,@PC_PPA2PB_SUP,@PC_PPA2PB_USRINT,@PC_PB,@PC_PB_SUP,@PC_PB_USRINT,@PC_PPA2PD,@PC_PPA2PD_SUP,@PC_PPA2P_USRINT,@PC_PD,@PC_PD_SUP,@PC_PD_USRINT,@LPP_AMT,@LPP_AMT_SUP,@LPP_AMT_USRINT,@LPP_REF,@LPP_REF_SUP,@LPP_REF_USRINT,@PC_PPA2PC,@PC_PPA2PC_SUP,@PC_PPA2PC_USRINT,@PC_PC,@PC_PC_SUP,@PC_PC_USRINT,@Claim1,@Claim2,@ClaimK1,@ClaimK2,@Remarks1,@Remarks2)";
 
 
-                for (int i = 0; i <= lpc_dgv_dbvalue.Rows.Count - 2; i += 3)
-                {
+        //            if (connection.State == ConnectionState.Closed)
+        //            {
+        //                connection.Open();
+        //            }
 
-                    int dbValueRowIndex = i;
-                    int suppPriceRowIndex = i + 1;
-                    int promoValueRowIndex = i + 2;
+        //            using (OleDbCommand cmd = new OleDbCommand(insQuery, connection))
+        //            {
+                        
+        //                cmd.Parameters.AddWithValue("@DocID", commonDocId); // Use the common DocID
+        //                //DocStatus
+        //                cmd.Parameters.AddWithValue("@CreatedBy", loggedUser);
+        //                cmd.Parameters.AddWithValue("@CreatedDate", DateTime.Now.ToString("yyyy/MM/dd/HH:mm"));
+        //                //ApprovedBy
+        //                //ApprovedDate
+        //                cmd.Parameters.AddWithValue("@TDate", lpc_dtp_memodate.Value.Date);
+        //                cmd.Parameters.AddWithValue("@Supplier", string.IsNullOrEmpty(lpc_tb_supplier.Text) ? (object)DBNull.Value : lpc_tb_supplier.Text);
+        //                cmd.Parameters.AddWithValue("@PromoTitle", promoName);
+        //                cmd.Parameters.AddWithValue("@StartDate", startDate);
+        //                cmd.Parameters.AddWithValue("@EndDate", (promoType == "Permanent") ? (object)DBNull.Value : endDate);
+        //                cmd.Parameters.AddWithValue("@PromoType", promoType);
 
-                    object GetCellValue(int rowIndex, string columnHeader)
-                    {
-                        if (rowIndex < 0 || rowIndex >= lpc_dgv_dbvalue.Rows.Count)
-                        {
-                            return DBNull.Value;
-                        }
-
-                        var cell = lpc_dgv_dbvalue.Rows[rowIndex].Cells[columnHeader];
-                        if (cell == null || cell.Value == null || (cell.Value is string s && string.IsNullOrEmpty(s)))
-                        {
-                            return DBNull.Value;
-                        }
-                        return cell.Value;
-                    }
-
-                    string insQuery = "INSERT INTO tbl_logpricechange" +
-                                      "(DocID,CreatedBy,  CreatedDate, TDate, Supplier, PromoTitle, StartDate, EndDate, Promotype, PROD_C, PROD_N, FREE, FREE_SUP, FREE_USRINT, PLFOB, PLFOB_SUP, PLFOB_USRINT, NWF, NWF_SUP, NWF_USRINT, NWFR, PC_PF, PC_PF_SUP, PC_PF_USRINT, PC_PFL, PC_PFL_SUP, PC_PFL_USRINT, PC_RP, PC_RP_SUP, PC_RP_USRINT, PC_PA, PC_PA_SUP, PC_PA_USRINT, PC_PLSRP, PC_PLSRP_SUP, PC_PLSRP_USRINT, PC_LSRP, PC_LSRP_SUP, PC_LSRP_USRINT, PC_PPA2LP, PC_PPA2LP_SUP, PC_PPA2LP_USRINT, PC_LP, PC_LP_SUP, PC_LP_USRINT, PC_PPA2WA, PC_PPA2WA_SUP, PC_PPA2WA_USRINT, PC_WA, PC_WA_SUP, PC_WA_USRINT, PC_PPA2WB, PC_PPA2WB_SUP, PC_PPA2WB_USRINT, PC_WB, PC_WB_SUP, PC_WB_USRINT, PC_PPA2WC, PC_PPA2WC_SUP, PC_PPA2WC_USRINT, PC_WC, PC_WC_SUP, PC_WC_USRINT, PC_PPA2LC, PC_PPA2LC_SUP, PC_PPA2LC_USRINT, PC_LC, PC_LC_SUP, PC_LC_USRINT, PC_PPA2PG, PC_PPA2PG_SUP, PC_PPA2PG_USRINT, PC_PG, PC_PG_SUP, PC_PG_USRINT, PC_PPA2PH, PC_PPA2PH_SUP, PC_PPA2PH_USRINT, PC_PH, PC_PH_SUP, PC_PH_USRINT, PC_PPA2PB, PC_PPA2PB_SUP, PC_PPA2PB_USRINT, PC_PB, PC_PB_SUP, PC_PB_USRINT, PC_PPA2PD, PC_PPA2PD_SUP, PC_PPA2P_USRINT, PC_PD, PC_PD_SUP, PC_PD_USRINT, LPP_AMT, LPP_AMT_SUP, LPP_AMT_USRINT, LPP_REF, LPP_REF_SUP, LPP_REF_USRINT, PC_PPA2PC, PC_PPA2PC_SUP, PC_PPA2PC_USRINT, PC_PC, PC_PC_SUP, PC_PC_USRINT, Claim1, Claim2, ClaimK1, ClaimK2, Remarks1, Remarks2) " +
-                                      "VALUES ( @DocID, @CreatedBy, @CreatedDate, @TDate,@Supplier, @PromoTitle, @StartDate, @EndDate, @Promotype,  @PROD_C,@PROD_N,@FREE,@FREE_SUP,@FREE_USRINT,@PLFOB,@PLFOB_SUP,@PLFOB_USRINT,@NWF,@NWF_SUP,@NWF_USRINT,@NWFR,@PC_PF,@PC_PF_SUP,@PC_PF_USRINT,@PC_PFL,@PC_PFL_SUP,@PC_PFL_USRINT,@PC_RP,@PC_RP_SUP,@PC_RP_USRINT,@PC_PA,@PC_PA_SUP,@PC_PA_USRINT,@PC_PLSRP,@PC_PLSRP_SUP,@PC_PLSRP_USRINT,@PC_LSRP,@PC_LSRP_SUP,@PC_LSRP_USRINT,@PC_PPA2LP,@PC_PPA2LP_SUP,@PC_PPA2LP_USRINT,@PC_LP,@PC_LP_SUP,@PC_LP_USRINT,@PC_PPA2WA,@PC_PPA2WA_SUP,@PC_PPA2WA_USRINT,@PC_WA,@PC_WA_SUP,@PC_WA_USRINT,@PC_PPA2WB,@PC_PPA2WB_SUP,@PC_PPA2WB_USRINT,@PC_WB,@PC_WB_SUP,@PC_WB_USRINT,@PC_PPA2WC,@PC_PPA2WC_SUP,@PC_PPA2WC_USRINT,@PC_WC,@PC_WC_SUP,@PC_WC_USRINT,@PC_PPA2LC,@PC_PPA2LC_SUP,@PC_PPA2LC_USRINT,@PC_LC,@PC_LC_SUP,@PC_LC_USRINT,@PC_PPA2PG,@PC_PPA2PG_SUP,@PC_PPA2PG_USRINT,@PC_PG,@PC_PG_SUP,@PC_PG_USRINT,@PC_PPA2PH,@PC_PPA2PH_SUP,@PC_PPA2PH_USRINT,@PC_PH,@PC_PH_SUP,@PC_PH_USRINT,@PC_PPA2PB,@PC_PPA2PB_SUP,@PC_PPA2PB_USRINT,@PC_PB,@PC_PB_SUP,@PC_PB_USRINT,@PC_PPA2PD,@PC_PPA2PD_SUP,@PC_PPA2P_USRINT,@PC_PD,@PC_PD_SUP,@PC_PD_USRINT,@LPP_AMT,@LPP_AMT_SUP,@LPP_AMT_USRINT,@LPP_REF,@LPP_REF_SUP,@LPP_REF_USRINT,@PC_PPA2PC,@PC_PPA2PC_SUP,@PC_PPA2PC_USRINT,@PC_PC,@PC_PC_SUP,@PC_PC_USRINT,@Claim1,@Claim2,@ClaimK1,@ClaimK2,@Remarks1,@Remarks2)";
-
-
-                    if (connection.State == ConnectionState.Closed)
-                    {
-                        connection.Open();
-                    }
-
-                    using (OleDbCommand cmd = new OleDbCommand(insQuery, connection))
-                    {
-                        // TEXBOX & DATETIME PICKER (These are common for all products in this submission)
-                        cmd.Parameters.AddWithValue("@DocID", commonDocId); // Use the common DocID
-                        //DocStatus
-                        cmd.Parameters.AddWithValue("@CreatedBy", loggedUser);
-                        cmd.Parameters.AddWithValue("@CreatedDate", DateTime.Now.ToString("yyyy/MM/dd/HH:mm"));
-                        //ApprovedBy
-                        //ApprovedDate
-                        cmd.Parameters.AddWithValue("@TDate", lpc_dtp_memodate.Value.Date);
-                        cmd.Parameters.AddWithValue("@Supplier", string.IsNullOrEmpty(lpc_tb_supplier.Text) ? (object)DBNull.Value : lpc_tb_supplier.Text);
-                        cmd.Parameters.AddWithValue("@PromoTitle", promoName);
-                        cmd.Parameters.AddWithValue("@StartDate", startDate);
-                        cmd.Parameters.AddWithValue("@EndDate", (promoType == "Permanent") ? (object)DBNull.Value : endDate);
-                        cmd.Parameters.AddWithValue("@PromoType", promoType);
-
-                        // DATAGRIDVIEW VALUES FOR CURRENT PRODUCT
-                        cmd.Parameters.AddWithValue("@PROD_C", GetCellValue(dbValueRowIndex, "PROD_C"));
-                        cmd.Parameters.AddWithValue("@PROD_N", GetCellValue(dbValueRowIndex, "PROD_N"));
-                        cmd.Parameters.AddWithValue("@FREE", GetCellValue(dbValueRowIndex, "FREE")); // Assuming SFREE is actually FREE in the source DGV
-                        cmd.Parameters.AddWithValue("@FREE_SUP", GetCellValue(suppPriceRowIndex, "FREE"));
-                        cmd.Parameters.AddWithValue("@FREE_USRINT", GetCellValue(promoValueRowIndex, "FREE"));
-                        cmd.Parameters.AddWithValue("@PLFOB", GetCellValue(dbValueRowIndex, "PLFOB"));
-                        cmd.Parameters.AddWithValue("@PLFOB_SUP", GetCellValue(suppPriceRowIndex, "PLFOB"));
-                        cmd.Parameters.AddWithValue("@PLFOB_USRINT", GetCellValue(promoValueRowIndex, "PLFOB"));
-                        cmd.Parameters.AddWithValue("@NWF", GetCellValue(dbValueRowIndex, "NWF"));
-                        cmd.Parameters.AddWithValue("@NWF_SUP", GetCellValue(suppPriceRowIndex, "NWF"));
-                        cmd.Parameters.AddWithValue("@NWF_USRINT", GetCellValue(promoValueRowIndex, "NWF"));
-                        cmd.Parameters.AddWithValue("@NWFR", GetCellValue(dbValueRowIndex, "NWFR"));
-                        cmd.Parameters.AddWithValue("@PC_PF", GetCellValue(dbValueRowIndex, "PC_PF"));
-                        cmd.Parameters.AddWithValue("@PC_PF_SUP", GetCellValue(suppPriceRowIndex, "PC_PF"));
-                        cmd.Parameters.AddWithValue("@PC_PF_USRINT", GetCellValue(promoValueRowIndex, "PC_PF"));
-                        cmd.Parameters.AddWithValue("@PC_PFL", GetCellValue(dbValueRowIndex, "PC_PFL"));
-                        cmd.Parameters.AddWithValue("@PC_PFL_SUP", GetCellValue(suppPriceRowIndex, "PC_PFL"));
-                        cmd.Parameters.AddWithValue("@PC_PFL_USRINT", GetCellValue(promoValueRowIndex, "PC_PFL"));
-                        cmd.Parameters.AddWithValue("@PC_RP", GetCellValue(dbValueRowIndex, "PC_RP"));
-                        cmd.Parameters.AddWithValue("@PC_RP_SUP", GetCellValue(suppPriceRowIndex, "PC_RP"));
-                        cmd.Parameters.AddWithValue("@PC_RP_USRINT", GetCellValue(promoValueRowIndex, "PC_RP"));
-                        cmd.Parameters.AddWithValue("@PC_PA", GetCellValue(dbValueRowIndex, "PC_PA"));
-                        cmd.Parameters.AddWithValue("@PC_PA_SUP", GetCellValue(suppPriceRowIndex, "PC_PA"));
-                        cmd.Parameters.AddWithValue("@PC_PA_USRINT", GetCellValue(promoValueRowIndex, "PC_PA"));
-                        cmd.Parameters.AddWithValue("@PC_PLSRP", GetCellValue(dbValueRowIndex, "PC_PLSRP"));
-                        cmd.Parameters.AddWithValue("@PC_PLSRP_SUP", GetCellValue(suppPriceRowIndex, "PC_PLSRP"));
-                        cmd.Parameters.AddWithValue("@PC_PLSRP_USRINT", GetCellValue(promoValueRowIndex, "PC_PLSRP"));
-                        cmd.Parameters.AddWithValue("@PC_LSRP", GetCellValue(dbValueRowIndex, "PC_LSRP"));
-                        cmd.Parameters.AddWithValue("@PC_LSRP_SUP", GetCellValue(suppPriceRowIndex, "PC_LSRP"));
-                        cmd.Parameters.AddWithValue("@PC_LSRP_USRINT", GetCellValue(promoValueRowIndex, "PC_LSRP"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2LP", GetCellValue(dbValueRowIndex, "PC_PPA2LP"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2LP_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2LP"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2LP_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2LP"));
-                        cmd.Parameters.AddWithValue("@PC_LP", GetCellValue(dbValueRowIndex, "PC_LP"));
-                        cmd.Parameters.AddWithValue("@PC_LP_SUP", GetCellValue(suppPriceRowIndex, "PC_LP"));
-                        cmd.Parameters.AddWithValue("@PC_LP_USRINT", GetCellValue(promoValueRowIndex, "PC_LP"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2WA", GetCellValue(dbValueRowIndex, "PC_PPA2WA"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2WA_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2WA"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2WA_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2WA"));
-                        cmd.Parameters.AddWithValue("@PC_WA", GetCellValue(dbValueRowIndex, "PC_WA"));
-                        cmd.Parameters.AddWithValue("@PC_WA_SUP", GetCellValue(suppPriceRowIndex, "PC_WA"));
-                        cmd.Parameters.AddWithValue("@PC_WA_USRINT", GetCellValue(promoValueRowIndex, "PC_WA"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2WB", GetCellValue(dbValueRowIndex, "PC_PPA2WB"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2WB_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2WB"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2WB_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2WB"));
-                        cmd.Parameters.AddWithValue("@PC_WB", GetCellValue(dbValueRowIndex, "PC_WB"));
-                        cmd.Parameters.AddWithValue("@PC_WB_SUP", GetCellValue(suppPriceRowIndex, "PC_WB"));
-                        cmd.Parameters.AddWithValue("@PC_WB_USRINT", GetCellValue(promoValueRowIndex, "PC_WB"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2WC", GetCellValue(dbValueRowIndex, "PC_PPA2WC"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2WC_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2WC"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2WC_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2WC"));
-                        cmd.Parameters.AddWithValue("@PC_WC", GetCellValue(dbValueRowIndex, "PC_WC"));
-                        cmd.Parameters.AddWithValue("@PC_WC_SUP", GetCellValue(suppPriceRowIndex, "PC_WC"));
-                        cmd.Parameters.AddWithValue("@PC_WC_USRINT", GetCellValue(promoValueRowIndex, "PC_WC"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2LC", GetCellValue(dbValueRowIndex, "PC_PPA2LC"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2LC_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2LC"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2LC_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2LC"));
-                        cmd.Parameters.AddWithValue("@PC_LC", GetCellValue(dbValueRowIndex, "PC_LC"));
-                        cmd.Parameters.AddWithValue("@PC_LC_SUP", GetCellValue(suppPriceRowIndex, "PC_LC"));
-                        cmd.Parameters.AddWithValue("@PC_LC_USRINT", GetCellValue(promoValueRowIndex, "PC_LC"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2PG", GetCellValue(dbValueRowIndex, "PC_PPA2PG"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2PG_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2PG"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2PG_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2PG"));
-                        cmd.Parameters.AddWithValue("@PC_PG", GetCellValue(dbValueRowIndex, "PC_PG"));
-                        cmd.Parameters.AddWithValue("@PC_PG_SUP", GetCellValue(suppPriceRowIndex, "PC_PG"));
-                        cmd.Parameters.AddWithValue("@PC_PG_USRINT", GetCellValue(promoValueRowIndex, "PC_PG"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2PH", GetCellValue(dbValueRowIndex, "PC_PPA2PH"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2PH_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2PH"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2PH_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2PH"));
-                        cmd.Parameters.AddWithValue("@PC_PH", GetCellValue(dbValueRowIndex, "PC_PH"));
-                        cmd.Parameters.AddWithValue("@PC_PH_SUP", GetCellValue(suppPriceRowIndex, "PC_PH"));
-                        cmd.Parameters.AddWithValue("@PC_PH_USRINT", GetCellValue(promoValueRowIndex, "PC_PH"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2PB", GetCellValue(dbValueRowIndex, "PC_PPA2PB"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2PB_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2PB"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2PB_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2PB"));
-                        cmd.Parameters.AddWithValue("@PC_PB", GetCellValue(dbValueRowIndex, "PC_PB"));
-                        cmd.Parameters.AddWithValue("@PC_PB_SUP", GetCellValue(suppPriceRowIndex, "PC_PB"));
-                        cmd.Parameters.AddWithValue("@PC_PB_USRINT", GetCellValue(promoValueRowIndex, "PC_PB"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2PD", GetCellValue(dbValueRowIndex, "PC_PPA2PD"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2PD_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2PD"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2P_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2PD"));
-                        cmd.Parameters.AddWithValue("@PC_PD", GetCellValue(dbValueRowIndex, "PC_PD"));
-                        cmd.Parameters.AddWithValue("@PC_PD_SUP", GetCellValue(suppPriceRowIndex, "PC_PD"));
-                        cmd.Parameters.AddWithValue("@PC_PD_USRINT", GetCellValue(promoValueRowIndex, "PC_PD"));
-                        cmd.Parameters.AddWithValue("@LPP_AMT", GetCellValue(dbValueRowIndex, "LPP_AMT"));
-                        cmd.Parameters.AddWithValue("@LPP_AMT_SUP", GetCellValue(suppPriceRowIndex, "LPP_AMT"));
-                        cmd.Parameters.AddWithValue("@LPP_AMT_USRINT", GetCellValue(promoValueRowIndex, "LPP_AMT"));
-                        cmd.Parameters.AddWithValue("@LPP_REF", GetCellValue(dbValueRowIndex, "LPP_REF"));
-                        cmd.Parameters.AddWithValue("@LPP_REF_SUP", GetCellValue(suppPriceRowIndex, "LPP_REF"));
-                        cmd.Parameters.AddWithValue("@LPP_REF_USRINT", GetCellValue(promoValueRowIndex, "LPP_REF"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2PC", GetCellValue(dbValueRowIndex, "PC_PPA2PC"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2PC_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2PC"));
-                        cmd.Parameters.AddWithValue("@PC_PPA2PC_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2PC"));
-                        cmd.Parameters.AddWithValue("@PC_PC", GetCellValue(dbValueRowIndex, "PC_PC"));
-                        cmd.Parameters.AddWithValue("@PC_PC_SUP", GetCellValue(suppPriceRowIndex, "PC_PC"));
-                        cmd.Parameters.AddWithValue("@PC_PC_USRINT", GetCellValue(promoValueRowIndex, "PC_PC"));
-                        cmd.Parameters.AddWithValue("@Claim1", GetCellValue(suppPriceRowIndex, "Claim1"));
-                        cmd.Parameters.AddWithValue("@Claim2", GetCellValue(promoValueRowIndex, "Claim2"));
-                        cmd.Parameters.AddWithValue("@ClaimK1", GetCellValue(suppPriceRowIndex, "ClaimK1"));
-                        cmd.Parameters.AddWithValue("@ClaimK2", GetCellValue(promoValueRowIndex, "ClaimK2"));
-                        cmd.Parameters.AddWithValue("@Remarks1", GetCellValue(suppPriceRowIndex, "Remarks1"));
-                        cmd.Parameters.AddWithValue("@Remarks2", GetCellValue(promoValueRowIndex, "Remarks2"));
+        //                // DATAGRIDVIEW VALUES FOR CURRENT PRODUCT
+        //                cmd.Parameters.AddWithValue("@PROD_C", GetCellValue(dbValueRowIndex, "PROD_C"));
+        //                cmd.Parameters.AddWithValue("@PROD_N", GetCellValue(dbValueRowIndex, "PROD_N"));
+        //                cmd.Parameters.AddWithValue("@FREE", GetCellValue(dbValueRowIndex, "FREE")); // Assuming SFREE is actually FREE in the source DGV
+        //                cmd.Parameters.AddWithValue("@FREE_SUP", GetCellValue(suppPriceRowIndex, "FREE"));
+        //                cmd.Parameters.AddWithValue("@FREE_USRINT", GetCellValue(promoValueRowIndex, "FREE"));
+        //                cmd.Parameters.AddWithValue("@PLFOB", GetCellValue(dbValueRowIndex, "PLFOB"));
+        //                cmd.Parameters.AddWithValue("@PLFOB_SUP", GetCellValue(suppPriceRowIndex, "PLFOB"));
+        //                cmd.Parameters.AddWithValue("@PLFOB_USRINT", GetCellValue(promoValueRowIndex, "PLFOB"));
+        //                cmd.Parameters.AddWithValue("@NWF", GetCellValue(dbValueRowIndex, "NWF"));
+        //                cmd.Parameters.AddWithValue("@NWF_SUP", GetCellValue(suppPriceRowIndex, "NWF"));
+        //                cmd.Parameters.AddWithValue("@NWF_USRINT", GetCellValue(promoValueRowIndex, "NWF"));
+        //                cmd.Parameters.AddWithValue("@NWFR", GetCellValue(dbValueRowIndex, "NWFR"));
+        //                cmd.Parameters.AddWithValue("@PC_PF", GetCellValue(dbValueRowIndex, "PC_PF"));
+        //                cmd.Parameters.AddWithValue("@PC_PF_SUP", GetCellValue(suppPriceRowIndex, "PC_PF"));
+        //                cmd.Parameters.AddWithValue("@PC_PF_USRINT", GetCellValue(promoValueRowIndex, "PC_PF"));
+        //                cmd.Parameters.AddWithValue("@PC_PFL", GetCellValue(dbValueRowIndex, "PC_PFL"));
+        //                cmd.Parameters.AddWithValue("@PC_PFL_SUP", GetCellValue(suppPriceRowIndex, "PC_PFL"));
+        //                cmd.Parameters.AddWithValue("@PC_PFL_USRINT", GetCellValue(promoValueRowIndex, "PC_PFL"));
+        //                cmd.Parameters.AddWithValue("@PC_RP", GetCellValue(dbValueRowIndex, "PC_RP"));
+        //                cmd.Parameters.AddWithValue("@PC_RP_SUP", GetCellValue(suppPriceRowIndex, "PC_RP"));
+        //                cmd.Parameters.AddWithValue("@PC_RP_USRINT", GetCellValue(promoValueRowIndex, "PC_RP"));
+        //                cmd.Parameters.AddWithValue("@PC_PA", GetCellValue(dbValueRowIndex, "PC_PA"));
+        //                cmd.Parameters.AddWithValue("@PC_PA_SUP", GetCellValue(suppPriceRowIndex, "PC_PA"));
+        //                cmd.Parameters.AddWithValue("@PC_PA_USRINT", GetCellValue(promoValueRowIndex, "PC_PA"));
+        //                cmd.Parameters.AddWithValue("@PC_PLSRP", GetCellValue(dbValueRowIndex, "PC_PLSRP"));
+        //                cmd.Parameters.AddWithValue("@PC_PLSRP_SUP", GetCellValue(suppPriceRowIndex, "PC_PLSRP"));
+        //                cmd.Parameters.AddWithValue("@PC_PLSRP_USRINT", GetCellValue(promoValueRowIndex, "PC_PLSRP"));
+        //                cmd.Parameters.AddWithValue("@PC_LSRP", GetCellValue(dbValueRowIndex, "PC_LSRP"));
+        //                cmd.Parameters.AddWithValue("@PC_LSRP_SUP", GetCellValue(suppPriceRowIndex, "PC_LSRP"));
+        //                cmd.Parameters.AddWithValue("@PC_LSRP_USRINT", GetCellValue(promoValueRowIndex, "PC_LSRP"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2LP", GetCellValue(dbValueRowIndex, "PC_PPA2LP"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2LP_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2LP"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2LP_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2LP"));
+        //                cmd.Parameters.AddWithValue("@PC_LP", GetCellValue(dbValueRowIndex, "PC_LP"));
+        //                cmd.Parameters.AddWithValue("@PC_LP_SUP", GetCellValue(suppPriceRowIndex, "PC_LP"));
+        //                cmd.Parameters.AddWithValue("@PC_LP_USRINT", GetCellValue(promoValueRowIndex, "PC_LP"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2WA", GetCellValue(dbValueRowIndex, "PC_PPA2WA"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2WA_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2WA"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2WA_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2WA"));
+        //                cmd.Parameters.AddWithValue("@PC_WA", GetCellValue(dbValueRowIndex, "PC_WA"));
+        //                cmd.Parameters.AddWithValue("@PC_WA_SUP", GetCellValue(suppPriceRowIndex, "PC_WA"));
+        //                cmd.Parameters.AddWithValue("@PC_WA_USRINT", GetCellValue(promoValueRowIndex, "PC_WA"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2WB", GetCellValue(dbValueRowIndex, "PC_PPA2WB"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2WB_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2WB"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2WB_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2WB"));
+        //                cmd.Parameters.AddWithValue("@PC_WB", GetCellValue(dbValueRowIndex, "PC_WB"));
+        //                cmd.Parameters.AddWithValue("@PC_WB_SUP", GetCellValue(suppPriceRowIndex, "PC_WB"));
+        //                cmd.Parameters.AddWithValue("@PC_WB_USRINT", GetCellValue(promoValueRowIndex, "PC_WB"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2WC", GetCellValue(dbValueRowIndex, "PC_PPA2WC"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2WC_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2WC"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2WC_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2WC"));
+        //                cmd.Parameters.AddWithValue("@PC_WC", GetCellValue(dbValueRowIndex, "PC_WC"));
+        //                cmd.Parameters.AddWithValue("@PC_WC_SUP", GetCellValue(suppPriceRowIndex, "PC_WC"));
+        //                cmd.Parameters.AddWithValue("@PC_WC_USRINT", GetCellValue(promoValueRowIndex, "PC_WC"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2LC", GetCellValue(dbValueRowIndex, "PC_PPA2LC"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2LC_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2LC"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2LC_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2LC"));
+        //                cmd.Parameters.AddWithValue("@PC_LC", GetCellValue(dbValueRowIndex, "PC_LC"));
+        //                cmd.Parameters.AddWithValue("@PC_LC_SUP", GetCellValue(suppPriceRowIndex, "PC_LC"));
+        //                cmd.Parameters.AddWithValue("@PC_LC_USRINT", GetCellValue(promoValueRowIndex, "PC_LC"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2PG", GetCellValue(dbValueRowIndex, "PC_PPA2PG"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2PG_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2PG"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2PG_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2PG"));
+        //                cmd.Parameters.AddWithValue("@PC_PG", GetCellValue(dbValueRowIndex, "PC_PG"));
+        //                cmd.Parameters.AddWithValue("@PC_PG_SUP", GetCellValue(suppPriceRowIndex, "PC_PG"));
+        //                cmd.Parameters.AddWithValue("@PC_PG_USRINT", GetCellValue(promoValueRowIndex, "PC_PG"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2PH", GetCellValue(dbValueRowIndex, "PC_PPA2PH"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2PH_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2PH"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2PH_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2PH"));
+        //                cmd.Parameters.AddWithValue("@PC_PH", GetCellValue(dbValueRowIndex, "PC_PH"));
+        //                cmd.Parameters.AddWithValue("@PC_PH_SUP", GetCellValue(suppPriceRowIndex, "PC_PH"));
+        //                cmd.Parameters.AddWithValue("@PC_PH_USRINT", GetCellValue(promoValueRowIndex, "PC_PH"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2PB", GetCellValue(dbValueRowIndex, "PC_PPA2PB"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2PB_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2PB"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2PB_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2PB"));
+        //                cmd.Parameters.AddWithValue("@PC_PB", GetCellValue(dbValueRowIndex, "PC_PB"));
+        //                cmd.Parameters.AddWithValue("@PC_PB_SUP", GetCellValue(suppPriceRowIndex, "PC_PB"));
+        //                cmd.Parameters.AddWithValue("@PC_PB_USRINT", GetCellValue(promoValueRowIndex, "PC_PB"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2PD", GetCellValue(dbValueRowIndex, "PC_PPA2PD"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2PD_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2PD"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2P_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2PD"));
+        //                cmd.Parameters.AddWithValue("@PC_PD", GetCellValue(dbValueRowIndex, "PC_PD"));
+        //                cmd.Parameters.AddWithValue("@PC_PD_SUP", GetCellValue(suppPriceRowIndex, "PC_PD"));
+        //                cmd.Parameters.AddWithValue("@PC_PD_USRINT", GetCellValue(promoValueRowIndex, "PC_PD"));
+        //                cmd.Parameters.AddWithValue("@LPP_AMT", GetCellValue(dbValueRowIndex, "LPP_AMT"));
+        //                cmd.Parameters.AddWithValue("@LPP_AMT_SUP", GetCellValue(suppPriceRowIndex, "LPP_AMT"));
+        //                cmd.Parameters.AddWithValue("@LPP_AMT_USRINT", GetCellValue(promoValueRowIndex, "LPP_AMT"));
+        //                cmd.Parameters.AddWithValue("@LPP_REF", GetCellValue(dbValueRowIndex, "LPP_REF"));
+        //                cmd.Parameters.AddWithValue("@LPP_REF_SUP", GetCellValue(suppPriceRowIndex, "LPP_REF"));
+        //                cmd.Parameters.AddWithValue("@LPP_REF_USRINT", GetCellValue(promoValueRowIndex, "LPP_REF"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2PC", GetCellValue(dbValueRowIndex, "PC_PPA2PC"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2PC_SUP", GetCellValue(suppPriceRowIndex, "PC_PPA2PC"));
+        //                cmd.Parameters.AddWithValue("@PC_PPA2PC_USRINT", GetCellValue(promoValueRowIndex, "PC_PPA2PC"));
+        //                cmd.Parameters.AddWithValue("@PC_PC", GetCellValue(dbValueRowIndex, "PC_PC"));
+        //                cmd.Parameters.AddWithValue("@PC_PC_SUP", GetCellValue(suppPriceRowIndex, "PC_PC"));
+        //                cmd.Parameters.AddWithValue("@PC_PC_USRINT", GetCellValue(promoValueRowIndex, "PC_PC"));
+        //                cmd.Parameters.AddWithValue("@Claim1", GetCellValue(suppPriceRowIndex, "Claim1"));
+        //                cmd.Parameters.AddWithValue("@Claim2", GetCellValue(promoValueRowIndex, "Claim2"));
+        //                cmd.Parameters.AddWithValue("@ClaimK1", GetCellValue(suppPriceRowIndex, "ClaimK1"));
+        //                cmd.Parameters.AddWithValue("@ClaimK2", GetCellValue(promoValueRowIndex, "ClaimK2"));
+        //                cmd.Parameters.AddWithValue("@Remarks1", GetCellValue(suppPriceRowIndex, "Remarks1"));
+        //                cmd.Parameters.AddWithValue("@Remarks2", GetCellValue(promoValueRowIndex, "Remarks2"));
 
 
 
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-                MessageBox.Show($"Data for {lpc_dgv_dbvalue.Rows.Count / 3} product(s) inserted successfully with DocID: {commonDocId}.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        //                cmd.ExecuteNonQuery();
+        //            }
+        //        }
+        //        MessageBox.Show($"Data for {lpc_dgv_dbvalue.Rows.Count / 3} product(s) inserted successfully with DocID: {commonDocId}.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                lpc_dgv_dbvalue.Rows.Clear();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error Inserting: " + ex.Message, "Insertion Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
+        //        lpc_dgv_dbvalue.Rows.Clear();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("Error Inserting: " + ex.Message, "Insertion Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+        //    finally
+        //    {
 
-                lpc_dtp_startdate.Value = DateTime.Now; // Reset to current date/time
-                lpc_dtp_startdate.Checked = true; // Reset to default permanent selection
-                lpc_tb_promotitle.Clear();
-                lpc_tb_supplier.Clear();
-                if (connection.State == ConnectionState.Open)
-                {
+        //        lpc_dtp_startdate.Value = DateTime.Now; // Reset to current date/time
+        //        lpc_dtp_startdate.Checked = true; // Reset to default permanent selection
+        //        lpc_tb_promotitle.Clear();
+        //        lpc_tb_supplier.Clear();
+        //        if (connection.State == ConnectionState.Open)
+        //        {
 
-                    connection.Close();
-                }
-            }
-        }
+        //            connection.Close();
+        //        }
+        //    }
+        //}
         
         private void UpdateDependentValues(int rowIndex, string editedColumnName)
         {
@@ -609,6 +605,264 @@ namespace LogPriceChange0._1
             UpdateDependentValues(e.RowIndex, columnName);
         }
 
-       
+        //************************************************Upsert*******************************************************************************************************************
+        #region
+        public void InsertData()
+        {
+            if (lpc_tb_promotitle.Text.Trim() == "")
+            {
+                MessageBox.Show("Please enter a Promo Name.");
+                return;
+            }
+            string promoName = lpc_tb_promotitle.Text.Trim();
+            string promoType = lpc_rbtn_permanent.Checked ? "Permanent"
+                             : lpc_rbtn_temporary.Checked ? "Temporary"
+                             : null;
+            if (promoType == null)
+            {
+                MessageBox.Show("Please select a Promotion Type.");
+                return;
+            }
+            DateTime startDate = lpc_dtp_startdate.Value;
+            DateTime endDate = lpc_dtp_enddate.Value;
+            string loggedUser = UserSession.Username;
+            string promoDate = DateTime.Now.ToString("yyyyMM");
+            int docIdSequence = 1;
+            connection.Open();
+            using (var maxCmd = new OleDbCommand("SELECT MAX(CInt(Mid(DocID,8))) FROM tbl_logpricechange WHERE DocID LIKE ?", connection))
+            {
+                maxCmd.Parameters.AddWithValue("?", promoDate + "-%");
+                object res = maxCmd.ExecuteScalar();
+                if (res != null && res != DBNull.Value && int.TryParse(res.ToString(), out int mx))
+                    docIdSequence = mx + 1;
+            }
+            string formattedSeq = docIdSequence.ToString("D6");
+            string commonDocId = $"{promoDate}-{formattedSeq}";
+
+            int totalRows = lpc_dgv_dbvalue.Rows.Count;
+            if (totalRows < 3 || totalRows % 3 != 0)
+            {
+                MessageBox.Show("Grid must contain rows in exact multiples of 3.");
+                connection.Close();
+                return;
+            }
+
+            using (var transaction = connection.BeginTransaction())
+            {
+                try
+                {
+                    string insQuery = "INSERT INTO tbl_logpricechange (DocID,CreatedBy,  CreatedDate, TDate, Supplier, PromoTitle, StartDate, EndDate, Promotype, PROD_C, PROD_N, FREE, FREE_SUP, FREE_USRINT, PLFOB, PLFOB_SUP, PLFOB_USRINT, NWF, NWF_SUP, NWF_USRINT, NWFR, PC_PF, PC_PF_SUP, PC_PF_USRINT, PC_PFL, PC_PFL_SUP, PC_PFL_USRINT, PC_RP, PC_RP_SUP, PC_RP_USRINT, PC_PA, PC_PA_SUP, PC_PA_USRINT, PC_PLSRP, PC_PLSRP_SUP, PC_PLSRP_USRINT, PC_LSRP, PC_LSRP_SUP, PC_LSRP_USRINT, PC_PPA2LP, PC_PPA2LP_SUP, PC_PPA2LP_USRINT, PC_LP, PC_LP_SUP, PC_LP_USRINT, PC_PPA2WA, PC_PPA2WA_SUP, PC_PPA2WA_USRINT, PC_WA, PC_WA_SUP, PC_WA_USRINT, PC_PPA2WB, PC_PPA2WB_SUP, PC_PPA2WB_USRINT, PC_WB, PC_WB_SUP, PC_WB_USRINT, PC_PPA2WC, PC_PPA2WC_SUP, PC_PPA2WC_USRINT, PC_WC, PC_WC_SUP, PC_WC_USRINT, PC_PPA2LC, PC_PPA2LC_SUP, PC_PPA2LC_USRINT, PC_LC, PC_LC_SUP, PC_LC_USRINT, PC_PPA2PG, PC_PPA2PG_SUP, PC_PPA2PG_USRINT, PC_PG, PC_PG_SUP, PC_PG_USRINT, PC_PPA2PH, PC_PPA2PH_SUP, PC_PPA2PH_USRINT, PC_PH, PC_PH_SUP, PC_PH_USRINT, PC_PPA2PB, PC_PPA2PB_SUP, PC_PPA2PB_USRINT, PC_PB, PC_PB_SUP, PC_PB_USRINT, PC_PPA2PD, PC_PPA2PD_SUP, PC_PPA2P_USRINT, PC_PD, PC_PD_SUP, PC_PD_USRINT, LPP_AMT, LPP_AMT_SUP, LPP_AMT_USRINT, LPP_REF, LPP_REF_SUP, LPP_REF_USRINT, PC_PPA2PC, PC_PPA2PC_SUP, PC_PPA2PC_USRINT, PC_PC, PC_PC_SUP, PC_PC_USRINT, Claim1, Claim2, ClaimK1, ClaimK2, Remarks1, Remarks2) " +
+                                                              "VALUES ( @DocID, @CreatedBy, @CreatedDate, @TDate,@Supplier, @PromoTitle, @StartDate, @EndDate, @Promotype,  @PROD_C,@PROD_N,@FREE,@FREE_SUP,@FREE_USRINT,@PLFOB,@PLFOB_SUP,@PLFOB_USRINT,@NWF,@NWF_SUP,@NWF_USRINT,@NWFR,@PC_PF,@PC_PF_SUP,@PC_PF_USRINT,@PC_PFL,@PC_PFL_SUP,@PC_PFL_USRINT,@PC_RP,@PC_RP_SUP,@PC_RP_USRINT,@PC_PA,@PC_PA_SUP,@PC_PA_USRINT,@PC_PLSRP,@PC_PLSRP_SUP,@PC_PLSRP_USRINT,@PC_LSRP,@PC_LSRP_SUP,@PC_LSRP_USRINT,@PC_PPA2LP,@PC_PPA2LP_SUP,@PC_PPA2LP_USRINT,@PC_LP,@PC_LP_SUP,@PC_LP_USRINT,@PC_PPA2WA,@PC_PPA2WA_SUP,@PC_PPA2WA_USRINT,@PC_WA,@PC_WA_SUP,@PC_WA_USRINT,@PC_PPA2WB,@PC_PPA2WB_SUP,@PC_PPA2WB_USRINT,@PC_WB,@PC_WB_SUP,@PC_WB_USRINT,@PC_PPA2WC,@PC_PPA2WC_SUP,@PC_PPA2WC_USRINT,@PC_WC,@PC_WC_SUP,@PC_WC_USRINT,@PC_PPA2LC,@PC_PPA2LC_SUP,@PC_PPA2LC_USRINT,@PC_LC,@PC_LC_SUP,@PC_LC_USRINT,@PC_PPA2PG,@PC_PPA2PG_SUP,@PC_PPA2PG_USRINT,@PC_PG,@PC_PG_SUP,@PC_PG_USRINT,@PC_PPA2PH,@PC_PPA2PH_SUP,@PC_PPA2PH_USRINT,@PC_PH,@PC_PH_SUP,@PC_PH_USRINT,@PC_PPA2PB,@PC_PPA2PB_SUP,@PC_PPA2PB_USRINT,@PC_PB,@PC_PB_SUP,@PC_PB_USRINT,@PC_PPA2PD,@PC_PPA2PD_SUP,@PC_PPA2P_USRINT,@PC_PD,@PC_PD_SUP,@PC_PD_USRINT,@LPP_AMT,@LPP_AMT_SUP,@LPP_AMT_USRINT,@LPP_REF,@LPP_REF_SUP,@LPP_REF_USRINT,@PC_PPA2PC,@PC_PPA2PC_SUP,@PC_PPA2PC_USRINT,@PC_PC,@PC_PC_SUP,@PC_PC_USRINT,@Claim1,@Claim2,@ClaimK1,@ClaimK2,@Remarks1,@Remarks2)";
+                    for (int i = 0; i < totalRows; i += 3)
+                    {
+                        int dbRow = i, suppRow = i + 1, promoRow = i + 2;
+                        string currentPROD_C = GetCellValue(dbRow, "PROD_C")?.ToString();
+
+                        // case1: both PROD_C + PromoTitle exist?
+                        using (var cmd = new OleDbCommand("SELECT COUNT(*) FROM tbl_logpricechange WHERE PROD_C = ? AND PromoTitle = ?", connection, transaction))
+                        {
+                            cmd.Parameters.AddWithValue("?", currentPROD_C);
+                            cmd.Parameters.AddWithValue("?", promoName);
+                            int both = Convert.ToInt32(cmd.ExecuteScalar());
+                            if (both > 0)
+                            {
+                                // UPDATE
+                                using (var upd = new OleDbCommand(
+                                    "UPDATE tbl_logpricechange SET CreatedBy = ?, CreatedDate = ?, TDate = ?, Supplier = ?, StartDate = ?, EndDate = ?, PromoType = ?, FREE = ?, FREE_SUP = ?, FREE_USRINT = ? WHERE PROD_C = ? AND PromoTitle = ?",
+                                    connection, transaction))
+                                {
+                                    upd.Parameters.AddWithValue("?", loggedUser);
+                                    upd.Parameters.AddWithValue("?", DateTime.Now);
+                                    upd.Parameters.AddWithValue("?", lpc_dtp_memodate.Value.Date);
+                                    upd.Parameters.AddWithValue("?", string.IsNullOrEmpty(lpc_tb_supplier.Text) ? (object)DBNull.Value : lpc_tb_supplier.Text);
+                                    upd.Parameters.AddWithValue("?", startDate);
+                                    upd.Parameters.AddWithValue("?", promoType == "Permanent" ? (object)DBNull.Value : (object)endDate);
+                                    upd.Parameters.AddWithValue("?", promoType);
+                                    upd.Parameters.AddWithValue("?", GetCellValue(dbRow, "FREE"));
+                                    upd.Parameters.AddWithValue("?", GetCellValue(suppRow, "FREE"));
+                                    upd.Parameters.AddWithValue("?", GetCellValue(promoRow, "FREE"));
+                                    upd.Parameters.AddWithValue("?", currentPROD_C);
+                                    upd.Parameters.AddWithValue("?", promoName);
+                                    upd.ExecuteNonQuery();
+                                }
+                                continue;
+                            }
+                        }
+
+                        // case2 or case3
+                        string docIdToUse = commonDocId;
+                        using (var cmd2 = new OleDbCommand("SELECT TOP 1 DocID FROM tbl_logpricechange WHERE PromoTitle = ?", connection, transaction))
+                        {
+                            cmd2.Parameters.AddWithValue("?", promoName);
+                            object f = cmd2.ExecuteScalar();
+                            if (f != null) docIdToUse = f.ToString();
+                        }
+
+                        // INSERT with correct docId
+                        InsertProductRow(connection, transaction, docIdToUse, dbRow, suppRow, promoRow, commonDocId, promoName, promoType, startDate, endDate, loggedUser, insQuery);
+
+                    }
+
+                    transaction.Commit();
+                    MessageBox.Show($"Inserted/Updated successfully under DocID: {commonDocId}");
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    MessageBox.Show("Error: " + ex.Message);
+                }
+            }
+
+            connection.Close();
+            // Reset controls
+            lpc_dgv_dbvalue.Rows.Clear();
+            lpc_tb_promotitle.Clear();
+            lpc_tb_supplier.Clear();
+            lpc_dtp_startdate.Value = DateTime.Now;
+            lpc_dtp_startdate.Checked = true;
+        }
+
+        // Helper to extract value safely
+        private object GetCellValue(int row, string col)
+        {
+            var cell = lpc_dgv_dbvalue.Rows[row].Cells[col];
+            if (cell == null || cell.Value == null || (cell.Value is string s && s.Trim() == ""))
+                return DBNull.Value;
+            return cell.Value;
+        }
+
+        // Helper to perform insert for a product row
+        private void InsertProductRow(OleDbConnection conn, OleDbTransaction tx,
+        string docIdToUse, int dbRow, int suppRow, int promoRow,
+        string commonDocId, string promoName, string promoType,
+        DateTime startDate, DateTime endDate, string loggedUser,
+        string insQuery)
+        {
+            using (var cmd = new OleDbCommand(insQuery, conn, tx))
+            {
+                cmd.Parameters.AddWithValue("@DocID", docIdToUse);
+                cmd.Parameters.AddWithValue("@CreatedBy", loggedUser);
+                cmd.Parameters.AddWithValue("@CreatedDate", DateTime.Now);
+                cmd.Parameters.AddWithValue("@TDate", lpc_dtp_memodate.Value.Date);
+                cmd.Parameters.AddWithValue("@Supplier", string.IsNullOrEmpty(lpc_tb_supplier.Text) ? (object)DBNull.Value : lpc_tb_supplier.Text);
+                cmd.Parameters.AddWithValue("@PromoTitle", promoName);
+                cmd.Parameters.AddWithValue("@StartDate", startDate);
+                cmd.Parameters.AddWithValue("@EndDate", promoType == "Permanent" ? (object)DBNull.Value : (object)endDate);
+                cmd.Parameters.AddWithValue("@PromoType", promoType);
+
+                cmd.Parameters.AddWithValue("@PROD_C", GetCellValue(dbRow, "PROD_C"));
+                cmd.Parameters.AddWithValue("@PROD_N", GetCellValue(dbRow, "PROD_N"));
+                cmd.Parameters.AddWithValue("@FREE", GetCellValue(dbRow, "FREE")); // Assuming SFREE is actually FREE in the source DGV
+                cmd.Parameters.AddWithValue("@FREE_SUP", GetCellValue(suppRow, "FREE"));
+                cmd.Parameters.AddWithValue("@FREE_USRINT", GetCellValue(promoRow, "FREE"));
+                cmd.Parameters.AddWithValue("@PLFOB", GetCellValue(dbRow, "PLFOB"));
+                cmd.Parameters.AddWithValue("@PLFOB_SUP", GetCellValue(suppRow, "PLFOB"));
+                cmd.Parameters.AddWithValue("@PLFOB_USRINT", GetCellValue(promoRow, "PLFOB"));
+                cmd.Parameters.AddWithValue("@NWF", GetCellValue(dbRow, "NWF"));
+                cmd.Parameters.AddWithValue("@NWF_SUP", GetCellValue(suppRow, "NWF"));
+                cmd.Parameters.AddWithValue("@NWF_USRINT", GetCellValue(promoRow, "NWF"));
+                cmd.Parameters.AddWithValue("@NWFR", GetCellValue(dbRow, "NWFR"));
+                cmd.Parameters.AddWithValue("@PC_PF", GetCellValue(dbRow, "PC_PF"));
+                cmd.Parameters.AddWithValue("@PC_PF_SUP", GetCellValue(suppRow, "PC_PF"));
+                cmd.Parameters.AddWithValue("@PC_PF_USRINT", GetCellValue(promoRow, "PC_PF"));
+                cmd.Parameters.AddWithValue("@PC_PFL", GetCellValue(dbRow, "PC_PFL"));
+                cmd.Parameters.AddWithValue("@PC_PFL_SUP", GetCellValue(suppRow, "PC_PFL"));
+                cmd.Parameters.AddWithValue("@PC_PFL_USRINT", GetCellValue(promoRow, "PC_PFL"));
+                cmd.Parameters.AddWithValue("@PC_RP", GetCellValue(dbRow, "PC_RP"));
+                cmd.Parameters.AddWithValue("@PC_RP_SUP", GetCellValue(suppRow, "PC_RP"));
+                cmd.Parameters.AddWithValue("@PC_RP_USRINT", GetCellValue(promoRow, "PC_RP"));
+                cmd.Parameters.AddWithValue("@PC_PA", GetCellValue(dbRow, "PC_PA"));
+                cmd.Parameters.AddWithValue("@PC_PA_SUP", GetCellValue(suppRow, "PC_PA"));
+                cmd.Parameters.AddWithValue("@PC_PA_USRINT", GetCellValue(promoRow, "PC_PA"));
+                cmd.Parameters.AddWithValue("@PC_PLSRP", GetCellValue(dbRow, "PC_PLSRP"));
+                cmd.Parameters.AddWithValue("@PC_PLSRP_SUP", GetCellValue(suppRow, "PC_PLSRP"));
+                cmd.Parameters.AddWithValue("@PC_PLSRP_USRINT", GetCellValue(promoRow, "PC_PLSRP"));
+                cmd.Parameters.AddWithValue("@PC_LSRP", GetCellValue(dbRow, "PC_LSRP"));
+                cmd.Parameters.AddWithValue("@PC_LSRP_SUP", GetCellValue(suppRow, "PC_LSRP"));
+                cmd.Parameters.AddWithValue("@PC_LSRP_USRINT", GetCellValue(promoRow, "PC_LSRP"));
+                cmd.Parameters.AddWithValue("@PC_PPA2LP", GetCellValue(dbRow, "PC_PPA2LP"));
+                cmd.Parameters.AddWithValue("@PC_PPA2LP_SUP", GetCellValue(suppRow, "PC_PPA2LP"));
+                cmd.Parameters.AddWithValue("@PC_PPA2LP_USRINT", GetCellValue(promoRow, "PC_PPA2LP"));
+                cmd.Parameters.AddWithValue("@PC_LP", GetCellValue(dbRow, "PC_LP"));
+                cmd.Parameters.AddWithValue("@PC_LP_SUP", GetCellValue(suppRow, "PC_LP"));
+                cmd.Parameters.AddWithValue("@PC_LP_USRINT", GetCellValue(promoRow, "PC_LP"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WA", GetCellValue(dbRow, "PC_PPA2WA"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WA_SUP", GetCellValue(suppRow, "PC_PPA2WA"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WA_USRINT", GetCellValue(promoRow, "PC_PPA2WA"));
+                cmd.Parameters.AddWithValue("@PC_WA", GetCellValue(dbRow, "PC_WA"));
+                cmd.Parameters.AddWithValue("@PC_WA_SUP", GetCellValue(suppRow, "PC_WA"));
+                cmd.Parameters.AddWithValue("@PC_WA_USRINT", GetCellValue(promoRow, "PC_WA"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WB", GetCellValue(dbRow, "PC_PPA2WB"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WB_SUP", GetCellValue(suppRow, "PC_PPA2WB"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WB_USRINT", GetCellValue(promoRow, "PC_PPA2WB"));
+                cmd.Parameters.AddWithValue("@PC_WB", GetCellValue(dbRow, "PC_WB"));
+                cmd.Parameters.AddWithValue("@PC_WB_SUP", GetCellValue(suppRow, "PC_WB"));
+                cmd.Parameters.AddWithValue("@PC_WB_USRINT", GetCellValue(promoRow, "PC_WB"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WC", GetCellValue(dbRow, "PC_PPA2WC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WC_SUP", GetCellValue(suppRow, "PC_PPA2WC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2WC_USRINT", GetCellValue(promoRow, "PC_PPA2WC"));
+                cmd.Parameters.AddWithValue("@PC_WC", GetCellValue(dbRow, "PC_WC"));
+                cmd.Parameters.AddWithValue("@PC_WC_SUP", GetCellValue(suppRow, "PC_WC"));
+                cmd.Parameters.AddWithValue("@PC_WC_USRINT", GetCellValue(promoRow, "PC_WC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2LC", GetCellValue(dbRow, "PC_PPA2LC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2LC_SUP", GetCellValue(suppRow, "PC_PPA2LC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2LC_USRINT", GetCellValue(promoRow, "PC_PPA2LC"));
+                cmd.Parameters.AddWithValue("@PC_LC", GetCellValue(dbRow, "PC_LC"));
+                cmd.Parameters.AddWithValue("@PC_LC_SUP", GetCellValue(suppRow, "PC_LC"));
+                cmd.Parameters.AddWithValue("@PC_LC_USRINT", GetCellValue(promoRow, "PC_LC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PG", GetCellValue(dbRow, "PC_PPA2PG"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PG_SUP", GetCellValue(suppRow, "PC_PPA2PG"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PG_USRINT", GetCellValue(promoRow, "PC_PPA2PG"));
+                cmd.Parameters.AddWithValue("@PC_PG", GetCellValue(dbRow, "PC_PG"));
+                cmd.Parameters.AddWithValue("@PC_PG_SUP", GetCellValue(suppRow, "PC_PG"));
+                cmd.Parameters.AddWithValue("@PC_PG_USRINT", GetCellValue(promoRow, "PC_PG"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PH", GetCellValue(dbRow, "PC_PPA2PH"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PH_SUP", GetCellValue(suppRow, "PC_PPA2PH"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PH_USRINT", GetCellValue(promoRow, "PC_PPA2PH"));
+                cmd.Parameters.AddWithValue("@PC_PH", GetCellValue(dbRow, "PC_PH"));
+                cmd.Parameters.AddWithValue("@PC_PH_SUP", GetCellValue(suppRow, "PC_PH"));
+                cmd.Parameters.AddWithValue("@PC_PH_USRINT", GetCellValue(promoRow, "PC_PH"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PB", GetCellValue(dbRow, "PC_PPA2PB"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PB_SUP", GetCellValue(suppRow, "PC_PPA2PB"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PB_USRINT", GetCellValue(promoRow, "PC_PPA2PB"));
+                cmd.Parameters.AddWithValue("@PC_PB", GetCellValue(dbRow, "PC_PB"));
+                cmd.Parameters.AddWithValue("@PC_PB_SUP", GetCellValue(suppRow, "PC_PB"));
+                cmd.Parameters.AddWithValue("@PC_PB_USRINT", GetCellValue(promoRow, "PC_PB"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PD", GetCellValue(dbRow, "PC_PPA2PD"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PD_SUP", GetCellValue(suppRow, "PC_PPA2PD"));
+                cmd.Parameters.AddWithValue("@PC_PPA2P_USRINT", GetCellValue(promoRow, "PC_PPA2PD"));
+                cmd.Parameters.AddWithValue("@PC_PD", GetCellValue(dbRow, "PC_PD"));
+                cmd.Parameters.AddWithValue("@PC_PD_SUP", GetCellValue(suppRow, "PC_PD"));
+                cmd.Parameters.AddWithValue("@PC_PD_USRINT", GetCellValue(promoRow, "PC_PD"));
+                cmd.Parameters.AddWithValue("@LPP_AMT", GetCellValue(dbRow, "LPP_AMT"));
+                cmd.Parameters.AddWithValue("@LPP_AMT_SUP", GetCellValue(suppRow, "LPP_AMT"));
+                cmd.Parameters.AddWithValue("@LPP_AMT_USRINT", GetCellValue(promoRow, "LPP_AMT"));
+                cmd.Parameters.AddWithValue("@LPP_REF", GetCellValue(dbRow, "LPP_REF"));
+                cmd.Parameters.AddWithValue("@LPP_REF_SUP", GetCellValue(suppRow, "LPP_REF"));
+                cmd.Parameters.AddWithValue("@LPP_REF_USRINT", GetCellValue(promoRow, "LPP_REF"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PC", GetCellValue(dbRow, "PC_PPA2PC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PC_SUP", GetCellValue(suppRow, "PC_PPA2PC"));
+                cmd.Parameters.AddWithValue("@PC_PPA2PC_USRINT", GetCellValue(promoRow, "PC_PPA2PC"));
+                cmd.Parameters.AddWithValue("@PC_PC", GetCellValue(dbRow, "PC_PC"));
+                cmd.Parameters.AddWithValue("@PC_PC_SUP", GetCellValue(suppRow, "PC_PC"));
+                cmd.Parameters.AddWithValue("@PC_PC_USRINT", GetCellValue(promoRow, "PC_PC"));
+                cmd.Parameters.AddWithValue("@Claim1", GetCellValue(suppRow, "Claim1"));
+                cmd.Parameters.AddWithValue("@Claim2", GetCellValue(promoRow, "Claim2"));
+                cmd.Parameters.AddWithValue("@ClaimK1", GetCellValue(suppRow, "ClaimK1"));
+                cmd.Parameters.AddWithValue("@ClaimK2", GetCellValue(promoRow, "ClaimK2"));
+                cmd.Parameters.AddWithValue("@Remarks1", GetCellValue(suppRow, "Remarks1"));
+                cmd.Parameters.AddWithValue("@Remarks2", GetCellValue(promoRow, "Remarks2"));
+
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+
+
+
+
+        #endregion
+
+
     }
 }
