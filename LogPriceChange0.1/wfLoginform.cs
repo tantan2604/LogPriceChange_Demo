@@ -14,6 +14,8 @@ namespace LogPriceChange0._1
 {
     public partial class wfLoginform : Form
     {
+        public string LoggedInUsername { get; private set; }
+        public string LoggedInUserRole { get; private set; }
         OleDbConnection conn = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\VisualStudio\LogPriceChange0.1\LogPriceChange0.1\pricematrix.accdb;");
         ctrLogPriceChange ctrLogPriceChange = new ctrLogPriceChange();
         
@@ -36,13 +38,9 @@ namespace LogPriceChange0._1
             try
             {
                 conn.Open();
-
-                // Case-sensitive comparison
-                string query = "SELECT * FROM tbl_employee WHERE StrComp(EmployeeUsername, ?, 0) = 0 AND StrComp(EmployeePassword, ?, 0) = 0";
-
+                string query = "SELECT Lastname, Firstname, EmployeeRole FROM tbl_employee WHERE Username = ? AND EmployeePassword = ?";
                 using (OleDbCommand cmd = new OleDbCommand(query, conn))
                 {
-                    // Leave input as-is — no .ToLower() or case normalization
                     cmd.Parameters.AddWithValue("?", logf_tb_username.Text.Trim());
                     cmd.Parameters.AddWithValue("?", logf_tb_password.Text);
 
@@ -51,14 +49,11 @@ namespace LogPriceChange0._1
                         if (dr.Read())
                         {
 
-                            this.Hide();
-                            MainForm mainForm = new MainForm();
-                            string username = dr["Lastname"].ToString() + " " + dr["Firstname"].ToString();
-                            mainForm.dashb_lbl_userlogged.Text = username;
-                            UserSession.Username = username;
-
-                            mainForm.Show();
+                            LoggedInUsername = dr["Lastname"]?.ToString() + " " + dr["Firstname"]?.ToString();
+                            LoggedInUserRole = dr["EmployeeRole"]?.ToString() ?? string.Empty;
+                            UserSession.Username = LoggedInUsername;
                             this.DialogResult = DialogResult.OK;
+                            this.Close();
                         }
                         else
                         {
@@ -73,11 +68,36 @@ namespace LogPriceChange0._1
             }
             finally
             {
-                conn.Close();
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
             }
         }
+        private void NavigateToFormByRole(string username, string role)
+        {
+            this.Hide();
+            Form nextForm = null;
 
+            switch (role.ToLower()) // Compare the role in lowercase for robustness.
+            {
+                case "admin":
+                    nextForm = new AdminForm(username); // Pass the username to the Admin form.
+                    break;
+                case "user":
+                    nextForm = new MainForm(username); // Pass the username to the Employee form.
+                    break;
+                default:
+                    MessageBox.Show("Unknown user role. Access denied.");
+                    this.Show(); // Show the login form again for another attempt.
+                    return;
+            }
 
+            if (nextForm != null)
+            {
+                nextForm.Show();
+            }
+        }
         private void TogglePasswordVisibility(object sender, EventArgs e)
         {
             

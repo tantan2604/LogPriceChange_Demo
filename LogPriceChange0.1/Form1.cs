@@ -7,17 +7,21 @@ namespace LogPriceChange0._1
 {
     public partial class MainForm : Form
     {
-        public MainForm()
-        {
-
+        private string _username;
+        public MainForm(string username)
+        { 
             InitializeComponent();
-
+            _username = username;
+            this.Text = "Employee Dashboard";
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            dashb_lbl_userlogged.Text = $"{UserSession.Username}!";
-            
+            if (this.Controls.Find("dashb_lbl_userlogged", true).Length > 0)
+            {
+                Label userLabel = (Label)this.Controls.Find("dashb_lbl_userlogged", true)[0];
+                userLabel.Text = _username;
+            }
         }
 
         // Event handlers for button clicks to load different user controls
