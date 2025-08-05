@@ -22,7 +22,7 @@ namespace LogPriceChange0._1
     public partial class ctrLogPriceChange : UserControl
     {
         string primaryKeyColumn = "ID";
-        OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\VisualStudio\LogPriceChange0.1\LogPriceChange0.1\pricematrix.accdb;");
+        OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;");
         DataTable dataTable;
         OleDbDataAdapter dataAdapter;
         private static Dictionary<string, int> lastNumbers = new Dictionary<string, int>();

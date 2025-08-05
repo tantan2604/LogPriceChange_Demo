@@ -36,51 +36,70 @@ namespace LogPriceChange0._1
         }
         private void logf_btn_login_Click(object sender, EventArgs e)
         {
-            bool loginSuccessful = false;
-            try
+            // Make sure to use a local connection object within the method
+            using (OleDbConnection conn = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\VisualStudio\LogPriceChange0.1\LogPriceChange0.1\pricematrix.accdb;"))
             {
-                conn.Open();
-                string query = "SELECT Lastname, Firstname, EmployeeRole FROM tbl_employee WHERE Username = ? AND EmployeePassword = ?";
-                using (OleDbCommand cmd = new OleDbCommand(query, conn))
+                try
                 {
-                    cmd.Parameters.AddWithValue("?", logf_tb_username.Text.Trim());
-                    cmd.Parameters.AddWithValue("?", logf_tb_password.Text);
+                    conn.Open();
 
-                    using (OleDbDataReader dr = cmd.ExecuteReader())
+                    // First query to check if the user exists and is not already logged in
+                    string checkLoginQuery = "SELECT Username, Lastname, Firstname, EmployeeRole FROM tbl_employee WHERE Username = ? AND EmployeePassword = ? AND IsLoggedIn = false";
+
+                    using (OleDbCommand cmdCheck = new OleDbCommand(checkLoginQuery, conn))
                     {
-                        if (dr.Read())
+                        cmdCheck.Parameters.AddWithValue("?", logf_tb_username.Text.Trim());
+                        cmdCheck.Parameters.AddWithValue("?", logf_tb_password.Text);
+
+                        using (OleDbDataReader dr = cmdCheck.ExecuteReader())
                         {
-                            // Login successful
-                            LoggedInUsername = dr["Lastname"]?.ToString() + " " + dr["Firstname"]?.ToString();
-                            LoggedInUserRole = dr["EmployeeRole"]?.ToString() ?? string.Empty;
-                            UserSession.Username = LoggedInUsername;
-                            loginSuccessful = true;
+                            if (dr.Read())
+                            {
+                                // Login is valid and user is not logged in, proceed to update status
+                                string loggedInUser = dr["Username"]?.ToString();
+
+                                string updateQuery = "UPDATE tbl_employee SET IsLoggedIn = true WHERE Username = ?";
+                                using (OleDbCommand cmdUpdate = new OleDbCommand(updateQuery, conn))
+                                {
+                                    cmdUpdate.Parameters.AddWithValue("?", loggedInUser);
+                                    cmdUpdate.ExecuteNonQuery();
+                                }
+
+                                // Set session data
+                                LoggedInUsername = dr["Lastname"]?.ToString() + " " + dr["Firstname"]?.ToString();
+                                LoggedInUserRole = dr["EmployeeRole"]?.ToString() ?? string.Empty;
+                                UserSession.Username = LoggedInUsername;
+
+                                // Login is now successful
+                                this.DialogResult = DialogResult.OK;
+                                this.Close();
+                            }
+                            else
+                            {
+                                // User not found, incorrect password, or already logged in
+                                string checkExistsQuery = "SELECT IsLoggedIn FROM tbl_employee WHERE Username = ?";
+                                using (OleDbCommand cmdExists = new OleDbCommand(checkExistsQuery, conn))
+                                {
+                                    cmdExists.Parameters.AddWithValue("?", logf_tb_username.Text.Trim());
+                                    object result = cmdExists.ExecuteScalar();
+
+                                    if (result != null && (bool)result)
+                                    {
+                                        MessageBox.Show("This account is already logged in.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("Login failed. Please check your username and password.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-            }
-            finally
-            {
-                if (conn.State == ConnectionState.Open)
+                catch (Exception ex)
                 {
-                    conn.Close();
+                    MessageBox.Show("Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-            }
-
-            // Now, handle the result of the login attempt
-            if (loginSuccessful)
-            {
-                this.DialogResult = DialogResult.OK;
-                this.Close();
-                
-            }
-            else
-            {
-                MessageBox.Show("Login failed. Please check your username and password.");
             }
         }
         private void NavigateToFormByRole(string username, string role)
