@@ -14,6 +14,7 @@ namespace LogPriceChange0._1
 {
     public partial class wfLoginform : Form
     {
+        public bool LoginSuccessful { get; private set; }
         public string LoggedInUsername { get; private set; }
         public string LoggedInUserRole { get; private set; }
         OleDbConnection conn = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\VisualStudio\LogPriceChange0.1\LogPriceChange0.1\pricematrix.accdb;");
@@ -24,7 +25,7 @@ namespace LogPriceChange0._1
         {
             InitializeComponent();
 
-
+         
             logf_tb_password.UseSystemPasswordChar = true;
             logf_pb_eyeopen.Click += TogglePasswordVisibility;
             logf_pb_eyeclose.Click += TogglePasswordVisibility;
@@ -35,6 +36,7 @@ namespace LogPriceChange0._1
         }
         private void logf_btn_login_Click(object sender, EventArgs e)
         {
+            bool loginSuccessful = false;
             try
             {
                 conn.Open();
@@ -48,16 +50,11 @@ namespace LogPriceChange0._1
                     {
                         if (dr.Read())
                         {
-
+                            // Login successful
                             LoggedInUsername = dr["Lastname"]?.ToString() + " " + dr["Firstname"]?.ToString();
                             LoggedInUserRole = dr["EmployeeRole"]?.ToString() ?? string.Empty;
                             UserSession.Username = LoggedInUsername;
-                            this.DialogResult = DialogResult.OK;
-                            this.Close();
-                        }
-                        else
-                        {
-                            MessageBox.Show("Login failed. Please check your username and password.");
+                            loginSuccessful = true;
                         }
                     }
                 }
@@ -72,6 +69,18 @@ namespace LogPriceChange0._1
                 {
                     conn.Close();
                 }
+            }
+
+            // Now, handle the result of the login attempt
+            if (loginSuccessful)
+            {
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+                
+            }
+            else
+            {
+                MessageBox.Show("Login failed. Please check your username and password.");
             }
         }
         private void NavigateToFormByRole(string username, string role)

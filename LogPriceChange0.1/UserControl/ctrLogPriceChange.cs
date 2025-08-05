@@ -177,11 +177,6 @@ namespace LogPriceChange0._1
             }
         }
 
-        private void btnlpcsubmit_Click(object sender, EventArgs e)
-        {
-            InsertData(); 
-        }
-
         private void lpc_tb_searchbycode_TextChanged(object sender, EventArgs e)
         {
             // Check if the textbox is empty
@@ -354,8 +349,12 @@ namespace LogPriceChange0._1
 
         //************************************************Upsert*******************************************************************************************************************
         #region
-        public void InsertData()
+        public void InsertData(string docStatus)
         {
+            // The DocStatus is now passed as a parameter.
+            // Call this method with "ForApproval" for the Submit button
+            // and "Draft" for the Draft button.
+
             if (lpc_tb_promotitle.Text.Trim() == "")
             {
                 MessageBox.Show("Please enter a Promo Name.");
@@ -363,8 +362,8 @@ namespace LogPriceChange0._1
             }
             string promoName = lpc_tb_promotitle.Text.Trim();
             string promoType = lpc_rbtn_permanent.Checked ? "Permanent"
-                             : lpc_rbtn_temporary.Checked ? "Temporary"
-                             : null;
+                                : lpc_rbtn_temporary.Checked ? "Temporary"
+                                : null;
             if (promoType == null)
             {
                 MessageBox.Show("Please select a Promotion Type.");
@@ -398,8 +397,8 @@ namespace LogPriceChange0._1
             {
                 try
                 {
-                    string insQuery = "INSERT INTO tbl_logpricechange (DocID,CreatedBy,  CreatedDate, TDate, Supplier, PromoTitle, StartDate, EndDate, Promotype, PROD_C, PROD_N, FREE, FREE_SUP, FREE_USRINT, PLFOB, PLFOB_SUP, PLFOB_USRINT, NWF, NWF_SUP, NWF_USRINT, NWFR, PC_PF, PC_PF_SUP, PC_PF_USRINT, PC_PFL, PC_PFL_SUP, PC_PFL_USRINT, PC_RP, PC_RP_SUP, PC_RP_USRINT, PC_PA, PC_PA_SUP, PC_PA_USRINT, PC_PLSRP, PC_PLSRP_SUP, PC_PLSRP_USRINT, PC_LSRP, PC_LSRP_SUP, PC_LSRP_USRINT, PC_PPA2LP, PC_PPA2LP_SUP, PC_PPA2LP_USRINT, PC_LP, PC_LP_SUP, PC_LP_USRINT, PC_PPA2WA, PC_PPA2WA_SUP, PC_PPA2WA_USRINT, PC_WA, PC_WA_SUP, PC_WA_USRINT, PC_PPA2WB, PC_PPA2WB_SUP, PC_PPA2WB_USRINT, PC_WB, PC_WB_SUP, PC_WB_USRINT, PC_PPA2WC, PC_PPA2WC_SUP, PC_PPA2WC_USRINT, PC_WC, PC_WC_SUP, PC_WC_USRINT, PC_PPA2LC, PC_PPA2LC_SUP, PC_PPA2LC_USRINT, PC_LC, PC_LC_SUP, PC_LC_USRINT, PC_PPA2PG, PC_PPA2PG_SUP, PC_PPA2PG_USRINT, PC_PG, PC_PG_SUP, PC_PG_USRINT, PC_PPA2PH, PC_PPA2PH_SUP, PC_PPA2PH_USRINT, PC_PH, PC_PH_SUP, PC_PH_USRINT, PC_PPA2PB, PC_PPA2PB_SUP, PC_PPA2PB_USRINT, PC_PB, PC_PB_SUP, PC_PB_USRINT, PC_PPA2PD, PC_PPA2PD_SUP, PC_PPA2P_USRINT, PC_PD, PC_PD_SUP, PC_PD_USRINT, LPP_AMT, LPP_AMT_SUP, LPP_AMT_USRINT, LPP_REF, LPP_REF_SUP, LPP_REF_USRINT, PC_PPA2PC, PC_PPA2PC_SUP, PC_PPA2PC_USRINT, PC_PC, PC_PC_SUP, PC_PC_USRINT, Claim1, Claim2, ClaimK1, ClaimK2, Remarks1, Remarks2) " +
-                                                              "VALUES ( @DocID, @CreatedBy, @CreatedDate, @TDate,@Supplier, @PromoTitle, @StartDate, @EndDate, @Promotype,  @PROD_C,@PROD_N,@FREE,@FREE_SUP,@FREE_USRINT,@PLFOB,@PLFOB_SUP,@PLFOB_USRINT,@NWF,@NWF_SUP,@NWF_USRINT,@NWFR,@PC_PF,@PC_PF_SUP,@PC_PF_USRINT,@PC_PFL,@PC_PFL_SUP,@PC_PFL_USRINT,@PC_RP,@PC_RP_SUP,@PC_RP_USRINT,@PC_PA,@PC_PA_SUP,@PC_PA_USRINT,@PC_PLSRP,@PC_PLSRP_SUP,@PC_PLSRP_USRINT,@PC_LSRP,@PC_LSRP_SUP,@PC_LSRP_USRINT,@PC_PPA2LP,@PC_PPA2LP_SUP,@PC_PPA2LP_USRINT,@PC_LP,@PC_LP_SUP,@PC_LP_USRINT,@PC_PPA2WA,@PC_PPA2WA_SUP,@PC_PPA2WA_USRINT,@PC_WA,@PC_WA_SUP,@PC_WA_USRINT,@PC_PPA2WB,@PC_PPA2WB_SUP,@PC_PPA2WB_USRINT,@PC_WB,@PC_WB_SUP,@PC_WB_USRINT,@PC_PPA2WC,@PC_PPA2WC_SUP,@PC_PPA2WC_USRINT,@PC_WC,@PC_WC_SUP,@PC_WC_USRINT,@PC_PPA2LC,@PC_PPA2LC_SUP,@PC_PPA2LC_USRINT,@PC_LC,@PC_LC_SUP,@PC_LC_USRINT,@PC_PPA2PG,@PC_PPA2PG_SUP,@PC_PPA2PG_USRINT,@PC_PG,@PC_PG_SUP,@PC_PG_USRINT,@PC_PPA2PH,@PC_PPA2PH_SUP,@PC_PPA2PH_USRINT,@PC_PH,@PC_PH_SUP,@PC_PH_USRINT,@PC_PPA2PB,@PC_PPA2PB_SUP,@PC_PPA2PB_USRINT,@PC_PB,@PC_PB_SUP,@PC_PB_USRINT,@PC_PPA2PD,@PC_PPA2PD_SUP,@PC_PPA2P_USRINT,@PC_PD,@PC_PD_SUP,@PC_PD_USRINT,@LPP_AMT,@LPP_AMT_SUP,@LPP_AMT_USRINT,@LPP_REF,@LPP_REF_SUP,@LPP_REF_USRINT,@PC_PPA2PC,@PC_PPA2PC_SUP,@PC_PPA2PC_USRINT,@PC_PC,@PC_PC_SUP,@PC_PC_USRINT,@Claim1,@Claim2,@ClaimK1,@ClaimK2,@Remarks1,@Remarks2)";
+                    string insQuery = "INSERT INTO tbl_logpricechange (DocID, DocStatus, CreatedBy,  CreatedDate, TDate, Supplier, PromoTitle, StartDate, EndDate, Promotype, PROD_C, PROD_N, FREE, FREE_SUP, FREE_USRINT, PLFOB, PLFOB_SUP, PLFOB_USRINT, NWF, NWF_SUP, NWF_USRINT, NWFR, PC_PF, PC_PF_SUP, PC_PF_USRINT, PC_PFL, PC_PFL_SUP, PC_PFL_USRINT, PC_RP, PC_RP_SUP, PC_RP_USRINT, PC_PA, PC_PA_SUP, PC_PA_USRINT, PC_PLSRP, PC_PLSRP_SUP, PC_PLSRP_USRINT, PC_LSRP, PC_LSRP_SUP, PC_LSRP_USRINT, PC_PPA2LP, PC_PPA2LP_SUP, PC_PPA2LP_USRINT, PC_LP, PC_LP_SUP, PC_LP_USRINT, PC_PPA2WA, PC_PPA2WA_SUP, PC_PPA2WA_USRINT, PC_WA, PC_WA_SUP, PC_WA_USRINT, PC_PPA2WB, PC_PPA2WB_SUP, PC_PPA2WB_USRINT, PC_WB, PC_WB_SUP, PC_WB_USRINT, PC_PPA2WC, PC_PPA2WC_SUP, PC_PPA2WC_USRINT, PC_WC, PC_WC_SUP, PC_WC_USRINT, PC_PPA2LC, PC_PPA2LC_SUP, PC_PPA2LC_USRINT, PC_LC, PC_LC_SUP, PC_LC_USRINT, PC_PPA2PG, PC_PPA2PG_SUP, PC_PPA2PG_USRINT, PC_PG, PC_PG_SUP, PC_PG_USRINT, PC_PPA2PH, PC_PPA2PH_SUP, PC_PPA2PH_USRINT, PC_PH, PC_PH_SUP, PC_PH_USRINT, PC_PPA2PB, PC_PPA2PB_SUP, PC_PPA2PB_USRINT, PC_PB, PC_PB_SUP, PC_PB_USRINT, PC_PPA2PD, PC_PPA2PD_SUP, PC_PPA2P_USRINT, PC_PD, PC_PD_SUP, PC_PD_USRINT, LPP_AMT, LPP_AMT_SUP, LPP_AMT_USRINT, LPP_REF, LPP_REF_SUP, LPP_REF_USRINT, PC_PPA2PC, PC_PPA2PC_SUP, PC_PPA2PC_USRINT, PC_PC, PC_PC_SUP, PC_PC_USRINT, Claim1, Claim2, ClaimK1, ClaimK2, Remarks1, Remarks2) " +
+                                                                "VALUES ( @DocID,@DocStatus, @CreatedBy, @CreatedDate, @TDate,@Supplier, @PromoTitle, @StartDate, @EndDate, @Promotype,  @PROD_C,@PROD_N,@FREE,@FREE_SUP,@FREE_USRINT,@PLFOB,@PLFOB_SUP,@PLFOB_USRINT,@NWF,@NWF_SUP,@NWF_USRINT,@NWFR,@PC_PF,@PC_PF_SUP,@PC_PF_USRINT,@PC_PFL,@PC_PFL_SUP,@PC_PFL_USRINT,@PC_RP,@PC_RP_SUP,@PC_RP_USRINT,@PC_PA,@PC_PA_SUP,@PC_PA_USRINT,@PC_PLSRP,@PC_PLSRP_SUP,@PC_PLSRP_USRINT,@PC_LSRP,@PC_LSRP_SUP,@PC_LSRP_USRINT,@PC_PPA2LP,@PC_PPA2LP_SUP,@PC_PPA2LP_USRINT,@PC_LP,@PC_LP_SUP,@PC_LP_USRINT,@PC_PPA2WA,@PC_PPA2WA_SUP,@PC_PPA2WA_USRINT,@PC_WA,@PC_WA_SUP,@PC_WA_USRINT,@PC_PPA2WB,@PC_PPA2WB_SUP,@PC_PPA2WB_USRINT,@PC_WB,@PC_WB_SUP,@PC_WB_USRINT,@PC_PPA2WC,@PC_PPA2WC_SUP,@PC_PPA2WC_USRINT,@PC_WC,@PC_WC_SUP,@PC_WC_USRINT,@PC_PPA2LC,@PC_PPA2LC_SUP,@PC_PPA2LC_USRINT,@PC_LC,@PC_LC_SUP,@PC_LC_USRINT,@PC_PPA2PG,@PC_PPA2PG_SUP,@PC_PPA2PG_USRINT,@PC_PG,@PC_PG_SUP,@PC_PG_USRINT,@PC_PPA2PH,@PC_PPA2PH_SUP,@PC_PPA2PH_USRINT,@PC_PH,@PC_PH_SUP,@PC_PH_USRINT,@PC_PPA2PB,@PC_PPA2PB_SUP,@PC_PPA2PB_USRINT,@PC_PB,@PC_PB_SUP,@PC_PB_USRINT,@PC_PPA2PD,@PC_PPA2PD_SUP,@PC_PPA2P_USRINT,@PC_PD,@PC_PD_SUP,@PC_PD_USRINT,@LPP_AMT,@LPP_AMT_SUP,@LPP_AMT_USRINT,@LPP_REF,@LPP_REF_SUP,@LPP_REF_USRINT,@PC_PPA2PC,@PC_PPA2PC_SUP,@PC_PPA2PC_USRINT,@PC_PC,@PC_PC_SUP,@PC_PC_USRINT,@Claim1,@Claim2,@ClaimK1,@ClaimK2,@Remarks1,@Remarks2)";
                     for (int i = 0; i < totalRows; i += 3)
                     {
                         int dbRow = i, suppRow = i + 1, promoRow = i + 2;
@@ -415,7 +414,7 @@ namespace LogPriceChange0._1
                             {
                                 // UPDATE
                                 using (var upd = new OleDbCommand(
-                                    "UPDATE tbl_logpricechange SET CreatedBy = ?, CreatedDate = ?, TDate = ?, Supplier = ?, StartDate = ?, EndDate = ?, PromoType = ?, FREE = ?, FREE_SUP = ?, FREE_USRINT = ? WHERE PROD_C = ? AND PromoTitle = ?",
+                                    "UPDATE tbl_logpricechange SET CreatedBy = ?, CreatedDate = ?, TDate = ?, Supplier = ?, StartDate = ?, EndDate = ?, PromoType = ?, DocStatus = ?, FREE = ?, FREE_SUP = ?, FREE_USRINT = ? WHERE PROD_C = ? AND PromoTitle = ?",
                                     connection, transaction))
                                 {
                                     upd.Parameters.AddWithValue("?", loggedUser);
@@ -425,6 +424,7 @@ namespace LogPriceChange0._1
                                     upd.Parameters.AddWithValue("?", startDate);
                                     upd.Parameters.AddWithValue("?", promoType == "Permanent" ? (object)DBNull.Value : (object)endDate);
                                     upd.Parameters.AddWithValue("?", promoType);
+                                    upd.Parameters.AddWithValue("?", docStatus); // Use the new parameter
                                     upd.Parameters.AddWithValue("?", GetCellValue(dbRow, "FREE"));
                                     upd.Parameters.AddWithValue("?", GetCellValue(suppRow, "FREE"));
                                     upd.Parameters.AddWithValue("?", GetCellValue(promoRow, "FREE"));
@@ -446,7 +446,7 @@ namespace LogPriceChange0._1
                         }
 
                         // INSERT with correct docId
-                        InsertProductRow(connection, transaction, docIdToUse, dbRow, suppRow, promoRow, commonDocId, promoName, promoType, startDate, endDate, loggedUser, insQuery);
+                        InsertProductRow(connection, transaction, docIdToUse, dbRow, suppRow, promoRow, commonDocId, promoName, promoType, startDate, endDate, loggedUser, insQuery, docStatus); // Pass the new parameter
 
                     }
 
@@ -479,15 +479,17 @@ namespace LogPriceChange0._1
         }
 
         // Helper to perform insert for a product row
+        // The signature has been updated to include the docStatus parameter
         private void InsertProductRow(OleDbConnection conn, OleDbTransaction tx,
         string docIdToUse, int dbRow, int suppRow, int promoRow,
         string commonDocId, string promoName, string promoType,
         DateTime startDate, DateTime endDate, string loggedUser,
-        string insQuery)
+        string insQuery, string docStatus)
         {
             using (var cmd = new OleDbCommand(insQuery, conn, tx))
             {
                 cmd.Parameters.AddWithValue("@DocID", docIdToUse);
+                cmd.Parameters.AddWithValue("@DocStatus", docStatus); // Use the new parameter
                 cmd.Parameters.AddWithValue("@CreatedBy", loggedUser);
                 cmd.Parameters.AddWithValue("@CreatedDate", DateTime.Now);
                 cmd.Parameters.AddWithValue("@TDate", lpc_dtp_memodate.Value.Date);
@@ -601,7 +603,24 @@ namespace LogPriceChange0._1
                 cmd.Parameters.AddWithValue("@Remarks2", GetCellValue(promoRow, "Remarks2"));
 
                 cmd.ExecuteNonQuery();
+
             }
+        }
+
+        private void btnlpcsubmit_Click(object sender, EventArgs e)
+        {
+            // Correct call for submitting for approval
+            DialogResult result = MessageBox.Show("Are you sure you want to submit this for approval?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result == DialogResult.Yes)
+            {
+                InsertData("ForApproval");
+            }
+        }
+
+        private void btn_draft_Click(object sender, EventArgs e)
+        {
+            // Correct call for a draft
+            InsertData("Draft");
         }
 
 

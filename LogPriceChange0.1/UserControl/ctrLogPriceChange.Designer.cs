@@ -93,6 +93,7 @@
             this.lpc_rbtn_temporary = new System.Windows.Forms.RadioButton();
             this.label8 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btn_draft = new System.Windows.Forms.Button();
             this.lblMessage = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_dbvalue)).BeginInit();
             this.cmsRemoveGroup.SuspendLayout();
@@ -578,12 +579,26 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btn_draft);
             this.panel1.Controls.Add(this.btnlpcsubmit);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(10, 541);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1108, 67);
             this.panel1.TabIndex = 15;
+            // 
+            // btn_draft
+            // 
+            this.btn_draft.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_draft.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_draft.Location = new System.Drawing.Point(881, 3);
+            this.btn_draft.Name = "btn_draft";
+            this.btn_draft.Size = new System.Drawing.Size(101, 38);
+            this.btn_draft.TabIndex = 1;
+            this.btn_draft.Text = "Save Draft";
+            this.btn_draft.UseVisualStyleBackColor = true;
+            this.btn_draft.Click += new System.EventHandler(this.btn_draft_Click);
             // 
             // lblMessage
             // 
@@ -695,5 +710,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Remarks2;
         private System.Windows.Forms.ContextMenuStrip cmsRemoveGroup;
         private System.Windows.Forms.ToolStripMenuItem cmsRemoveGroupItem;
+        private System.Windows.Forms.Button btn_draft;
     }
 }
