@@ -14,18 +14,11 @@ namespace LogPriceChange0._1
 {
     public partial class wfLoginform : Form
     {
-        public bool LoginSuccessful { get; private set; }
-        public string LoggedInUsername { get; private set; }
-        public string LoggedInUserRole { get; private set; }
-        OleDbConnection conn = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\VisualStudio\LogPriceChange0.1\LogPriceChange0.1\pricematrix.accdb;");
         ctrLogPriceChange ctrLogPriceChange = new ctrLogPriceChange();
-        
-
+       
         public wfLoginform()
         {
             InitializeComponent();
-
-         
             logf_tb_password.UseSystemPasswordChar = true;
             logf_pb_eyeopen.Click += TogglePasswordVisibility;
             logf_pb_eyeclose.Click += TogglePasswordVisibility;
@@ -36,95 +29,88 @@ namespace LogPriceChange0._1
         }
         private void logf_btn_login_Click(object sender, EventArgs e)
         {
-            // Make sure to use a local connection object within the method
-            using (OleDbConnection conn = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\VisualStudio\LogPriceChange0.1\LogPriceChange0.1\pricematrix.accdb;"))
-            {
-                try
+            try {
+                string username = logf_tb_username.Text.Trim();
+                string password = logf_tb_password.Text;
+                using (OleDbConnection conn = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;"))
                 {
-                    conn.Open();
-
-                    // First query to check if the user exists and is not already logged in
-                    string checkLoginQuery = "SELECT Username, Lastname, Firstname, EmployeeRole FROM tbl_employee WHERE Username = ? AND EmployeePassword = ? AND IsLoggedIn = false";
-
-                    using (OleDbCommand cmdCheck = new OleDbCommand(checkLoginQuery, conn))
+                    try
                     {
-                        cmdCheck.Parameters.AddWithValue("?", logf_tb_username.Text.Trim());
-                        cmdCheck.Parameters.AddWithValue("?", logf_tb_password.Text);
+                        conn.Open();
 
-                        using (OleDbDataReader dr = cmdCheck.ExecuteReader())
+                        string checkLoginQuery = "SELECT Lastname, Firstname, EmployeeRole, IsLoggedIn FROM tbl_employee WHERE Username = ? AND EmployeePassword = ?";
+
+                        using (OleDbCommand cmdCheck = new OleDbCommand(checkLoginQuery, conn))
                         {
-                            if (dr.Read())
+                            cmdCheck.Parameters.AddWithValue("?", username);
+                            cmdCheck.Parameters.AddWithValue("?", password);
+
+                            using (OleDbDataReader dr = cmdCheck.ExecuteReader())
                             {
-                                // Login is valid and user is not logged in, proceed to update status
-                                string loggedInUser = dr["Username"]?.ToString();
-
-                                string updateQuery = "UPDATE tbl_employee SET IsLoggedIn = true WHERE Username = ?";
-                                using (OleDbCommand cmdUpdate = new OleDbCommand(updateQuery, conn))
+                                if (dr.Read())
                                 {
-                                    cmdUpdate.Parameters.AddWithValue("?", loggedInUser);
-                                    cmdUpdate.ExecuteNonQuery();
-                                }
+                                    bool isLoggedIn = dr.GetBoolean(dr.GetOrdinal("IsLoggedIn"));
 
-                                // Set session data
-                                LoggedInUsername = dr["Lastname"]?.ToString() + " " + dr["Firstname"]?.ToString();
-                                LoggedInUserRole = dr["EmployeeRole"]?.ToString() ?? string.Empty;
-                                UserSession.Username = LoggedInUsername;
-
-                                // Login is now successful
-                                this.DialogResult = DialogResult.OK;
-                                this.Close();
-                            }
-                            else
-                            {
-                                // User not found, incorrect password, or already logged in
-                                string checkExistsQuery = "SELECT IsLoggedIn FROM tbl_employee WHERE Username = ?";
-                                using (OleDbCommand cmdExists = new OleDbCommand(checkExistsQuery, conn))
-                                {
-                                    cmdExists.Parameters.AddWithValue("?", logf_tb_username.Text.Trim());
-                                    object result = cmdExists.ExecuteScalar();
-
-                                    if (result != null && (bool)result)
+                                    if (isLoggedIn)
                                     {
                                         MessageBox.Show("This account is already logged in.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                        return;
                                     }
-                                    else
+
+                                    string updateQuery = "UPDATE tbl_employee SET IsLoggedIn = true WHERE Username = ?";
+                                    using (OleDbCommand cmdUpdate = new OleDbCommand(updateQuery, conn))
                                     {
-                                        MessageBox.Show("Login failed. Please check your username and password.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        cmdUpdate.Parameters.AddWithValue("?", username);
+                                        cmdUpdate.ExecuteNonQuery();
                                     }
+
+                                    // Store the full name for display, but keep the original username.
+                                    string loggedInFullName = dr["Lastname"]?.ToString() + " " + dr["Firstname"]?.ToString();
+                                    string loggedInUserRole = dr["EmployeeRole"]?.ToString() ?? string.Empty;
+
+                                    this.DialogResult = DialogResult.OK;
+                                    this.Hide();
+                                    Form nextForm = null;
+
+                                    switch (loggedInUserRole.ToLower())
+                                    {
+                                        case "admin":
+                                            nextForm = new AdminForm(username); // Pass the correct username
+                                            break;
+                                        case "user":
+                                            nextForm = new MainForm(username); // Pass the correct username
+                                            break;
+                                        default:
+                                            MessageBox.Show("Unknown user role. Access denied.");
+                                            this.Show();
+                                            nextForm = null;
+                                            return;
+                                    }
+
+                                    if (nextForm != null)
+                                    {
+                                        nextForm.Show();
+                                    }
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Login failed. Please check your username and password.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
-        private void NavigateToFormByRole(string username, string role)
-        {
-            this.Hide();
-            Form nextForm = null;
 
-            switch (role.ToLower()) // Compare the role in lowercase for robustness.
-            {
-                case "admin":
-                    nextForm = new AdminForm(username); // Pass the username to the Admin form.
-                    break;
-                case "user":
-                    nextForm = new MainForm(username); // Pass the username to the Employee form.
-                    break;
-                default:
-                    MessageBox.Show("Unknown user role. Access denied.");
-                    this.Show(); // Show the login form again for another attempt.
-                    return;
             }
-
-            if (nextForm != null)
+            catch (Exception ex)
             {
-                nextForm.Show();
+                MessageBox.Show("An error occurred during login: " + ex.Message, "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+           
         }
         private void TogglePasswordVisibility(object sender, EventArgs e)
         {

@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.OleDb;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace LogPriceChange0._1
 {
@@ -18,7 +19,6 @@ namespace LogPriceChange0._1
             _username = username;
             this.Text = "Admin Dashboard";
         }
-
         private void AdminForm_Load(object sender, EventArgs e)
         {
             LoadDataByStatus("ForApproval", dgv_forApproval);
@@ -27,7 +27,7 @@ namespace LogPriceChange0._1
             if (this.Controls.Find("lbl_adminLog", true).Length > 0)
             {
                 Label userLabel = (Label)this.Controls.Find("lbl_adminLog", true)[0];
-                userLabel.Text = _username;
+                userLabel.Text = GetFullName(_username);
             }
         }
         // This method is now safe and properly manages its own connection.
@@ -57,14 +57,29 @@ namespace LogPriceChange0._1
                 MessageBox.Show($"Error loading {docStatus} data: " + ex.Message);
             }
         }
-
         private void btn_logout_Click(object sender, EventArgs e)
         {
             this.Hide();
             wfLoginform loginForm = new wfLoginform();
-            loginForm.ShowDialog();
+            loginForm.Show();
+            UpdateIsLogin();
         }
-
+        private void UpdateIsLogin()
+        {
+            using (OleDbConnection conn = new OleDbConnection(connectionString))
+            {
+                conn.Open();
+                string updateQuery = "UPDATE tbl_employee SET IsLoggedIn = false WHERE Username = ?";
+                using (OleDbCommand cmdUpdate = new OleDbCommand(updateQuery, conn))
+                {
+                    // Parameters are added positionally for the UPDATE query
+                    cmdUpdate.Parameters.AddWithValue("?", _username); // Only one parameter needed
+                    cmdUpdate.ExecuteNonQuery();
+                   
+                    conn.Close();
+                }
+            }
+        }
         private void dgv_forApproval_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && dgv_forApproval.Rows[e.RowIndex].Cells["ID"].Value != null)
@@ -72,7 +87,6 @@ namespace LogPriceChange0._1
                 _idValue = dgv_forApproval.Rows[e.RowIndex].Cells["ID"].Value.ToString();
             }
         }
-
         private void tabCtr_forApproval_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (tabCtr_forApproval.SelectedIndex == 1)
@@ -87,7 +101,6 @@ namespace LogPriceChange0._1
                 btn_reject.Visible = true;
             }
         }
-
         // This method now uses the class-level connectionString and handles its own resources.
         private void UpdateDocumentStatus(string newDocStatus, string approvedBy, string approvedDate = null)
         {
@@ -134,7 +147,6 @@ namespace LogPriceChange0._1
                 MessageBox.Show($"Error {newDocStatus.ToLower()} record: " + ex.Message);
             }
         }
-
         private void btn_approve_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(_idValue))
@@ -147,11 +159,10 @@ namespace LogPriceChange0._1
             if (result == DialogResult.Yes)
             {
                 string approvedDate = DateTime.Now.ToString("yyyy/MM/dd HH:mm");
-                UpdateDocumentStatus("Approved", _username, approvedDate);
+                UpdateDocumentStatus("Approved", GetFullName(_username), approvedDate);
             }
             UpdateStatusCounts();
         }
-
         private void btn_reject_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(_idValue))
@@ -163,11 +174,10 @@ namespace LogPriceChange0._1
             DialogResult result = MessageBox.Show("Are you sure you want to reject this?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
             {
-                UpdateDocumentStatus("Rejected", _username);
+                UpdateDocumentStatus("Rejected", GetFullName(_username));
             }
             UpdateStatusCounts();
         }
-
         private void UpdateStatusCounts()
         {
             // Define the query to count all statuses
@@ -218,6 +228,68 @@ namespace LogPriceChange0._1
                     MessageBox.Show("Error updating status counts: " + ex.Message);
                 }
             }
+        }
+        private string GetFullName(string username)
+        {
+            string fullName = string.Empty;
+            string query = "SELECT Lastname, Firstname FROM tbl_employee WHERE Username = ?";
+
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
+            {
+                using (OleDbCommand command = new OleDbCommand(query, connection))
+                {
+                    // The parameter is for the username
+                    command.Parameters.Add("?", OleDbType.VarWChar, 255).Value = username;
+
+                    try
+                    {
+                        connection.Open();
+                        using (OleDbDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // Concatenate Lastname and Firstname from the database
+                                string lastName = reader["Lastname"].ToString();
+                                string firstName = reader["Firstname"].ToString();
+                                fullName = $"{lastName} {firstName}";
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error retrieving full name: " + ex.Message, "Database Error");
+                    }
+                }
+            }
+            return fullName;
+        }
+        private void AdminForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Your code to update the IsLoggedIn status to false
+            string username = UserSession.Username;
+            string connString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;";
+            string updateQuery = "UPDATE tbl_employee SET IsLoggedIn = ? WHERE Username = ?";
+
+            try
+            {
+                using (OleDbConnection conn = new OleDbConnection(connString))
+                {
+                    conn.Open();
+                    using (OleDbCommand cmdUpdate = new OleDbCommand(updateQuery, conn))
+                    {
+                        cmdUpdate.Parameters.AddWithValue("?", false);
+                        cmdUpdate.Parameters.AddWithValue("?", username);
+                        cmdUpdate.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error on logout: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            // Now, let the application close gracefully.
+            Application.Exit();
         }
     }
 }

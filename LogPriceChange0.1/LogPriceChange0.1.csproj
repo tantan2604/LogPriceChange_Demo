@@ -79,6 +79,12 @@
     <Compile Include="AdminForm.Designer.cs">
       <DependentUpon>AdminForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControl\ctrDashboard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\ctrDashboard.Designer.cs">
+      <DependentUpon>ctrDashboard.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControl\ctrClaimByInventory.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -120,6 +126,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\ctrClaimBySellOut.resx">
       <DependentUpon>ctrClaimBySellOut.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\ctrDashboard.resx">
+      <DependentUpon>ctrDashboard.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\ctrLogPriceChange.resx">
       <DependentUpon>ctrLogPriceChange.cs</DependentUpon>

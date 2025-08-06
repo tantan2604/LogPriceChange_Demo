@@ -16,23 +16,54 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace LogPriceChange0._1
 {
+    
     public partial class ctrLogPriceChange : UserControl
     {
-        string primaryKeyColumn = "ID";
+        string username = UserSession.Username;
+
         OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;");
-        DataTable dataTable;
-        OleDbDataAdapter dataAdapter;
         private static Dictionary<string, int> lastNumbers = new Dictionary<string, int>();
         private DataGridViewRow rightClickedRow;
+        
+        private string GetFullName(string username)
+        {
+            string fullName = string.Empty;
+            string query = "SELECT Lastname, Firstname FROM tbl_employee WHERE Username = ?";
+            using (OleDbCommand command = new OleDbCommand(query, connection))
+            {
+                // The parameter is for the username
+                command.Parameters.Add("?", username);
 
-
-
+                try
+                {
+                    connection.Open();
+                    using (OleDbDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            // Concatenate Lastname and Firstname from the database
+                            string lastName = reader["Lastname"].ToString();
+                            string firstName = reader["Firstname"].ToString();
+                            fullName = $"{lastName} {firstName}";
+                        }
+                    }
+                    connection.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error retrieving full name: " + ex.Message, "Database Error");
+                }
+            }
+            return fullName;
+        }
         public ctrLogPriceChange()
         {
             InitializeComponent();
+            
 
             // Set custom format for your DateTimePicker
             lpc_dtp_enddate.CustomFormat = " ";
@@ -123,43 +154,6 @@ namespace LogPriceChange0._1
        
         #endregion
         //************************************************End Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
-  
-        public void LoadData()
-        {
-            try
-            {
-
-                connection.Open(); // Open the database connection
-
-                string query = @"SELECT ID, PROD_C, PROD_N, FREE, PLFOB, NWF, NWFR, PC_PF, PC_PFL, PC_RP, PC_PA, PC_PLSRP, PC_LSRP, PC_PPA2LP, PC_LP, PC_PPA2WA, PC_WA, PC_PPA2WB, PC_WB, PC_PPA2WC, PC_WC, PC_PPA2LC, PC_LC, PC_PPA2PG, PC_PG, PC_PPA2PH, PC_PH, PC_PPA2PB, PC_PB, PC_PPA2PD, PC_PD, LPP_AMT, LPP_REF, PC_PPA2PC, PC_PC FROM tbl_billPTMP";
-                dataAdapter = new OleDbDataAdapter(query, connection);
-                dataTable = new DataTable();
-                dataAdapter.Fill(dataTable); // Fill the DataTable with data from the database
-
-                lpc_dgv_searchbycode.DataSource = dataTable; // Bind the DataTable to the DataGridView
-
-                // Make the primary key column read-only if it's auto-incrementing in Access.
-                // This prevents users from manually changing the ID.
-                if (lpc_dgv_searchbycode.Columns.Contains(primaryKeyColumn))
-                {
-                    lpc_dgv_searchbycode.Columns[primaryKeyColumn].ReadOnly = true;
-                }
-                connection.Close();
-            }
-            catch (Exception ex)
-            {
-                // Display an error message if data loading fails
-                MessageBox.Show("Error loading data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                // Ensure the connection is closed even if an error occurs
-                if (connection != null && connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
-        }
 
         private void lpc_rbtn_permanent_CheckedChanged(object sender, EventArgs e)
         {
@@ -371,7 +365,7 @@ namespace LogPriceChange0._1
             }
             DateTime startDate = lpc_dtp_startdate.Value;
             DateTime endDate = lpc_dtp_enddate.Value;
-            string loggedUser = UserSession.Username;
+            string loggedUser = GetFullName(UserSession.Username);
             string promoDate = DateTime.Now.ToString("yyyyMM");
             int docIdSequence = 1;
             connection.Open();
@@ -606,7 +600,6 @@ namespace LogPriceChange0._1
 
             }
         }
-
         private void btnlpcsubmit_Click(object sender, EventArgs e)
         {
             // Correct call for submitting for approval
@@ -616,18 +609,15 @@ namespace LogPriceChange0._1
                 InsertData("ForApproval");
             }
         }
-
         private void btn_draft_Click(object sender, EventArgs e)
         {
-            // Correct call for a draft
-            InsertData("Draft");
+
+            //InsertData("Draft");
+
+            MessageBox.Show("" + " " + UserSession.Username);
         }
-
-
-
-
-
         #endregion
+        
 
 
     }

@@ -29,11 +29,21 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.panel6 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.btn_logout = new System.Windows.Forms.Button();
             this.lbl_adminLog = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.panel9 = new System.Windows.Forms.Panel();
+            this.lblRejectedCount = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.lblForApproval = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.lblApprovedCount = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
             this.tabCtr_forApproval = new System.Windows.Forms.TabControl();
             this.tabCtrforApproval = new System.Windows.Forms.TabPage();
@@ -42,28 +52,18 @@
             this.dgv_Approved = new System.Windows.Forms.DataGridView();
             this.btn_approve = new System.Windows.Forms.Button();
             this.btn_reject = new System.Windows.Forms.Button();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.panel7 = new System.Windows.Forms.Panel();
-            this.panel8 = new System.Windows.Forms.Panel();
-            this.panel9 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.lblApprovedCount = new System.Windows.Forms.Label();
-            this.lblForApproval = new System.Windows.Forms.Label();
-            this.lblRejectedCount = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
+            this.panel9.SuspendLayout();
+            this.panel8.SuspendLayout();
+            this.panel7.SuspendLayout();
             this.panel5.SuspendLayout();
             this.tabCtr_forApproval.SuspendLayout();
             this.tabCtrforApproval.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_forApproval)).BeginInit();
             this.tabCtrApproved.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Approved)).BeginInit();
-            this.panel7.SuspendLayout();
-            this.panel8.SuspendLayout();
-            this.panel9.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -75,6 +75,13 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1233, 58);
             this.panel1.TabIndex = 0;
+            // 
+            // panel6
+            // 
+            this.panel6.Location = new System.Drawing.Point(175, 58);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(352, 131);
+            this.panel6.TabIndex = 0;
             // 
             // panel2
             // 
@@ -125,6 +132,94 @@
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(1058, 131);
             this.panel4.TabIndex = 3;
+            // 
+            // panel9
+            // 
+            this.panel9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel9.Controls.Add(this.lblRejectedCount);
+            this.panel9.Controls.Add(this.label3);
+            this.panel9.Location = new System.Drawing.Point(706, 0);
+            this.panel9.Name = "panel9";
+            this.panel9.Size = new System.Drawing.Size(352, 131);
+            this.panel9.TabIndex = 3;
+            // 
+            // lblRejectedCount
+            // 
+            this.lblRejectedCount.AutoSize = true;
+            this.lblRejectedCount.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblRejectedCount.Location = new System.Drawing.Point(267, 50);
+            this.lblRejectedCount.Name = "lblRejectedCount";
+            this.lblRejectedCount.Size = new System.Drawing.Size(72, 30);
+            this.lblRejectedCount.TabIndex = 2;
+            this.lblRejectedCount.Text = "label4";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(19, 12);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(50, 13);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Rejected";
+            // 
+            // panel8
+            // 
+            this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel8.Controls.Add(this.lblForApproval);
+            this.panel8.Controls.Add(this.label2);
+            this.panel8.Location = new System.Drawing.Point(353, 0);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(352, 131);
+            this.panel8.TabIndex = 2;
+            // 
+            // lblForApproval
+            // 
+            this.lblForApproval.AutoSize = true;
+            this.lblForApproval.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblForApproval.Location = new System.Drawing.Point(263, 50);
+            this.lblForApproval.Name = "lblForApproval";
+            this.lblForApproval.Size = new System.Drawing.Size(72, 30);
+            this.lblForApproval.TabIndex = 2;
+            this.lblForApproval.Text = "label4";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(23, 12);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(46, 13);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Pending";
+            // 
+            // panel7
+            // 
+            this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel7.Controls.Add(this.lblApprovedCount);
+            this.panel7.Controls.Add(this.label1);
+            this.panel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel7.Location = new System.Drawing.Point(0, 0);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(1058, 131);
+            this.panel7.TabIndex = 1;
+            // 
+            // lblApprovedCount
+            // 
+            this.lblApprovedCount.AutoSize = true;
+            this.lblApprovedCount.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblApprovedCount.Location = new System.Drawing.Point(263, 50);
+            this.lblApprovedCount.Name = "lblApprovedCount";
+            this.lblApprovedCount.Size = new System.Drawing.Size(72, 30);
+            this.lblApprovedCount.TabIndex = 1;
+            this.lblApprovedCount.Text = "label4";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(18, 12);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(53, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Approved";
             // 
             // panel5
             // 
@@ -215,101 +310,6 @@
             this.btn_reject.UseVisualStyleBackColor = false;
             this.btn_reject.Click += new System.EventHandler(this.btn_reject_Click);
             // 
-            // panel6
-            // 
-            this.panel6.Location = new System.Drawing.Point(175, 58);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(352, 131);
-            this.panel6.TabIndex = 0;
-            // 
-            // panel7
-            // 
-            this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel7.Controls.Add(this.lblApprovedCount);
-            this.panel7.Controls.Add(this.label1);
-            this.panel7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel7.Location = new System.Drawing.Point(0, 0);
-            this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(1058, 131);
-            this.panel7.TabIndex = 1;
-            // 
-            // panel8
-            // 
-            this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel8.Controls.Add(this.lblForApproval);
-            this.panel8.Controls.Add(this.label2);
-            this.panel8.Location = new System.Drawing.Point(353, 0);
-            this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(352, 131);
-            this.panel8.TabIndex = 2;
-            // 
-            // panel9
-            // 
-            this.panel9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel9.Controls.Add(this.lblRejectedCount);
-            this.panel9.Controls.Add(this.label3);
-            this.panel9.Location = new System.Drawing.Point(706, 0);
-            this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(352, 131);
-            this.panel9.TabIndex = 3;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(18, 12);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(53, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Approved";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(23, 12);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(46, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Pending";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(19, 12);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(50, 13);
-            this.label3.TabIndex = 1;
-            this.label3.Text = "Rejected";
-            // 
-            // lblApprovedCount
-            // 
-            this.lblApprovedCount.AutoSize = true;
-            this.lblApprovedCount.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblApprovedCount.Location = new System.Drawing.Point(263, 50);
-            this.lblApprovedCount.Name = "lblApprovedCount";
-            this.lblApprovedCount.Size = new System.Drawing.Size(72, 30);
-            this.lblApprovedCount.TabIndex = 1;
-            this.lblApprovedCount.Text = "label4";
-            // 
-            // lblForApproval
-            // 
-            this.lblForApproval.AutoSize = true;
-            this.lblForApproval.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblForApproval.Location = new System.Drawing.Point(263, 50);
-            this.lblForApproval.Name = "lblForApproval";
-            this.lblForApproval.Size = new System.Drawing.Size(72, 30);
-            this.lblForApproval.TabIndex = 2;
-            this.lblForApproval.Text = "label4";
-            // 
-            // lblRejectedCount
-            // 
-            this.lblRejectedCount.AutoSize = true;
-            this.lblRejectedCount.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblRejectedCount.Location = new System.Drawing.Point(267, 50);
-            this.lblRejectedCount.Name = "lblRejectedCount";
-            this.lblRejectedCount.Size = new System.Drawing.Size(72, 30);
-            this.lblRejectedCount.TabIndex = 2;
-            this.lblRejectedCount.Text = "label4";
-            // 
             // AdminForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -323,23 +323,24 @@
             this.MinimumSize = new System.Drawing.Size(1249, 670);
             this.Name = "AdminForm";
             this.Text = "AdminForm";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AdminForm_FormClosing);
             this.Load += new System.EventHandler(this.AdminForm_Load);
             this.panel1.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.panel4.ResumeLayout(false);
+            this.panel9.ResumeLayout(false);
+            this.panel9.PerformLayout();
+            this.panel8.ResumeLayout(false);
+            this.panel8.PerformLayout();
+            this.panel7.ResumeLayout(false);
+            this.panel7.PerformLayout();
             this.panel5.ResumeLayout(false);
             this.tabCtr_forApproval.ResumeLayout(false);
             this.tabCtrforApproval.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_forApproval)).EndInit();
             this.tabCtrApproved.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Approved)).EndInit();
-            this.panel7.ResumeLayout(false);
-            this.panel7.PerformLayout();
-            this.panel8.ResumeLayout(false);
-            this.panel8.PerformLayout();
-            this.panel9.ResumeLayout(false);
-            this.panel9.PerformLayout();
             this.ResumeLayout(false);
 
         }

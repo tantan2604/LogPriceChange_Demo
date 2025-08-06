@@ -32,19 +32,17 @@
             this.pnl_footer = new System.Windows.Forms.Panel();
             this.pnl_sidebar = new System.Windows.Forms.Panel();
             this.panel7 = new System.Windows.Forms.Panel();
-            this.btn_claimbyinventory = new System.Windows.Forms.Button();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.btn_claimbysellout = new System.Windows.Forms.Button();
-            this.panel6 = new System.Windows.Forms.Panel();
+            this.btn_logout = new System.Windows.Forms.Button();
+            this.btn_dashboard = new System.Windows.Forms.Button();
             this.btn_lpc = new System.Windows.Forms.Button();
+            this.btn_claimbysellout = new System.Windows.Forms.Button();
+            this.btn_claimbyinventory = new System.Windows.Forms.Button();
             this.panel5 = new System.Windows.Forms.Panel();
             this.dashb_lbl_userlogged = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pnl_main = new System.Windows.Forms.Panel();
             this.pnl_sidebar.SuspendLayout();
             this.panel7.SuspendLayout();
-            this.panel4.SuspendLayout();
-            this.panel6.SuspendLayout();
             this.panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -70,8 +68,6 @@
             // 
             this.pnl_sidebar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(15)))), ((int)(((byte)(255)))));
             this.pnl_sidebar.Controls.Add(this.panel7);
-            this.pnl_sidebar.Controls.Add(this.panel4);
-            this.pnl_sidebar.Controls.Add(this.panel6);
             this.pnl_sidebar.Controls.Add(this.panel5);
             this.pnl_sidebar.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnl_sidebar.Location = new System.Drawing.Point(0, 43);
@@ -81,43 +77,53 @@
             // 
             // panel7
             // 
+            this.panel7.Controls.Add(this.btn_logout);
+            this.panel7.Controls.Add(this.btn_dashboard);
+            this.panel7.Controls.Add(this.btn_lpc);
+            this.panel7.Controls.Add(this.btn_claimbysellout);
             this.panel7.Controls.Add(this.btn_claimbyinventory);
             this.panel7.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel7.Font = new System.Drawing.Font("Arial Rounded MT Bold", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.panel7.Location = new System.Drawing.Point(0, 285);
+            this.panel7.Location = new System.Drawing.Point(0, 185);
             this.panel7.Margin = new System.Windows.Forms.Padding(3, 3, 3, 15);
             this.panel7.Name = "panel7";
             this.panel7.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.panel7.Size = new System.Drawing.Size(221, 50);
+            this.panel7.Size = new System.Drawing.Size(221, 373);
             this.panel7.TabIndex = 6;
             // 
-            // btn_claimbyinventory
+            // btn_logout
             // 
-            this.btn_claimbyinventory.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btn_claimbyinventory.Location = new System.Drawing.Point(0, 0);
-            this.btn_claimbyinventory.Name = "btn_claimbyinventory";
-            this.btn_claimbyinventory.Size = new System.Drawing.Size(221, 45);
-            this.btn_claimbyinventory.TabIndex = 0;
-            this.btn_claimbyinventory.Text = "Claim By Inventory";
-            this.btn_claimbyinventory.UseVisualStyleBackColor = true;
-            this.btn_claimbyinventory.Click += new System.EventHandler(this.btn_claimbyinventory_Click);
+            this.btn_logout.Location = new System.Drawing.Point(0, 327);
+            this.btn_logout.Name = "btn_logout";
+            this.btn_logout.Size = new System.Drawing.Size(221, 45);
+            this.btn_logout.TabIndex = 2;
+            this.btn_logout.Text = "Log out";
+            this.btn_logout.UseVisualStyleBackColor = true;
+            this.btn_logout.Click += new System.EventHandler(this.btn_logout_Click);
             // 
-            // panel4
+            // btn_dashboard
             // 
-            this.panel4.Controls.Add(this.btn_claimbysellout);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel4.Font = new System.Drawing.Font("Arial Rounded MT Bold", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.panel4.Location = new System.Drawing.Point(0, 235);
-            this.panel4.Margin = new System.Windows.Forms.Padding(3, 3, 3, 15);
-            this.panel4.Name = "panel4";
-            this.panel4.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.panel4.Size = new System.Drawing.Size(221, 50);
-            this.panel4.TabIndex = 3;
+            this.btn_dashboard.Location = new System.Drawing.Point(0, 3);
+            this.btn_dashboard.Name = "btn_dashboard";
+            this.btn_dashboard.Size = new System.Drawing.Size(221, 45);
+            this.btn_dashboard.TabIndex = 1;
+            this.btn_dashboard.Text = "Dashboard";
+            this.btn_dashboard.UseVisualStyleBackColor = true;
+            this.btn_dashboard.Click += new System.EventHandler(this.btn_dashboard_Click);
+            // 
+            // btn_lpc
+            // 
+            this.btn_lpc.Location = new System.Drawing.Point(0, 47);
+            this.btn_lpc.Name = "btn_lpc";
+            this.btn_lpc.Size = new System.Drawing.Size(221, 45);
+            this.btn_lpc.TabIndex = 0;
+            this.btn_lpc.Text = "Log Price Change";
+            this.btn_lpc.UseVisualStyleBackColor = true;
+            this.btn_lpc.Click += new System.EventHandler(this.btn_lpc_Click);
             // 
             // btn_claimbysellout
             // 
-            this.btn_claimbysellout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btn_claimbysellout.Location = new System.Drawing.Point(0, 0);
+            this.btn_claimbysellout.Location = new System.Drawing.Point(0, 91);
             this.btn_claimbysellout.Name = "btn_claimbysellout";
             this.btn_claimbysellout.Size = new System.Drawing.Size(221, 45);
             this.btn_claimbysellout.TabIndex = 0;
@@ -125,28 +131,15 @@
             this.btn_claimbysellout.UseVisualStyleBackColor = true;
             this.btn_claimbysellout.Click += new System.EventHandler(this.btn_claimbysellout_Click);
             // 
-            // panel6
+            // btn_claimbyinventory
             // 
-            this.panel6.Controls.Add(this.btn_lpc);
-            this.panel6.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel6.Font = new System.Drawing.Font("Arial Rounded MT Bold", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.panel6.Location = new System.Drawing.Point(0, 185);
-            this.panel6.Margin = new System.Windows.Forms.Padding(3, 3, 3, 15);
-            this.panel6.Name = "panel6";
-            this.panel6.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.panel6.Size = new System.Drawing.Size(221, 50);
-            this.panel6.TabIndex = 5;
-            // 
-            // btn_lpc
-            // 
-            this.btn_lpc.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btn_lpc.Location = new System.Drawing.Point(0, 0);
-            this.btn_lpc.Name = "btn_lpc";
-            this.btn_lpc.Size = new System.Drawing.Size(221, 45);
-            this.btn_lpc.TabIndex = 0;
-            this.btn_lpc.Text = "Log Price Change";
-            this.btn_lpc.UseVisualStyleBackColor = true;
-            this.btn_lpc.Click += new System.EventHandler(this.btn_lpc_Click);
+            this.btn_claimbyinventory.Location = new System.Drawing.Point(0, 135);
+            this.btn_claimbyinventory.Name = "btn_claimbyinventory";
+            this.btn_claimbyinventory.Size = new System.Drawing.Size(221, 45);
+            this.btn_claimbyinventory.TabIndex = 0;
+            this.btn_claimbyinventory.Text = "Claim By Inventory";
+            this.btn_claimbyinventory.UseVisualStyleBackColor = true;
+            this.btn_claimbyinventory.Click += new System.EventHandler(this.btn_claimbyinventory_Click);
             // 
             // panel5
             // 
@@ -181,6 +174,7 @@
             // 
             // pnl_main
             // 
+            this.pnl_main.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pnl_main.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnl_main.Location = new System.Drawing.Point(221, 43);
             this.pnl_main.Name = "pnl_main";
@@ -200,11 +194,10 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Dashboard";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.pnl_sidebar.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
-            this.panel4.ResumeLayout(false);
-            this.panel6.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -218,15 +211,15 @@
         private System.Windows.Forms.Panel pnl_footer;
         private System.Windows.Forms.Panel pnl_sidebar;
         private System.Windows.Forms.Panel panel7;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Button btn_claimbyinventory;
         private System.Windows.Forms.Button btn_claimbysellout;
-        private System.Windows.Forms.Button btn_lpc;
         public System.Windows.Forms.Label dashb_lbl_userlogged;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel pnl_main;
+        private System.Windows.Forms.Button btn_dashboard;
+        private System.Windows.Forms.Button btn_lpc;
+        private System.Windows.Forms.Button btn_logout;
     }
 }
 
