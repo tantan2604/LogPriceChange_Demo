@@ -11,6 +11,7 @@ namespace LogPriceChange0._1
     public static class UserSession
     {
         public static string Username { get; set; } = "Guest";
+        public static string LoggedUser { get; set; }= "Guest";
     }
    
 }

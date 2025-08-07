@@ -28,33 +28,43 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel8 = new System.Windows.Forms.Panel();
+            this.pnlDaftCount = new System.Windows.Forms.Panel();
             this.lblDraftCount = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.panel3 = new System.Windows.Forms.Panel();
+            this.pnlRejectedCount = new System.Windows.Forms.Panel();
             this.lblRejectedCount = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.panel2 = new System.Windows.Forms.Panel();
+            this.pnlApprovedCount = new System.Windows.Forms.Panel();
             this.lblApprovedCount = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.pnlPendingApprovalCount = new System.Windows.Forms.Panel();
             this.lblForApproval = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.panel8.SuspendLayout();
-            this.panel3.SuspendLayout();
-            this.panel2.SuspendLayout();
+            this.statusComboBox = new System.Windows.Forms.ComboBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.lblDocStat = new System.Windows.Forms.Label();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.dgvDocStat = new System.Windows.Forms.DataGridView();
+            this.pnlDaftCount.SuspendLayout();
+            this.pnlRejectedCount.SuspendLayout();
+            this.pnlApprovedCount.SuspendLayout();
+            this.pnlPendingApprovalCount.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvDocStat)).BeginInit();
             this.SuspendLayout();
             // 
-            // panel8
+            // pnlDaftCount
             // 
-            this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel8.Controls.Add(this.lblDraftCount);
-            this.panel8.Controls.Add(this.label4);
-            this.panel8.Location = new System.Drawing.Point(760, 7);
-            this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(245, 100);
-            this.panel8.TabIndex = 3;
+            this.pnlDaftCount.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlDaftCount.Controls.Add(this.lblDraftCount);
+            this.pnlDaftCount.Controls.Add(this.label4);
+            this.pnlDaftCount.Location = new System.Drawing.Point(760, 10);
+            this.pnlDaftCount.Name = "pnlDaftCount";
+            this.pnlDaftCount.Size = new System.Drawing.Size(245, 100);
+            this.pnlDaftCount.TabIndex = 3;
             // 
             // lblDraftCount
             // 
@@ -75,15 +85,15 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Draft";
             // 
-            // panel3
+            // pnlRejectedCount
             // 
-            this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel3.Controls.Add(this.lblRejectedCount);
-            this.panel3.Controls.Add(this.label3);
-            this.panel3.Location = new System.Drawing.Point(509, 7);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(245, 100);
-            this.panel3.TabIndex = 4;
+            this.pnlRejectedCount.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlRejectedCount.Controls.Add(this.lblRejectedCount);
+            this.pnlRejectedCount.Controls.Add(this.label3);
+            this.pnlRejectedCount.Location = new System.Drawing.Point(509, 10);
+            this.pnlRejectedCount.Name = "pnlRejectedCount";
+            this.pnlRejectedCount.Size = new System.Drawing.Size(245, 100);
+            this.pnlRejectedCount.TabIndex = 4;
             // 
             // lblRejectedCount
             // 
@@ -104,15 +114,15 @@
             this.label3.TabIndex = 0;
             this.label3.Text = "Rejected";
             // 
-            // panel2
+            // pnlApprovedCount
             // 
-            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel2.Controls.Add(this.lblApprovedCount);
-            this.panel2.Controls.Add(this.label2);
-            this.panel2.Location = new System.Drawing.Point(258, 7);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(245, 100);
-            this.panel2.TabIndex = 5;
+            this.pnlApprovedCount.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlApprovedCount.Controls.Add(this.lblApprovedCount);
+            this.pnlApprovedCount.Controls.Add(this.label2);
+            this.pnlApprovedCount.Location = new System.Drawing.Point(258, 10);
+            this.pnlApprovedCount.Name = "pnlApprovedCount";
+            this.pnlApprovedCount.Size = new System.Drawing.Size(245, 100);
+            this.pnlApprovedCount.TabIndex = 5;
             // 
             // lblApprovedCount
             // 
@@ -133,15 +143,15 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "Approved";
             // 
-            // panel1
+            // pnlPendingApprovalCount
             // 
-            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel1.Controls.Add(this.lblForApproval);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Location = new System.Drawing.Point(7, 7);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(245, 100);
-            this.panel1.TabIndex = 2;
+            this.pnlPendingApprovalCount.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlPendingApprovalCount.Controls.Add(this.lblForApproval);
+            this.pnlPendingApprovalCount.Controls.Add(this.label1);
+            this.pnlPendingApprovalCount.Location = new System.Drawing.Point(7, 10);
+            this.pnlPendingApprovalCount.Name = "pnlPendingApprovalCount";
+            this.pnlPendingApprovalCount.Size = new System.Drawing.Size(245, 100);
+            this.pnlPendingApprovalCount.TabIndex = 2;
             // 
             // lblForApproval
             // 
@@ -162,41 +172,112 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Pending Approval";
             // 
+            // statusComboBox
+            // 
+            this.statusComboBox.FormattingEnabled = true;
+            this.statusComboBox.Location = new System.Drawing.Point(803, 116);
+            this.statusComboBox.Name = "statusComboBox";
+            this.statusComboBox.Size = new System.Drawing.Size(189, 21);
+            this.statusComboBox.TabIndex = 6;
+            this.statusComboBox.SelectedIndexChanged += new System.EventHandler(this.statusComboBox_SelectedIndexChanged);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.pnlApprovedCount);
+            this.panel1.Controls.Add(this.statusComboBox);
+            this.panel1.Controls.Add(this.pnlPendingApprovalCount);
+            this.panel1.Controls.Add(this.pnlDaftCount);
+            this.panel1.Controls.Add(this.pnlRejectedCount);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1012, 156);
+            this.panel1.TabIndex = 7;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.lblDocStat);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(0, 156);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1012, 38);
+            this.panel2.TabIndex = 8;
+            // 
+            // lblDocStat
+            // 
+            this.lblDocStat.AutoSize = true;
+            this.lblDocStat.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDocStat.Location = new System.Drawing.Point(17, 9);
+            this.lblDocStat.Name = "lblDocStat";
+            this.lblDocStat.Size = new System.Drawing.Size(57, 20);
+            this.lblDocStat.TabIndex = 0;
+            this.lblDocStat.Text = "label5";
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.dgvDocStat);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel3.Location = new System.Drawing.Point(0, 194);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(1012, 364);
+            this.panel3.TabIndex = 9;
+            // 
+            // dgvDocStat
+            // 
+            this.dgvDocStat.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvDocStat.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvDocStat.Location = new System.Drawing.Point(0, 0);
+            this.dgvDocStat.Name = "dgvDocStat";
+            this.dgvDocStat.Size = new System.Drawing.Size(1012, 364);
+            this.dgvDocStat.TabIndex = 0;
+            this.dgvDocStat.Visible = false;
+            // 
             // ctrDashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.panel8);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "ctrDashboard";
             this.Size = new System.Drawing.Size(1012, 558);
-            this.panel8.ResumeLayout(false);
-            this.panel8.PerformLayout();
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
+            this.Load += new System.EventHandler(this.ctrDashboard_Load_1);
+            this.pnlDaftCount.ResumeLayout(false);
+            this.pnlDaftCount.PerformLayout();
+            this.pnlRejectedCount.ResumeLayout(false);
+            this.pnlRejectedCount.PerformLayout();
+            this.pnlApprovedCount.ResumeLayout(false);
+            this.pnlApprovedCount.PerformLayout();
+            this.pnlPendingApprovalCount.ResumeLayout(false);
+            this.pnlPendingApprovalCount.PerformLayout();
+            this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.panel3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvDocStat)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Panel panel8;
+        private System.Windows.Forms.Panel pnlDaftCount;
         private System.Windows.Forms.Label lblDraftCount;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel pnlRejectedCount;
         private System.Windows.Forms.Label lblRejectedCount;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel pnlApprovedCount;
         private System.Windows.Forms.Label lblApprovedCount;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel pnlPendingApprovalCount;
         private System.Windows.Forms.Label lblForApproval;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox statusComboBox;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label lblDocStat;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.DataGridView dgvDocStat;
     }
 }

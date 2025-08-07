@@ -121,6 +121,7 @@
             this.Name = "wfLoginform";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "wfLoginform";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.wfLoginform_FormClosed);
             this.Load += new System.EventHandler(this.wfLoginform_Load);
             ((System.ComponentModel.ISupportInitialize)(this.logf_pb_eyeopen)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.logf_pb_eyeclose)).EndInit();

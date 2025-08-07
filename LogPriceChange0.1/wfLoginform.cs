@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,7 +16,7 @@ namespace LogPriceChange0._1
     public partial class wfLoginform : Form
     {
         ctrLogPriceChange ctrLogPriceChange = new ctrLogPriceChange();
-       
+
         public wfLoginform()
         {
             InitializeComponent();
@@ -25,11 +26,13 @@ namespace LogPriceChange0._1
         }
         private void wfLoginform_Load(object sender, EventArgs e)
         {
-            
+
         }
         private void logf_btn_login_Click(object sender, EventArgs e)
         {
-            try {
+            try
+            {
+                string LoggedUsername = logf_tb_username.Text.Trim();
                 string username = logf_tb_username.Text.Trim();
                 string password = logf_tb_password.Text;
                 using (OleDbConnection conn = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;"))
@@ -110,11 +113,11 @@ namespace LogPriceChange0._1
             {
                 MessageBox.Show("An error occurred during login: " + ex.Message, "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-           
+
         }
         private void TogglePasswordVisibility(object sender, EventArgs e)
         {
-            
+
             // Check if the password is currently hidden
             if (logf_tb_password.UseSystemPasswordChar)
             {
@@ -134,6 +137,11 @@ namespace LogPriceChange0._1
                 logf_pb_eyeopen.Visible = true;
                 logf_pb_eyeclose.Visible = false;
             }
+        }
+
+        private void wfLoginform_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

@@ -125,8 +125,8 @@
             // panel4
             // 
             this.panel4.Controls.Add(this.panel9);
-            this.panel4.Controls.Add(this.panel8);
             this.panel4.Controls.Add(this.panel7);
+            this.panel4.Controls.Add(this.panel8);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel4.Location = new System.Drawing.Point(175, 58);
             this.panel4.Name = "panel4";
@@ -138,9 +138,9 @@
             this.panel9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel9.Controls.Add(this.lblRejectedCount);
             this.panel9.Controls.Add(this.label3);
-            this.panel9.Location = new System.Drawing.Point(706, 0);
+            this.panel9.Location = new System.Drawing.Point(709, 6);
             this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(352, 131);
+            this.panel9.Size = new System.Drawing.Size(345, 119);
             this.panel9.TabIndex = 3;
             // 
             // lblRejectedCount
@@ -167,9 +167,9 @@
             this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel8.Controls.Add(this.lblForApproval);
             this.panel8.Controls.Add(this.label2);
-            this.panel8.Location = new System.Drawing.Point(353, 0);
+            this.panel8.Location = new System.Drawing.Point(360, 6);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(352, 131);
+            this.panel8.Size = new System.Drawing.Size(345, 119);
             this.panel8.TabIndex = 2;
             // 
             // lblForApproval
@@ -196,10 +196,9 @@
             this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel7.Controls.Add(this.lblApprovedCount);
             this.panel7.Controls.Add(this.label1);
-            this.panel7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel7.Location = new System.Drawing.Point(0, 0);
+            this.panel7.Location = new System.Drawing.Point(10, 6);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(1058, 131);
+            this.panel7.Size = new System.Drawing.Size(345, 119);
             this.panel7.TabIndex = 1;
             // 
             // lblApprovedCount

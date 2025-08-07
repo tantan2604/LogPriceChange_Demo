@@ -8,8 +8,62 @@ namespace LogPriceChange0._1
 {
     public partial class MainForm : Form
     {
+        wfLoginform loginForm = new wfLoginform();
         private string _username;
         private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;";
+
+        #region Methods
+        public string GetFullName(string username)
+        {
+            string fullName = string.Empty;
+            string query = "SELECT Lastname, Firstname FROM tbl_employee WHERE Username = ?";
+
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
+            {
+                using (OleDbCommand command = new OleDbCommand(query, connection))
+                {
+                    // The parameter is for the username
+                    command.Parameters.Add("?", OleDbType.VarWChar, 255).Value = username;
+
+                    try
+                    {
+                        connection.Open();
+                        using (OleDbDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // Concatenate Lastname and Firstname from the database
+                                string lastName = reader["Lastname"].ToString();
+                                string firstName = reader["Firstname"].ToString();
+                                fullName = $"{lastName} {firstName}";
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error retrieving full name: " + ex.Message, "Database Error");
+                    }
+                }
+            }
+            return fullName;
+        }
+        private void UpdateIsLoginTofalse()
+        {
+            using (OleDbConnection conn = new OleDbConnection(connectionString))
+            {
+                conn.Open();
+                string updateQuery = "UPDATE tbl_employee SET IsLoggedIn = false WHERE Username = ?";
+                using (OleDbCommand cmdUpdate = new OleDbCommand(updateQuery, conn))
+                {
+                    // Parameters are added positionally for the UPDATE query
+                    cmdUpdate.Parameters.AddWithValue("?", _username); // Only one parameter needed
+                    cmdUpdate.ExecuteNonQuery();
+
+                    conn.Close();
+                }
+            }
+        }
+        #endregion
 
         public MainForm(string username)
         {
@@ -65,106 +119,14 @@ namespace LogPriceChange0._1
         }
         private void btn_logout_Click(object sender, EventArgs e)
         {
-            string updateQuery = "UPDATE tbl_employee SET IsLoggedIn = ? WHERE username = ?";
-            using (OleDbConnection connection = new OleDbConnection(connectionString))
-            {
-                using (OleDbCommand command = new OleDbCommand(updateQuery, connection))
-                {
-                    command.Parameters.Add("IsLoggedIn", OleDbType.Boolean).Value = false;
-                    command.Parameters.Add("username", OleDbType.VarWChar, 255).Value = _username;
-
-                    try
-                    {
-                        connection.Open();
-                        int rowsAffected = command.ExecuteNonQuery();
-                        
-
-                        if (rowsAffected > 0)
-                        {
-                            // Optional: Show a success message to confirm the update
-                            this.Hide();
-                            wfLoginform loginForm = new wfLoginform();  
-                            loginForm.ShowDialog();
-
-
-                        }
-                        else
-                        {
-                            // No rows were updated. The username may not exist.
-                            MessageBox.Show("No user found to update.");
-                            MessageBox.Show("Username to update: '" + _username + "'");
-
-
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Error updating log status: " + ex.Message);
-                     
-                    }
-                }
-            }
-        }
-        public string GetFullName(string username)
-        {
-            string fullName = string.Empty;
-            string query = "SELECT Lastname, Firstname FROM tbl_employee WHERE Username = ?";
-
-            using (OleDbConnection connection = new OleDbConnection(connectionString))
-            {
-                using (OleDbCommand command = new OleDbCommand(query, connection))
-                {
-                    // The parameter is for the username
-                    command.Parameters.Add("?", OleDbType.VarWChar, 255).Value = username;
-
-                    try
-                    {
-                        connection.Open();
-                        using (OleDbDataReader reader = command.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                // Concatenate Lastname and Firstname from the database
-                                string lastName = reader["Lastname"].ToString();
-                                string firstName = reader["Firstname"].ToString();
-                                fullName = $"{lastName} {firstName}";
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Error retrieving full name: " + ex.Message, "Database Error");
-                    }
-                }
-            }
-            return fullName;
+            UpdateIsLoginTofalse();
+            this.Hide();
+            loginForm.Show();
         }
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Your code to update the IsLoggedIn status to false
-            string username = UserSession.Username;
-            string connString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;";
-            string updateQuery = "UPDATE tbl_employee SET IsLoggedIn = ? WHERE Username = ?";
+            UpdateIsLoginTofalse();
 
-            try
-            {
-                using (OleDbConnection conn = new OleDbConnection(connString))
-                {
-                    conn.Open();
-                    using (OleDbCommand cmdUpdate = new OleDbCommand(updateQuery, conn))
-                    {
-                        cmdUpdate.Parameters.AddWithValue("?", false);
-                        cmdUpdate.Parameters.AddWithValue("?", username);
-                        cmdUpdate.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error on logout: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            // Now, let the application close gracefully.
             Application.Exit();
         }
     }

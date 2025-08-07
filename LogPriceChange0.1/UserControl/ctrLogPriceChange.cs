@@ -60,6 +60,7 @@ namespace LogPriceChange0._1
             }
             return fullName;
         }
+
         public ctrLogPriceChange()
         {
             InitializeComponent();
@@ -79,6 +80,7 @@ namespace LogPriceChange0._1
             // Assign the ContextMenuStrip to the DataGridView (if not done in designer)
             lpc_dgv_dbvalue.ContextMenuStrip = cmsRemoveGroup;
         }
+
         //***********************************************Remove Rows in datagridview**********************************************************************************************************************************************************************************************
         #region RightClick remove in lpc_dgv_dbvalue 
         private void lpc_dgv_dbvalue_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
@@ -293,7 +295,6 @@ namespace LogPriceChange0._1
         }
 
         /**************************************************Start For DataGridview Insert Update *******************************************************************************************************************************************************************************************************************************************************************************************************************************/
-        
         private void UpdateDependentValues(int rowIndex, string editedColumnName)
         {
             if (rowIndex < 0 || rowIndex >= lpc_dgv_dbvalue.Rows.Count)
@@ -340,7 +341,6 @@ namespace LogPriceChange0._1
             string columnName = lpc_dgv_dbvalue.Columns[e.ColumnIndex].Name;
             UpdateDependentValues(e.RowIndex, columnName);
         }
-
         //************************************************Upsert*******************************************************************************************************************
         #region
         public void InsertData(string docStatus)
@@ -463,7 +463,6 @@ namespace LogPriceChange0._1
             lpc_dtp_startdate.Checked = true;
         }
 
-        // Helper to extract value safely
         private object GetCellValue(int row, string col)
         {
             var cell = lpc_dgv_dbvalue.Rows[row].Cells[col];
@@ -472,8 +471,6 @@ namespace LogPriceChange0._1
             return cell.Value;
         }
 
-        // Helper to perform insert for a product row
-        // The signature has been updated to include the docStatus parameter
         private void InsertProductRow(OleDbConnection conn, OleDbTransaction tx,
         string docIdToUse, int dbRow, int suppRow, int promoRow,
         string commonDocId, string promoName, string promoType,
@@ -600,6 +597,7 @@ namespace LogPriceChange0._1
 
             }
         }
+
         private void btnlpcsubmit_Click(object sender, EventArgs e)
         {
             // Correct call for submitting for approval
@@ -609,12 +607,10 @@ namespace LogPriceChange0._1
                 InsertData("ForApproval");
             }
         }
+
         private void btn_draft_Click(object sender, EventArgs e)
         {
-
-            //InsertData("Draft");
-
-            MessageBox.Show("" + " " + UserSession.Username);
+            InsertData("Draft");
         }
         #endregion
         
