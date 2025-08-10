@@ -38,32 +38,30 @@
             this.panel9 = new System.Windows.Forms.Panel();
             this.lblRejectedCount = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.panel8 = new System.Windows.Forms.Panel();
-            this.lblForApproval = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.panel7 = new System.Windows.Forms.Panel();
             this.lblApprovedCount = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.lblForApproval = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.tabCtr_forApproval = new System.Windows.Forms.TabControl();
-            this.tabCtrforApproval = new System.Windows.Forms.TabPage();
-            this.dgv_forApproval = new System.Windows.Forms.DataGridView();
-            this.tabCtrApproved = new System.Windows.Forms.TabPage();
-            this.dgv_Approved = new System.Windows.Forms.DataGridView();
             this.btn_approve = new System.Windows.Forms.Button();
             this.btn_reject = new System.Windows.Forms.Button();
+            this.tabApproved = new System.Windows.Forms.TabPage();
+            this.tabCtr_forApproval = new System.Windows.Forms.TabControl();
+            this.tabForApproval = new System.Windows.Forms.TabPage();
+            this.dgv_main = new System.Windows.Forms.DataGridView();
+            this.btnUpdate = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel9.SuspendLayout();
-            this.panel8.SuspendLayout();
             this.panel7.SuspendLayout();
+            this.panel8.SuspendLayout();
             this.panel5.SuspendLayout();
+            this.tabApproved.SuspendLayout();
             this.tabCtr_forApproval.SuspendLayout();
-            this.tabCtrforApproval.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_forApproval)).BeginInit();
-            this.tabCtrApproved.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_Approved)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_main)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -162,35 +160,6 @@
             this.label3.TabIndex = 1;
             this.label3.Text = "Rejected";
             // 
-            // panel8
-            // 
-            this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel8.Controls.Add(this.lblForApproval);
-            this.panel8.Controls.Add(this.label2);
-            this.panel8.Location = new System.Drawing.Point(360, 6);
-            this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(345, 119);
-            this.panel8.TabIndex = 2;
-            // 
-            // lblForApproval
-            // 
-            this.lblForApproval.AutoSize = true;
-            this.lblForApproval.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblForApproval.Location = new System.Drawing.Point(263, 50);
-            this.lblForApproval.Name = "lblForApproval";
-            this.lblForApproval.Size = new System.Drawing.Size(72, 30);
-            this.lblForApproval.TabIndex = 2;
-            this.lblForApproval.Text = "label4";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(23, 12);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(46, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Pending";
-            // 
             // panel7
             // 
             this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -220,8 +189,38 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Approved";
             // 
+            // panel8
+            // 
+            this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel8.Controls.Add(this.lblForApproval);
+            this.panel8.Controls.Add(this.label2);
+            this.panel8.Location = new System.Drawing.Point(360, 6);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(345, 119);
+            this.panel8.TabIndex = 2;
+            // 
+            // lblForApproval
+            // 
+            this.lblForApproval.AutoSize = true;
+            this.lblForApproval.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblForApproval.Location = new System.Drawing.Point(263, 50);
+            this.lblForApproval.Name = "lblForApproval";
+            this.lblForApproval.Size = new System.Drawing.Size(72, 30);
+            this.lblForApproval.TabIndex = 2;
+            this.lblForApproval.Text = "label4";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(23, 12);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(46, 13);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Pending";
+            // 
             // panel5
             // 
+            this.panel5.Controls.Add(this.btnUpdate);
             this.panel5.Controls.Add(this.tabCtr_forApproval);
             this.panel5.Controls.Add(this.btn_approve);
             this.panel5.Controls.Add(this.btn_reject);
@@ -230,60 +229,6 @@
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(1058, 378);
             this.panel5.TabIndex = 4;
-            // 
-            // tabCtr_forApproval
-            // 
-            this.tabCtr_forApproval.Controls.Add(this.tabCtrforApproval);
-            this.tabCtr_forApproval.Controls.Add(this.tabCtrApproved);
-            this.tabCtr_forApproval.Location = new System.Drawing.Point(6, 6);
-            this.tabCtr_forApproval.Name = "tabCtr_forApproval";
-            this.tabCtr_forApproval.SelectedIndex = 0;
-            this.tabCtr_forApproval.Size = new System.Drawing.Size(1052, 324);
-            this.tabCtr_forApproval.TabIndex = 3;
-            this.tabCtr_forApproval.SelectedIndexChanged += new System.EventHandler(this.tabCtr_forApproval_SelectedIndexChanged);
-            // 
-            // tabCtrforApproval
-            // 
-            this.tabCtrforApproval.Controls.Add(this.dgv_forApproval);
-            this.tabCtrforApproval.Location = new System.Drawing.Point(4, 22);
-            this.tabCtrforApproval.Name = "tabCtrforApproval";
-            this.tabCtrforApproval.Padding = new System.Windows.Forms.Padding(3);
-            this.tabCtrforApproval.Size = new System.Drawing.Size(1044, 298);
-            this.tabCtrforApproval.TabIndex = 0;
-            this.tabCtrforApproval.Text = "For Approval";
-            this.tabCtrforApproval.UseVisualStyleBackColor = true;
-            // 
-            // dgv_forApproval
-            // 
-            this.dgv_forApproval.BackgroundColor = System.Drawing.Color.White;
-            this.dgv_forApproval.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_forApproval.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv_forApproval.Location = new System.Drawing.Point(3, 3);
-            this.dgv_forApproval.Name = "dgv_forApproval";
-            this.dgv_forApproval.Size = new System.Drawing.Size(1038, 292);
-            this.dgv_forApproval.TabIndex = 0;
-            this.dgv_forApproval.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_forApproval_CellClick);
-            // 
-            // tabCtrApproved
-            // 
-            this.tabCtrApproved.Controls.Add(this.dgv_Approved);
-            this.tabCtrApproved.Location = new System.Drawing.Point(4, 22);
-            this.tabCtrApproved.Name = "tabCtrApproved";
-            this.tabCtrApproved.Padding = new System.Windows.Forms.Padding(3);
-            this.tabCtrApproved.Size = new System.Drawing.Size(1044, 298);
-            this.tabCtrApproved.TabIndex = 1;
-            this.tabCtrApproved.Text = "Approved";
-            this.tabCtrApproved.UseVisualStyleBackColor = true;
-            // 
-            // dgv_Approved
-            // 
-            this.dgv_Approved.BackgroundColor = System.Drawing.Color.White;
-            this.dgv_Approved.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_Approved.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv_Approved.Location = new System.Drawing.Point(3, 3);
-            this.dgv_Approved.Name = "dgv_Approved";
-            this.dgv_Approved.Size = new System.Drawing.Size(1038, 292);
-            this.dgv_Approved.TabIndex = 0;
             // 
             // btn_approve
             // 
@@ -309,6 +254,60 @@
             this.btn_reject.UseVisualStyleBackColor = false;
             this.btn_reject.Click += new System.EventHandler(this.btn_reject_Click);
             // 
+            // tabApproved
+            // 
+            this.tabApproved.Controls.Add(this.dgv_main);
+            this.tabApproved.Location = new System.Drawing.Point(4, 22);
+            this.tabApproved.Name = "tabApproved";
+            this.tabApproved.Padding = new System.Windows.Forms.Padding(3);
+            this.tabApproved.Size = new System.Drawing.Size(1044, 298);
+            this.tabApproved.TabIndex = 0;
+            this.tabApproved.Text = "Approved";
+            this.tabApproved.UseVisualStyleBackColor = true;
+            // 
+            // tabCtr_forApproval
+            // 
+            this.tabCtr_forApproval.Controls.Add(this.tabApproved);
+            this.tabCtr_forApproval.Controls.Add(this.tabForApproval);
+            this.tabCtr_forApproval.Location = new System.Drawing.Point(6, 6);
+            this.tabCtr_forApproval.Name = "tabCtr_forApproval";
+            this.tabCtr_forApproval.SelectedIndex = 0;
+            this.tabCtr_forApproval.Size = new System.Drawing.Size(1052, 324);
+            this.tabCtr_forApproval.TabIndex = 3;
+            this.tabCtr_forApproval.SelectedIndexChanged += new System.EventHandler(this.tabCtr_forApproval_SelectedIndexChanged);
+            // 
+            // tabForApproval
+            // 
+            this.tabForApproval.Location = new System.Drawing.Point(4, 22);
+            this.tabForApproval.Name = "tabForApproval";
+            this.tabForApproval.Padding = new System.Windows.Forms.Padding(3);
+            this.tabForApproval.Size = new System.Drawing.Size(1044, 298);
+            this.tabForApproval.TabIndex = 1;
+            this.tabForApproval.Text = "For Approval";
+            this.tabForApproval.UseVisualStyleBackColor = true;
+            // 
+            // dgv_main
+            // 
+            this.dgv_main.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_main.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_main.Location = new System.Drawing.Point(3, 3);
+            this.dgv_main.Name = "dgv_main";
+            this.dgv_main.Size = new System.Drawing.Size(1038, 292);
+            this.dgv_main.TabIndex = 0;
+            this.dgv_main.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_main_CellClick_1);
+            // 
+            // btnUpdate
+            // 
+            this.btnUpdate.BackColor = System.Drawing.Color.Blue;
+            this.btnUpdate.ForeColor = System.Drawing.Color.White;
+            this.btnUpdate.Location = new System.Drawing.Point(731, 336);
+            this.btnUpdate.Name = "btnUpdate";
+            this.btnUpdate.Size = new System.Drawing.Size(101, 36);
+            this.btnUpdate.TabIndex = 4;
+            this.btnUpdate.Text = "Update";
+            this.btnUpdate.UseVisualStyleBackColor = false;
+            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
+            // 
             // AdminForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -330,16 +329,14 @@
             this.panel4.ResumeLayout(false);
             this.panel9.ResumeLayout(false);
             this.panel9.PerformLayout();
-            this.panel8.ResumeLayout(false);
-            this.panel8.PerformLayout();
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
+            this.panel8.ResumeLayout(false);
+            this.panel8.PerformLayout();
             this.panel5.ResumeLayout(false);
+            this.tabApproved.ResumeLayout(false);
             this.tabCtr_forApproval.ResumeLayout(false);
-            this.tabCtrforApproval.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_forApproval)).EndInit();
-            this.tabCtrApproved.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_Approved)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_main)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -355,11 +352,6 @@
         private System.Windows.Forms.Button btn_approve;
         private System.Windows.Forms.Label lbl_adminLog;
         private System.Windows.Forms.Button btn_logout;
-        private System.Windows.Forms.TabControl tabCtr_forApproval;
-        private System.Windows.Forms.TabPage tabCtrforApproval;
-        private System.Windows.Forms.DataGridView dgv_forApproval;
-        private System.Windows.Forms.TabPage tabCtrApproved;
-        private System.Windows.Forms.DataGridView dgv_Approved;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Panel panel9;
         private System.Windows.Forms.Label label3;
@@ -370,5 +362,10 @@
         private System.Windows.Forms.Label lblApprovedCount;
         private System.Windows.Forms.Label lblRejectedCount;
         private System.Windows.Forms.Label lblForApproval;
+        private System.Windows.Forms.TabControl tabCtr_forApproval;
+        private System.Windows.Forms.TabPage tabApproved;
+        private System.Windows.Forms.TabPage tabForApproval;
+        private System.Windows.Forms.DataGridView dgv_main;
+        private System.Windows.Forms.Button btnUpdate;
     }
 }

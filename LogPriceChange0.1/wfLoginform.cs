@@ -32,26 +32,34 @@ namespace LogPriceChange0._1
         {
             try
             {
-                string LoggedUsername = logf_tb_username.Text.Trim();
-                string username = logf_tb_username.Text.Trim();
+                // Retrieve username and password from the text boxes
+                string username = logf_tb_username.Text;
                 string password = logf_tb_password.Text;
-                using (OleDbConnection conn = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;"))
+
+                // Use a secure and reliable connection to the database
+                // Note: Hardcoding the path is not ideal for a deployed application.
+                using (OleDbConnection conn = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\Desktop\CameraHaus\LogPriceChange_Demo\pricematrix.accdb;"))
                 {
                     try
                     {
                         conn.Open();
 
+                        // SQL query to check for user credentials.
+                        // Using '?' as placeholders for parameters to prevent SQL injection.
                         string checkLoginQuery = "SELECT Lastname, Firstname, EmployeeRole, IsLoggedIn FROM tbl_employee WHERE Username = ? AND EmployeePassword = ?";
 
                         using (OleDbCommand cmdCheck = new OleDbCommand(checkLoginQuery, conn))
                         {
-                            cmdCheck.Parameters.AddWithValue("?", username);
-                            cmdCheck.Parameters.AddWithValue("?", password);
+                            // CORRECTED: Explicitly add parameters with their data type for OleDb
+                            // The 'OleDbType.VarWChar' type is used for text/string data.
+                            cmdCheck.Parameters.Add("?", OleDbType.VarWChar).Value = username;
+                            cmdCheck.Parameters.Add("?", OleDbType.VarWChar).Value = password;
 
                             using (OleDbDataReader dr = cmdCheck.ExecuteReader())
                             {
                                 if (dr.Read())
                                 {
+                                    //A user was found, now check if they are already logged in
                                     bool isLoggedIn = dr.GetBoolean(dr.GetOrdinal("IsLoggedIn"));
 
                                     if (isLoggedIn)
@@ -60,14 +68,16 @@ namespace LogPriceChange0._1
                                         return;
                                     }
 
+                                    // User is valid and not logged in, proceed to update login status
                                     string updateQuery = "UPDATE tbl_employee SET IsLoggedIn = true WHERE Username = ?";
                                     using (OleDbCommand cmdUpdate = new OleDbCommand(updateQuery, conn))
                                     {
-                                        cmdUpdate.Parameters.AddWithValue("?", username);
+                                        // CORRECTED: Use explicit parameter addition for the update query as well
+                                        cmdUpdate.Parameters.Add("?", OleDbType.VarWChar).Value = username;
                                         cmdUpdate.ExecuteNonQuery();
                                     }
 
-                                    // Store the full name for display, but keep the original username.
+                                    // Retrieve user information for the next form
                                     string loggedInFullName = dr["Lastname"]?.ToString() + " " + dr["Firstname"]?.ToString();
                                     string loggedInUserRole = dr["EmployeeRole"]?.ToString() ?? string.Empty;
 
@@ -75,6 +85,7 @@ namespace LogPriceChange0._1
                                     this.Hide();
                                     Form nextForm = null;
 
+                                    // Determine which form to show based on the user's role
                                     switch (loggedInUserRole.ToLower())
                                     {
                                         case "admin":
@@ -97,6 +108,7 @@ namespace LogPriceChange0._1
                                 }
                                 else
                                 {
+                                    // No matching user found
                                     MessageBox.Show("Login failed. Please check your username and password.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
@@ -104,17 +116,18 @@ namespace LogPriceChange0._1
                     }
                     catch (Exception ex)
                     {
+                        // Handle database-specific errors
                         MessageBox.Show("Error: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
-
             }
             catch (Exception ex)
             {
+                // Handle general application errors
                 MessageBox.Show("An error occurred during login: " + ex.Message, "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
         }
+
         private void TogglePasswordVisibility(object sender, EventArgs e)
         {
 

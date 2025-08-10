@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
 using System.Windows.Forms;
@@ -9,9 +10,10 @@ namespace LogPriceChange0._1
     public partial class AdminForm : Form
     {
         // Store the connection string in a private field
-        private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;";
+        private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\Desktop\CameraHaus\LogPriceChange_Demo\pricematrix.accdb;";
         private string _username;
         private string _idValue;
+        private BindingSource bindingSource = new BindingSource();
 
         #region **************************************************** Methods **********************************************************************************
         private void UpdateIsLoginTofalse()
@@ -36,159 +38,178 @@ namespace LogPriceChange0._1
             string query = "SELECT Lastname, Firstname FROM tbl_employee WHERE Username = ?";
 
             using (OleDbConnection connection = new OleDbConnection(connectionString))
+            using (OleDbCommand command = new OleDbCommand(query, connection))
             {
-                using (OleDbCommand command = new OleDbCommand(query, connection))
-                {
-                    // The parameter is for the username
-                    command.Parameters.Add("?", OleDbType.VarWChar, 255).Value = username;
+                command.Parameters.Add("?", OleDbType.VarWChar, 255).Value = username;
 
-                    try
+                try
+                {
+                    connection.Open();
+                    using (OleDbDataReader reader = command.ExecuteReader())
                     {
-                        connection.Open();
-                        using (OleDbDataReader reader = command.ExecuteReader())
+                        if (reader.Read())
                         {
-                            if (reader.Read())
-                            {
-                                // Concatenate Lastname and Firstname from the database
-                                string lastName = reader["Lastname"].ToString();
-                                string firstName = reader["Firstname"].ToString();
-                                fullName = $"{lastName} {firstName}";
-                            }
+                            string lastName = reader["Lastname"].ToString();
+                            string firstName = reader["Firstname"].ToString();
+                            fullName = $"{lastName} {firstName}";
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Error retrieving full name: " + ex.Message, "Database Error");
-                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error retrieving full name: " + ex.Message, "Database Error");
                 }
             }
             return fullName;
         }
-        private void UpdateStatusCounts()
+        private void LoadDataAndStatus()
         {
-            // Define the query to count all statuses
-            string query = "SELECT DocStatus, COUNT(DocStatus) AS StatusCount FROM tbl_logpricechange GROUP BY DocStatus;";
-
-            // Use a 'using' statement for the connection for proper resource management
-            using (OleDbConnection connection = new OleDbConnection(connectionString))
+            using (var connection = new OleDbConnection(connectionString))
             {
                 try
                 {
                     connection.Open();
-                    OleDbCommand command = new OleDbCommand(query, connection);
-                    OleDbDataReader reader = command.ExecuteReader();
 
-                    // Reset all labels to zero before updating
-                    lblApprovedCount.Text = "0";
-                    lblForApproval.Text = "0";
-                    lblRejectedCount.Text = "0";
+                    // Load counts for labels
+                    string statusQuery = @"
+                        SELECT DocStatus, COUNT(*) AS StatusCount
+                        FROM tbl_logpricechange
+                        GROUP BY DocStatus";
 
-
-                    // Loop through the query results
-                    while (reader.Read())
+                    using (var statusCmd = new OleDbCommand(statusQuery, connection))
+                    using (var reader = statusCmd.ExecuteReader())
                     {
-                        string status = reader["DocStatus"].ToString();
-                        int count = Convert.ToInt32(reader["StatusCount"]);
+                        lblApprovedCount.Text = "0";
+                        lblForApproval.Text = "0";
+                        lblRejectedCount.Text = "0";
 
-                        // Update the appropriate label based on the status
-                        switch (status)
+                        while (reader.Read())
                         {
-                            case "ForApproval":
-                                lblForApproval.Text = count.ToString();
-                                break;
+                            string status = reader["DocStatus"]?.ToString() ?? "";
+                            int count = Convert.ToInt32(reader["StatusCount"]);
 
-                            case "Approved":
-                                lblApprovedCount.Text = count.ToString();
-                                break;
-
-                            case "Rejected":
-                                lblRejectedCount.Text = count.ToString();
-                                break;
+                            switch (status)
+                            {
+                                case "ForApproval":
+                                    lblForApproval.Text = count.ToString();
+                                    break;
+                                case "Approved":
+                                    lblApprovedCount.Text = count.ToString();
+                                    break;
+                                case "Rejected":
+                                    lblRejectedCount.Text = count.ToString();
+                                    break;
+                            }
                         }
                     }
 
-                    reader.Close();
+                    // Load all data into one DataGridView
+                    string dataQuery = @"
+                        SELECT *
+                        FROM tbl_logpricechange
+                        ORDER BY CreatedDate ASC";
+
+                    using (var dataAdapter = new OleDbDataAdapter(dataQuery, connection))
+                    {
+                        var dataTable = new DataTable();
+                        dataAdapter.Fill(dataTable);
+
+                        bindingSource.DataSource = dataTable;
+                        dgv_main.DataSource = bindingSource; // one grid only
+                        dgv_main.ReadOnly = false;
+                        tabCtr_forApproval.SelectedIndexChanged += tabCtr_forApproval_SelectedIndexChanged;
+                    }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error updating status counts: " + ex.Message);
+                    MessageBox.Show("An error occurred while loading data: " + ex.Message,
+                        "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
-        private void LoadDataByStatus(string docStatus, DataGridView dgv)
+        private void UpdateChangedRows()
         {
-            string query = $"SELECT * FROM tbl_logpricechange WHERE DocStatus = '{docStatus}';";
-
-            try
+            using (OleDbConnection conn = new OleDbConnection(connectionString))
             {
-                // Use a 'using' statement to ensure the connection is always closed.
-                using (OleDbConnection connection = new OleDbConnection(connectionString))
+                conn.Open();
+
+                if (bindingSource.DataSource is DataTable table)
                 {
-                    connection.Open();
-                    OleDbDataAdapter dataAdapter = new OleDbDataAdapter(query, connection);
-                    DataTable dataTable = new DataTable();
-                    dataAdapter.Fill(dataTable);
-                    dgv.DataSource = dataTable;
-                }
+                    foreach (DataRow dr in table.Rows)
+                    {
+                        if (dr.RowState == DataRowState.Modified)
+                        {
+                            string pkColumn = dgv_main.Columns[0].Name;
 
-                if (dgv.Columns.Contains("ID"))
-                {
-                    dgv.Columns["ID"].Visible = false;
+                            // Build SET clause dynamically, skipping DocStatus
+                            List<string> setClauses = new List<string>();
+                            for (int i = 1; i < dgv_main.Columns.Count; i++)
+                            {
+                                string colName = dgv_main.Columns[i].Name;
+                                if (!colName.Equals("DocStatus", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    setClauses.Add($"{colName} = ?");
+                                }
+                            }
+
+                            // Append DocStatus manually at the end
+                            setClauses.Add("DocStatus = ?");
+
+                            string query = $"UPDATE tbl_logpricechange SET {string.Join(", ", setClauses)} WHERE {pkColumn} = ?";
+
+                            using (OleDbCommand cmd = new OleDbCommand(query, conn))
+                            {
+                                // Add parameters for all columns except PK and DocStatus
+                                for (int i = 1; i < dgv_main.Columns.Count; i++)
+                                {
+                                    string colName = dgv_main.Columns[i].Name;
+                                    if (!colName.Equals("DocStatus", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        cmd.Parameters.AddWithValue("?", dr[colName] ?? DBNull.Value);
+                                    }
+                                }
+
+                                // Add DocStatus param (fixed)
+                                cmd.Parameters.AddWithValue("?", "ForApproval");
+
+                                // Add PK param
+                                cmd.Parameters.AddWithValue("?", dr[pkColumn] ?? DBNull.Value);
+
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading {docStatus} data: " + ex.Message);
-            }
-        }
-        private void AdminForm_Load(object sender, EventArgs e)
-        {
-            LoadDataByStatus("ForApproval", dgv_forApproval);
-            LoadDataByStatus("Approved", dgv_Approved);
-            UpdateStatusCounts();
-            if (this.Controls.Find("lbl_adminLog", true).Length > 0)
-            {
-                Label userLabel = (Label)this.Controls.Find("lbl_adminLog", true)[0];
-                userLabel.Text = GetFullName(_username);
-            }
-        }
-        #endregion ****************************************************End of Methods **********************************************************************************
 
-        public AdminForm(string username)
-        {
-            InitializeComponent();
-            _username = username;
-            this.Text = "Admin Dashboard";
+            MessageBox.Show("Only changed rows updated, DocStatus set to 'ForApproval'.");
         }
-        private void btn_logout_Click(object sender, EventArgs e)
+        private void ApplyTabFilter()
         {
-            this.Hide();
-            wfLoginform loginForm = new wfLoginform();
-            loginForm.Show();
-            UpdateIsLoginTofalse();
-        }
-        private void dgv_forApproval_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0 && dgv_forApproval.Rows[e.RowIndex].Cells["ID"].Value != null)
+            if (tabCtr_forApproval.SelectedTab == null) return;
+
+            string filter = "";
+
+            switch (tabCtr_forApproval.SelectedTab.Name)
             {
-                _idValue = dgv_forApproval.Rows[e.RowIndex].Cells["ID"].Value.ToString();
+                case "tabApproved":
+                    filter = "[DocStatus] = 'Approved'";
+                    break;
+               
+                case "tabForApproval":
+                default:
+                    filter = "[DocStatus] = 'ForApproval'";
+                    break;
             }
+
+            bindingSource.Filter = filter;
+
+            // Show/hide approve/reject buttons only for ForApproval tab
+            bool isApprovalTab = tabCtr_forApproval.SelectedTab.Name == "tabForApproval";
+            btn_approve.Visible = isApprovalTab;
+            btn_reject.Visible = isApprovalTab;
+            btnUpdate.Visible = isApprovalTab;
         }
-        private void tabCtr_forApproval_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (tabCtr_forApproval.SelectedIndex == 1)
-            {
-                btn_approve.Visible = false;
-                btn_reject.Visible = false;
-                LoadDataByStatus("Approved", dgv_Approved);
-            }
-            else
-            {
-                btn_approve.Visible = true;
-                btn_reject.Visible = true;
-            }
-        }
-        // This method now uses the class-level connectionString and handles its own resources.
         private void UpdateDocumentStatus(string newDocStatus, string approvedBy, string approvedDate = null)
         {
             if (string.IsNullOrEmpty(_idValue))
@@ -200,7 +221,7 @@ namespace LogPriceChange0._1
             string query = "";
             if (newDocStatus == "Rejected")
             {
-                query = $"UPDATE tbl_logpricechange SET DocStatus = 'Rejected', ApprovedBy = '{approvedBy}' WHERE ID = {_idValue};";
+                query = $"UPDATE tbl_logpricechange SET DocStatus = 'Rejected' WHERE ID = {_idValue};";
             }
             else if (newDocStatus == "Approved")
             {
@@ -220,7 +241,7 @@ namespace LogPriceChange0._1
                         if (rowsAffected > 0)
                         {
                             MessageBox.Show($"Record has been {newDocStatus.ToLower()} successfully.");
-                            LoadDataByStatus("ForApproval", dgv_forApproval);
+                            //LoadDataByStatus("ForApproval", dgv_forApproval);
                         }
                         else
                         {
@@ -233,6 +254,27 @@ namespace LogPriceChange0._1
             {
                 MessageBox.Show($"Error {newDocStatus.ToLower()} record: " + ex.Message);
             }
+        }
+
+        #endregion ****************************************************End of Methods **********************************************************************************
+        public AdminForm(string username)
+        {
+            InitializeComponent();
+            _username = username;
+            this.Text = "Admin Dashboard";
+            LoadDataAndStatus();
+           
+        }
+        private void AdminForm_Load(object sender, EventArgs e)
+        {
+            ApplyTabFilter();
+        }
+        private void btn_logout_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            wfLoginform loginForm = new wfLoginform();
+            loginForm.Show();
+            UpdateIsLoginTofalse();
         }
         private void btn_approve_Click(object sender, EventArgs e)
         {
@@ -248,7 +290,7 @@ namespace LogPriceChange0._1
                 string approvedDate = DateTime.Now.ToString("yyyy/MM/dd HH:mm");
                 UpdateDocumentStatus("Approved", GetFullName(_username), approvedDate);
             }
-            UpdateStatusCounts();
+            LoadDataAndStatus();
         }
         private void btn_reject_Click(object sender, EventArgs e)
         {
@@ -263,7 +305,7 @@ namespace LogPriceChange0._1
             {
                 UpdateDocumentStatus("Rejected", GetFullName(_username));
             }
-            UpdateStatusCounts();
+            LoadDataAndStatus();
         }
         private void AdminForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -271,6 +313,31 @@ namespace LogPriceChange0._1
 
             // Now, let the application close gracefully.
             Application.Exit();
+        }
+        private void dgv_main_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && dgv_main.Rows[e.RowIndex].Cells["ID"].Value != null)
+            {
+                _idValue = dgv_main.Rows[e.RowIndex].Cells["ID"].Value.ToString();
+            }
+        }
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            UpdateChangedRows();
+            LoadDataAndStatus();
+        }
+        private void tabCtr_forApproval_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            dgv_main.Parent = tabCtr_forApproval.SelectedTab;
+            dgv_main.Dock = DockStyle.Fill;
+            ApplyTabFilter();
+        }
+        private void dgv_main_CellClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && dgv_main.Rows[e.RowIndex].Cells["ID"].Value != null)
+            {
+                _idValue = dgv_main.Rows[e.RowIndex].Cells["ID"].Value.ToString();
+            }
         }
     }
 }

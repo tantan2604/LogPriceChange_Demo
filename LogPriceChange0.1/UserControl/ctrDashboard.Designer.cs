@@ -44,16 +44,19 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.lblDocStat = new System.Windows.Forms.Label();
-            this.panel3 = new System.Windows.Forms.Panel();
             this.dgvDocStat = new System.Windows.Forms.DataGridView();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.btnUpdate = new System.Windows.Forms.Button();
             this.pnlDaftCount.SuspendLayout();
             this.pnlRejectedCount.SuspendLayout();
             this.pnlApprovedCount.SuspendLayout();
             this.pnlPendingApprovalCount.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
-            this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDocStat)).BeginInit();
+            this.panel3.SuspendLayout();
+            this.panel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlDaftCount
@@ -175,6 +178,12 @@
             // statusComboBox
             // 
             this.statusComboBox.FormattingEnabled = true;
+            this.statusComboBox.Items.AddRange(new object[] {
+            "",
+            "ForApproval",
+            "Approved",
+            "Rejected",
+            "Draft"});
             this.statusComboBox.Location = new System.Drawing.Point(803, 116);
             this.statusComboBox.Name = "statusComboBox";
             this.statusComboBox.Size = new System.Drawing.Size(189, 21);
@@ -212,15 +221,7 @@
             this.lblDocStat.Size = new System.Drawing.Size(57, 20);
             this.lblDocStat.TabIndex = 0;
             this.lblDocStat.Text = "label5";
-            // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.dgvDocStat);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(0, 194);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1012, 364);
-            this.panel3.TabIndex = 9;
+            this.lblDocStat.Visible = false;
             // 
             // dgvDocStat
             // 
@@ -228,9 +229,39 @@
             this.dgvDocStat.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvDocStat.Location = new System.Drawing.Point(0, 0);
             this.dgvDocStat.Name = "dgvDocStat";
-            this.dgvDocStat.Size = new System.Drawing.Size(1012, 364);
+            this.dgvDocStat.Size = new System.Drawing.Size(1012, 319);
             this.dgvDocStat.TabIndex = 0;
             this.dgvDocStat.Visible = false;
+            this.dgvDocStat.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDocStat_CellEndEdit);
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.dgvDocStat);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel3.Location = new System.Drawing.Point(0, 194);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(1012, 319);
+            this.panel3.TabIndex = 9;
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.btnUpdate);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel4.Location = new System.Drawing.Point(0, 513);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(1012, 45);
+            this.panel4.TabIndex = 10;
+            // 
+            // btnUpdate
+            // 
+            this.btnUpdate.Location = new System.Drawing.Point(900, 10);
+            this.btnUpdate.Name = "btnUpdate";
+            this.btnUpdate.Size = new System.Drawing.Size(75, 23);
+            this.btnUpdate.TabIndex = 0;
+            this.btnUpdate.Text = "UPDATE";
+            this.btnUpdate.UseVisualStyleBackColor = true;
+            this.btnUpdate.Visible = false;
+            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
             // ctrDashboard
             // 
@@ -239,6 +270,7 @@
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.panel4);
             this.Name = "ctrDashboard";
             this.Size = new System.Drawing.Size(1012, 558);
             this.Load += new System.EventHandler(this.ctrDashboard_Load_1);
@@ -253,8 +285,9 @@
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvDocStat)).EndInit();
+            this.panel3.ResumeLayout(false);
+            this.panel4.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -277,7 +310,9 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label lblDocStat;
-        private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.DataGridView dgvDocStat;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Button btnUpdate;
     }
 }

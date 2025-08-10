@@ -25,7 +25,7 @@ namespace LogPriceChange0._1
     {
         string username = UserSession.Username;
 
-        OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;");
+        OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\Desktop\CameraHaus\LogPriceChange_Demo\pricematrix.accdb;");
         private static Dictionary<string, int> lastNumbers = new Dictionary<string, int>();
         private DataGridViewRow rightClickedRow;
         
@@ -126,7 +126,7 @@ namespace LogPriceChange0._1
 
             rightClickedRow = null;
         }
-        #endregion 
+        #endregion
         //***********************************************End of Remove Rows in datagridview*************************************************************************************************************************************************************************************************************************
 
         //************************************************Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
@@ -138,22 +138,55 @@ namespace LogPriceChange0._1
             public string RateColumn { get; set; }
         }
 
-        private readonly List<ColumnMapping> columnMappings = new List<ColumnMapping>
-    {
-      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LSRP", RateColumn = "PC_PLSRP"},
-      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LP", RateColumn = "PC_PPA2LP"},
-      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_WA", RateColumn = "PC_PPA2WA"},
-      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_WB", RateColumn = "PC_PPA2WB"},
-      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_WC", RateColumn = "PC_PPA2WC"},
-      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LC", RateColumn = "PC_PPA2LC"},
-      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PG", RateColumn = "PC_PPA2PG"},
-      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PH", RateColumn = "PC_PPA2PH"},
-      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PB", RateColumn = "PC_PPA2PB"},
-      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PD", RateColumn = "PC_PPA2PD"},
-      new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PC", RateColumn = "PC_PPA2PC"}
-        // Add more mappings here if needed
-    };
-       
+        private readonly List<ColumnMapping> columnMappings = new List<ColumnMapping>        
+        {
+            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LSRP", RateColumn = "PC_PLSRP"},
+            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LP",   RateColumn = "PC_PPA2LP"},
+            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_WA",   RateColumn = "PC_PPA2WA"},
+            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_WB",   RateColumn = "PC_PPA2WB"},
+            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_WC",   RateColumn = "PC_PPA2WC"},
+            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LC",   RateColumn = "PC_PPA2LC"},
+            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PG",   RateColumn = "PC_PPA2PG"},
+            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PH",   RateColumn = "PC_PPA2PH"},
+            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PB",   RateColumn = "PC_PPA2PB"},
+            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PD",   RateColumn = "PC_PPA2PD"},
+            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PC",   RateColumn = "PC_PPA2PC"}
+        }
+;
+
+        private void UpdateDependentValues(int rowIndex, string editedColumn)
+        {
+            if (rowIndex < 0 || rowIndex >= lpc_dgv_dbvalue.Rows.Count) return;
+
+            var row = lpc_dgv_dbvalue.Rows[rowIndex];
+
+            foreach (var map in columnMappings)
+            {
+                if (editedColumn != map.ValueColumn && editedColumn != map.RateColumn) continue;
+                if (!decimal.TryParse(row.Cells[map.BaseColumn]?.Value?.ToString(), out decimal baseVal) || baseVal == 0) return;
+
+                if (editedColumn == map.ValueColumn &&
+                    decimal.TryParse(row.Cells[map.ValueColumn]?.Value?.ToString(), out decimal val))
+                {
+                    row.Cells[map.RateColumn].Value = Math.Round(val / baseVal * 100);
+                }
+                else if (editedColumn == map.RateColumn &&
+                         decimal.TryParse(row.Cells[map.RateColumn]?.Value?.ToString(), out decimal rate))
+                {
+                    row.Cells[map.ValueColumn].Value = Math.Round(baseVal * rate / 100);
+                }
+                break; // No need to check further mappings for this edit
+            }
+        }
+
+        private void lpc_dgv_dbvalue_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+                UpdateDependentValues(e.RowIndex, lpc_dgv_dbvalue.Columns[e.ColumnIndex].Name);
+        }
+
+
+
         #endregion
         //************************************************End Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
 
@@ -295,52 +328,7 @@ namespace LogPriceChange0._1
         }
 
         /**************************************************Start For DataGridview Insert Update *******************************************************************************************************************************************************************************************************************************************************************************************************************************/
-        private void UpdateDependentValues(int rowIndex, string editedColumnName)
-        {
-            if (rowIndex < 0 || rowIndex >= lpc_dgv_dbvalue.Rows.Count)
-                return;
-
-            var row = lpc_dgv_dbvalue.Rows[rowIndex];
-
-            foreach (var mapping in columnMappings)
-            {
-                if (editedColumnName != mapping.ValueColumn && editedColumnName != mapping.RateColumn)
-                    continue;
-
-                if (!decimal.TryParse(row.Cells[mapping.BaseColumn]?.Value?.ToString(), out decimal baseValue) || baseValue == 0)
-                    return;
-
-                if (editedColumnName == mapping.ValueColumn)
-                {
-                    if (decimal.TryParse(row.Cells[mapping.ValueColumn]?.Value?.ToString(), out decimal val))
-                    {
-                        decimal rate = val / baseValue * 100;
-                        int roundedRate = (int)Math.Round(rate);
-                        row.Cells[mapping.RateColumn].Value = roundedRate.ToString();
-                    }
-                }
-                else if (editedColumnName == mapping.RateColumn)
-                {
-                    if (decimal.TryParse(row.Cells[mapping.RateColumn]?.Value?.ToString(), out decimal rate))
-                    {
-                        decimal val = (baseValue * rate) / 100;
-                        int roundedVal = (int)Math.Round(val);
-                        row.Cells[mapping.ValueColumn].Value = roundedVal.ToString();
-                    }
-                }
-
-                break;
-            }
-        }
-
-        private void lpc_dgv_dbvalue_CellEndEdit(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0 || e.ColumnIndex < 0)
-                return;
-
-            string columnName = lpc_dgv_dbvalue.Columns[e.ColumnIndex].Name;
-            UpdateDependentValues(e.RowIndex, columnName);
-        }
+        
         //************************************************Upsert*******************************************************************************************************************
         #region
         public void InsertData(string docStatus)

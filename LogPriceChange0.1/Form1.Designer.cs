@@ -106,7 +106,7 @@
             this.btn_dashboard.Location = new System.Drawing.Point(0, 3);
             this.btn_dashboard.Name = "btn_dashboard";
             this.btn_dashboard.Size = new System.Drawing.Size(221, 45);
-            this.btn_dashboard.TabIndex = 1;
+            this.btn_dashboard.TabIndex = 0;
             this.btn_dashboard.Text = "Dashboard";
             this.btn_dashboard.UseVisualStyleBackColor = true;
             this.btn_dashboard.Click += new System.EventHandler(this.btn_dashboard_Click);
@@ -116,7 +116,7 @@
             this.btn_lpc.Location = new System.Drawing.Point(0, 47);
             this.btn_lpc.Name = "btn_lpc";
             this.btn_lpc.Size = new System.Drawing.Size(221, 45);
-            this.btn_lpc.TabIndex = 0;
+            this.btn_lpc.TabIndex = 1;
             this.btn_lpc.Text = "Log Price Change";
             this.btn_lpc.UseVisualStyleBackColor = true;
             this.btn_lpc.Click += new System.EventHandler(this.btn_lpc_Click);
