@@ -10,7 +10,7 @@ namespace LogPriceChange0._1
     {
         wfLoginform loginForm = new wfLoginform();
         private string _username;
-        private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\Desktop\CameraHaus\LogPriceChange_Demo\pricematrix.accdb;";
+        private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;";
 
         #region Methods
         public string GetFullName(string username)

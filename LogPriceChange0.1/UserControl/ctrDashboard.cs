@@ -12,7 +12,7 @@ namespace LogPriceChange0._1
     public partial class ctrDashboard : UserControl
     {
        
-        private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\Desktop\CameraHaus\LogPriceChange_Demo\pricematrix.accdb;";
+        private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;";
 
      
         private OleDbConnection connection;
@@ -135,8 +135,17 @@ namespace LogPriceChange0._1
 
                         bindingSource.DataSource = dataTable;
                         dgvDocStat.DataSource = bindingSource;
-                        dgvDocStat.ReadOnly = false;
-                     
+                        dgvDocStat.ReadOnly = true;
+                        //if (statusComboBox.SelectedItem == "Rejected" || statusComboBox.SelectedItem == "Draft")
+                        //{
+                        //    dgvDocStat.ReadOnly = true;
+                        //}
+                        //else
+                        //{
+                        //    dgvDocStat.ReadOnly = false;
+                        //}
+                        
+
                     }
                 }
                 catch (Exception ex)
@@ -226,8 +235,7 @@ namespace LogPriceChange0._1
 
             if (string.IsNullOrWhiteSpace(statusComboBox.Text))
             {
-                lblDocStat.Visible = false;
-                dgvDocStat.Visible = false;
+                
                 bindingSource.RemoveFilter();
                 return;
             }
@@ -251,7 +259,7 @@ namespace LogPriceChange0._1
             {
                 case "ForApproval":
                     lblDocStat.Text = "For Approval";
-                    dgvDocStat.ReadOnly = true; 
+                    
                     break;
                 case "Approved":
                     lblDocStat.Text = "Approved";
@@ -259,12 +267,15 @@ namespace LogPriceChange0._1
                     break;
                 case "Rejected":
                     lblDocStat.Text = "Rejected";
+                   dgvDocStat.ReadOnly = false;
                     break;
                 case "Draft":
                     lblDocStat.Text = "Draft";
+                   dgvDocStat.ReadOnly = false;
                     break;
                 default:
                     lblDocStat.Text = "";
+                    dgvDocStat.ReadOnly = true;
                     break;
             }
         }

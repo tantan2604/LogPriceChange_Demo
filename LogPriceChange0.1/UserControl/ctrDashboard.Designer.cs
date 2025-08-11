@@ -48,6 +48,7 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.btnUpdate = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
             this.pnlDaftCount.SuspendLayout();
             this.pnlRejectedCount.SuspendLayout();
             this.pnlApprovedCount.SuspendLayout();
@@ -192,6 +193,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.pnlApprovedCount);
             this.panel1.Controls.Add(this.statusComboBox);
             this.panel1.Controls.Add(this.pnlPendingApprovalCount);
@@ -218,20 +220,19 @@
             this.lblDocStat.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblDocStat.Location = new System.Drawing.Point(17, 9);
             this.lblDocStat.Name = "lblDocStat";
-            this.lblDocStat.Size = new System.Drawing.Size(57, 20);
+            this.lblDocStat.Size = new System.Drawing.Size(69, 20);
             this.lblDocStat.TabIndex = 0;
-            this.lblDocStat.Text = "label5";
-            this.lblDocStat.Visible = false;
+            this.lblDocStat.Text = "Promos";
             // 
             // dgvDocStat
             // 
+            this.dgvDocStat.BackgroundColor = System.Drawing.Color.Snow;
             this.dgvDocStat.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvDocStat.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvDocStat.Location = new System.Drawing.Point(0, 0);
             this.dgvDocStat.Name = "dgvDocStat";
             this.dgvDocStat.Size = new System.Drawing.Size(1012, 319);
             this.dgvDocStat.TabIndex = 0;
-            this.dgvDocStat.Visible = false;
             this.dgvDocStat.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDocStat_CellEndEdit);
             // 
             // panel3
@@ -263,6 +264,16 @@
             this.btnUpdate.Visible = false;
             this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(658, 120);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(130, 17);
+            this.label5.TabIndex = 7;
+            this.label5.Text = "Document Status :";
+            // 
             // ctrDashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -283,6 +294,7 @@
             this.pnlPendingApprovalCount.ResumeLayout(false);
             this.pnlPendingApprovalCount.PerformLayout();
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDocStat)).EndInit();
@@ -314,5 +326,6 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Button btnUpdate;
+        private System.Windows.Forms.Label label5;
     }
 }

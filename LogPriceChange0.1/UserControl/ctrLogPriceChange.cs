@@ -25,7 +25,7 @@ namespace LogPriceChange0._1
     {
         string username = UserSession.Username;
 
-        OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\Desktop\CameraHaus\LogPriceChange_Demo\pricematrix.accdb;");
+        OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;");
         private static Dictionary<string, int> lastNumbers = new Dictionary<string, int>();
         private DataGridViewRow rightClickedRow;
         
@@ -79,6 +79,29 @@ namespace LogPriceChange0._1
 
             // Assign the ContextMenuStrip to the DataGridView (if not done in designer)
             lpc_dgv_dbvalue.ContextMenuStrip = cmsRemoveGroup;
+
+            if (!lpc_dgv_searchbycode.Columns.Contains("Select"))
+            {
+                DataGridViewCheckBoxColumn checkBoxColumn = new DataGridViewCheckBoxColumn();
+                checkBoxColumn.HeaderText = "✓";
+                checkBoxColumn.Name = "Select";
+                checkBoxColumn.Width = 30;
+                lpc_dgv_searchbycode.Columns.Insert(0, checkBoxColumn); // Adds to the first column
+            }
+        }
+        private void ctrLogPriceChange_Load(object sender, EventArgs e)
+        {
+            if (!lpc_dgv_searchbycode.Columns.Contains("Select"))
+            {
+                DataGridViewCheckBoxColumn chk = new DataGridViewCheckBoxColumn();
+                chk.Name = "Select";
+                chk.HeaderText = "✓";
+                chk.Width = 40;
+                lpc_dgv_searchbycode.Columns.Insert(0, chk);
+            }
+
+            lpc_dgv_searchbycode.CellValueChanged += lpc_dgv_searchbycode_CellValueChanged;
+            lpc_dgv_searchbycode.CurrentCellDirtyStateChanged += lpc_dgv_searchbycode_CurrentCellDirtyStateChanged;
         }
 
         //***********************************************Remove Rows in datagridview**********************************************************************************************************************************************************************************************
@@ -185,8 +208,6 @@ namespace LogPriceChange0._1
                 UpdateDependentValues(e.RowIndex, lpc_dgv_dbvalue.Columns[e.ColumnIndex].Name);
         }
 
-
-
         #endregion
         //************************************************End Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
 
@@ -251,81 +272,81 @@ namespace LogPriceChange0._1
             }
         }
 
-        private void lpc_dgv_searchbycode_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            try
-            {
-                // Ensure connection is closed before opening again for the query
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
+        //private void lpc_dgv_searchbycode_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        //{
+        //    try
+        //    {
+        //        // Ensure connection is closed before opening again for the query
+        //        if (connection.State == ConnectionState.Open)
+        //        {
+        //            connection.Close();
+        //        }
 
-                connection.Open();
-                string query = "SELECT * FROM tbl_billptmp";
-                OleDbDataAdapter da = new OleDbDataAdapter(query, connection);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
+        //        connection.Open();
+        //        string query = "SELECT * FROM tbl_billptmp";
+        //        OleDbDataAdapter da = new OleDbDataAdapter(query, connection);
+        //        DataTable dt = new DataTable();
+        //        da.Fill(dt);
 
-                if (e.RowIndex >= 0)
-                {
-                    DataGridViewRow selectedRow = lpc_dgv_searchbycode.Rows[e.RowIndex];
+        //        if (e.RowIndex >= 0)
+        //        {
+        //            DataGridViewRow selectedRow = lpc_dgv_searchbycode.Rows[e.RowIndex];
 
-                    // Check if the product is already added to prevent duplicates
-                    string prodCode = selectedRow.Cells["PROD_C"].Value?.ToString();
-                    bool productAlreadyAdded = false;
-                    for (int i = 0; i < lpc_dgv_dbvalue.Rows.Count; i += 3)
-                    {
-                        if (lpc_dgv_dbvalue.Rows[i].Cells["PROD_C"].Value?.ToString() == prodCode)
-                        {
-                            productAlreadyAdded = true;
-                            break;
-                        }
-                    }
+        //            // Check if the product is already added to prevent duplicates
+        //            string prodCode = selectedRow.Cells["PROD_C"].Value?.ToString();
+        //            bool productAlreadyAdded = false;
+        //            for (int i = 0; i < lpc_dgv_dbvalue.Rows.Count; i += 3)
+        //            {
+        //                if (lpc_dgv_dbvalue.Rows[i].Cells["PROD_C"].Value?.ToString() == prodCode)
+        //                {
+        //                    productAlreadyAdded = true;
+        //                    break;
+        //                }
+        //            }
 
-                    if (productAlreadyAdded)
-                    {
-                        MessageBox.Show("This product has already been added.", "Duplicate Product", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
+        //            if (productAlreadyAdded)
+        //            {
+        //                MessageBox.Show("This product has already been added.", "Duplicate Product", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        //                return;
+        //            }
 
-                    // Create three rows for the selected product
-                    int mainRowIndex = lpc_dgv_dbvalue.Rows.Add();
-                    int suppRowIndex = lpc_dgv_dbvalue.Rows.Add();
-                    int promoRowIndex = lpc_dgv_dbvalue.Rows.Add();
+        //            // Create three rows for the selected product
+        //            int mainRowIndex = lpc_dgv_dbvalue.Rows.Add();
+        //            int suppRowIndex = lpc_dgv_dbvalue.Rows.Add();
+        //            int promoRowIndex = lpc_dgv_dbvalue.Rows.Add();
 
-                    // Fill mainRow with selected data
-                    DataGridViewRow mainRow = lpc_dgv_dbvalue.Rows[mainRowIndex];
-                    for (int i = 0; i < selectedRow.Cells.Count && i < lpc_dgv_dbvalue.Columns.Count; i++)
-                    {
-                        mainRow.Cells[i].Value = selectedRow.Cells[i].Value;
-                    }
+        //            // Fill mainRow with selected data
+        //            DataGridViewRow mainRow = lpc_dgv_dbvalue.Rows[mainRowIndex];
+        //            for (int i = 0; i < selectedRow.Cells.Count && i < lpc_dgv_dbvalue.Columns.Count; i++)
+        //            {
+        //                mainRow.Cells[i].Value = selectedRow.Cells[i].Value;
+        //            }
 
-                    // Set row header labels
-                    lpc_dgv_dbvalue.Rows[mainRowIndex].HeaderCell.Value = "Database Value";
-                    lpc_dgv_dbvalue.Rows[suppRowIndex].HeaderCell.Value = "Supplier Price";
-                    lpc_dgv_dbvalue.Rows[promoRowIndex].HeaderCell.Value = "Promo Value";
+        //            // Set row header labels
+        //            lpc_dgv_dbvalue.Rows[mainRowIndex].HeaderCell.Value = "Database Value";
+        //            lpc_dgv_dbvalue.Rows[suppRowIndex].HeaderCell.Value = "Supplier Price";
+        //            lpc_dgv_dbvalue.Rows[promoRowIndex].HeaderCell.Value = "Promo Value";
 
-                    // Optionally make main row read-only
-                    lpc_dgv_dbvalue.Rows[mainRowIndex].ReadOnly = true;
-
-                    // Clear the search textbox after adding
-                    lpc_tb_searchbycode.Clear();
-                    lpc_dgv_searchbycode.Visible = false; // Hide search results
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred: " + ex.Message);
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
-        }
+        //            // Optionally make main row read-only
+        //            lpc_dgv_dbvalue.Rows[mainRowIndex].ReadOnly = true;
+        //            lpc_dgv_dbvalue.Rows[mainRowIndex].DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#FFECA1");
+        //            // Clear the search textbox after adding
+        //            lpc_tb_searchbycode.Clear();
+        //            lpc_dgv_searchbycode.Visible = false; // Hide search results
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("An error occurred: " + ex.Message);
+        //    }
+        //    finally
+        //    {
+        //        if (connection.State == ConnectionState.Open)
+        //        {
+        //            connection.Close();
+        //        }
+        //    }
+        //}
 
         /**************************************************Start For DataGridview Insert Update *******************************************************************************************************************************************************************************************************************************************************************************************************************************/
         
@@ -600,9 +621,84 @@ namespace LogPriceChange0._1
         {
             InsertData("Draft");
         }
-        #endregion
-        
 
+
+
+        #endregion
+        private void lpc_dgv_searchbycode_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (lpc_dgv_searchbycode.IsCurrentCellDirty)
+            {
+                lpc_dgv_searchbycode.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
+        }
+
+        private void lpc_dgv_searchbycode_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && lpc_dgv_searchbycode.Columns[e.ColumnIndex].Name == "Select")
+            {
+                DataGridViewRow selectedRow = lpc_dgv_searchbycode.Rows[e.RowIndex];
+                bool isChecked = Convert.ToBoolean(selectedRow.Cells["Select"].Value);
+                string prodCode = selectedRow.Cells["PROD_C"].Value?.ToString();
+
+                if (isChecked)
+                {
+                    // Add to dgv_dbvalue
+                    bool alreadyAdded = false;
+                    for (int i = 0; i < lpc_dgv_dbvalue.Rows.Count; i += 3)
+                    {
+                        if (lpc_dgv_dbvalue.Rows[i].Cells["PROD_C"].Value?.ToString() == prodCode)
+                        {
+                            alreadyAdded = true;
+                            break;
+                        }
+                    }
+
+                    if (alreadyAdded)
+                        return;
+
+                    int mainRowIndex = lpc_dgv_dbvalue.Rows.Add();
+                    int suppRowIndex = lpc_dgv_dbvalue.Rows.Add();
+                    int promoRowIndex = lpc_dgv_dbvalue.Rows.Add();
+
+                    // Fill data
+                    DataGridViewRow mainRow = lpc_dgv_dbvalue.Rows[mainRowIndex];
+                    for (int i = 0; i < selectedRow.Cells.Count; i++)
+                    {
+                        string columnName = selectedRow.Cells[i].OwningColumn.Name;
+                        if (lpc_dgv_dbvalue.Columns.Contains(columnName))
+                        {
+                            mainRow.Cells[columnName].Value = selectedRow.Cells[columnName].Value;
+                        }
+                    }
+
+                    mainRow.HeaderCell.Value = "Database Value";
+                    lpc_dgv_dbvalue.Rows[suppRowIndex].HeaderCell.Value = "Supplier Price";
+                    lpc_dgv_dbvalue.Rows[promoRowIndex].HeaderCell.Value = "Promo Value";
+
+                    mainRow.ReadOnly = true;
+                    mainRow.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#FFECA1");
+                }
+                else
+                {
+                    // Remove from dgv_dbvalue
+                    for (int i = 0; i < lpc_dgv_dbvalue.Rows.Count; i++)
+                    {
+                        if (lpc_dgv_dbvalue.Rows[i].Cells["PROD_C"].Value?.ToString() == prodCode)
+                        {
+                            // Remove 3 rows starting from i
+                            if (i + 2 < lpc_dgv_dbvalue.Rows.Count)
+                            {
+                                lpc_dgv_dbvalue.Rows.RemoveAt(i);     // Promo
+                                lpc_dgv_dbvalue.Rows.RemoveAt(i);     // Supplier
+                                lpc_dgv_dbvalue.Rows.RemoveAt(i);     // Main
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
     }
 }
