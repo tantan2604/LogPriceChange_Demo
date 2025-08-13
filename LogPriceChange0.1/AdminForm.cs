@@ -14,6 +14,7 @@ namespace LogPriceChange0._1
         private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;";
         private string _username;
         private string _idValue;
+        private string _docIDValue;
         Label activeLabel = null;
         private BindingSource bindingSource = new BindingSource();
 
@@ -120,7 +121,7 @@ namespace LogPriceChange0._1
                         bindingSource.DataSource = dataTable;
                         dgv_main.DataSource = bindingSource; // one grid only
                         dgv_main.ReadOnly = false;
-   
+
                     }
                 }
                 catch (Exception ex)
@@ -185,40 +186,53 @@ namespace LogPriceChange0._1
                 }
             }
 
-           
+
         }
         private void UpdateDocumentStatus(string newDocStatus, string approvedBy = null, string approvedDate = null)
         {
-            if (string.IsNullOrEmpty(_idValue))
+            if (string.IsNullOrEmpty(_docIDValue))
             {
                 MessageBox.Show("Please select a record to update.");
                 return;
             }
 
             string query = "";
+            var parameters = new List<OleDbParameter>();
+
             if (newDocStatus == "Rejected")
             {
-                query = $"UPDATE tbl_logpricechange SET DocStatus = 'Rejected',  WHERE ID = {_idValue};";
+                query = "UPDATE tbl_logpricechange SET DocStatus = ? WHERE DocID = ?";
+                parameters.Add(new OleDbParameter("DocStatus", "Rejected"));
+                parameters.Add(new OleDbParameter("DocID", _docIDValue));
             }
             else if (newDocStatus == "Approved")
             {
-                query = $"UPDATE tbl_logpricechange SET DocStatus = 'Approved', ApprovedBy = '{approvedBy}', ApprovedDate = '{approvedDate}' WHERE ID = {_idValue};";
+                query = "UPDATE tbl_logpricechange SET DocStatus = ?, ApprovedBy = ?, ApprovedDate = ? WHERE DocID = ?";
+                parameters.Add(new OleDbParameter("DocStatus", "Approved"));
+                parameters.Add(new OleDbParameter("ApprovedBy", approvedBy ?? (object)DBNull.Value));
+                parameters.Add(new OleDbParameter("ApprovedDate", approvedDate ?? (object)DBNull.Value));
+                parameters.Add(new OleDbParameter("DocID", _docIDValue));
+            }
+            else
+            {
+                MessageBox.Show("Invalid status provided.");
+                return;
             }
 
             try
             {
-                // Use a 'using' statement for the connection and command.
                 using (OleDbConnection connection = new OleDbConnection(connectionString))
                 {
                     connection.Open();
                     using (OleDbCommand command = new OleDbCommand(query, connection))
                     {
+                        command.Parameters.AddRange(parameters.ToArray());
+
                         int rowsAffected = command.ExecuteNonQuery();
 
                         if (rowsAffected > 0)
                         {
-                            //MessageBox.Show($"Record has been {newDocStatus.ToLower()} successfully.");
-                           
+                            MessageBox.Show($"Record has been {newDocStatus.ToLower()} successfully.");
                         }
                         else
                         {
@@ -233,6 +247,7 @@ namespace LogPriceChange0._1
             }
         }
 
+
         #endregion ****************************************************End of Methods **********************************************************************************
         public AdminForm(string username)
         {
@@ -241,11 +256,11 @@ namespace LogPriceChange0._1
             this.Text = "Admin Dashboard";
             lbl_adminLog.Text = GetFullName(_username);
             LoadDataAndStatus();
-           
+
         }
         private void AdminForm_Load(object sender, EventArgs e)
         {
-           
+
 
             lbl_forapproval.Click += LabelFilter_Click;
             lbl_rejected.Click += LabelFilter_Click;
@@ -260,9 +275,9 @@ namespace LogPriceChange0._1
         }
         private void btn_approve_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(_idValue))
+            if (string.IsNullOrEmpty(_docIDValue))
             {
-                
+               
                 MessageBox.Show("Please select a record to approve.");
                 return;
             }
@@ -278,7 +293,7 @@ namespace LogPriceChange0._1
         }
         private void btn_reject_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(_idValue))
+            if (string.IsNullOrEmpty(_docIDValue))
             {
                 MessageBox.Show("Please select a record to reject.");
                 return;
@@ -403,6 +418,8 @@ namespace LogPriceChange0._1
             if (e.RowIndex >= 0 && dgv_main.Rows[e.RowIndex].Cells["ID"].Value != null)
             {
                 _idValue = dgv_main.Rows[e.RowIndex].Cells["ID"].Value.ToString();
+                _docIDValue = dgv_main.Rows[e.RowIndex].Cells["DocID"].Value.ToString();
+                
             }
         }
         #endregion
@@ -466,6 +483,6 @@ namespace LogPriceChange0._1
             }
         }
 
-       
+
     }
 }

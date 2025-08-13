@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
+using System.Drawing;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
@@ -59,7 +61,7 @@ namespace LogPriceChange0._1
             return fullName;
         }
 
-        private void LoadDataAndStatus()
+        public void LoadDataAndStatus()
         {
             string createdByFullName = GetFullName(loggedUsername);
 
@@ -69,83 +71,67 @@ namespace LogPriceChange0._1
                 {
                     connection.Open();
 
-                    // 1️⃣ Get status counts
-                    string statusQuery = @"
-                SELECT DocStatus, COUNT(DocStatus) AS StatusCount
-                FROM tbl_logpricechange
-                WHERE CreatedBy = ?
-                GROUP BY DocStatus";
-
-                    
-
-                    using (var statusCmd = new OleDbCommand(statusQuery, connection))
-                    {
-                        statusCmd.Parameters.Add("?", OleDbType.VarWChar, 255).Value = createdByFullName;
-
-                        using (var reader = statusCmd.ExecuteReader())
-                        {
-                            // Reset labels
-                            lblApprovedCount.Text = "0";
-                            lblForApproval.Text = "0";
-                            lblRejectedCount.Text = "0";
-                            lblDraftCount.Text = "0";
-
-                            while (reader.Read())
-                            {
-                                string status = reader["DocStatus"].ToString();
-                                int count = Convert.ToInt32(reader["StatusCount"]);
-
-                                switch (status)
-                                {
-                                    case "ForApproval":
-                                        lblForApproval.Text = count.ToString();
-                                        
-                                        break;
-                                    case "Approved":
-                                        lblApprovedCount.Text = count.ToString();
-                                       
-                                        break;
-                                    case "Rejected":
-                                        lblRejectedCount.Text = count.ToString();
-                                        break;
-                                    case "Draft":
-                                        lblDraftCount.Text = count.ToString();
-                                        break;
-                                }
-                            }
-                        }
-                    }
-
-                    // 2️⃣ Load DataGridView data
-                  
                     string dataQuery = @"
                 SELECT *
                 FROM tbl_logpricechange
                 WHERE CreatedBy = ?
-                ORDER BY CreatedDate ASC";
-               
+                ORDER BY DocID, CreatedDate ASC";
 
                     using (var dataAdapter = new OleDbDataAdapter(dataQuery, connection))
                     {
                         dataAdapter.SelectCommand.Parameters.AddWithValue("?", createdByFullName);
-                        var commandBuilder = new OleDbCommandBuilder(dataAdapter);
-
                         var dataTable = new DataTable();
                         dataAdapter.Fill(dataTable);
 
-                        bindingSource.DataSource = dataTable;
+                        // Add temporary column for sorting
+                        if (!dataTable.Columns.Contains("SortOrder"))
+                            dataTable.Columns.Add("SortOrder", typeof(int));
+
+                        var grouped = dataTable.AsEnumerable()
+                            .GroupBy(row => row.Field<string>("DocID"))
+                            .SelectMany(group =>
+                            {
+                                // Assign sort order based on row type (normal, _sup, _promo)
+                                foreach (var row in group)
+                                {
+                                    int sortOrder = GetRowType(row); // 0 = normal, 1 = sup, 2 = promo
+                                    row["SortOrder"] = sortOrder;
+                                }
+
+                                var sortedGroup = group.OrderBy(r => Convert.ToInt32(r["SortOrder"])).ToList();
+
+                                bool first = true;
+                                return sortedGroup.Select(row =>
+                                {
+                                    var newRow = dataTable.NewRow();
+
+                                    foreach (DataColumn column in dataTable.Columns)
+                                    {
+                                        if (column.ColumnName == "DocID")
+                                        {
+                                            newRow[column] = first ? row[column] : DBNull.Value;
+                                        }
+                                        else
+                                        {
+                                            newRow[column] = row[column];
+                                        }
+                                    }
+
+                                    first = false;
+                                    return newRow;
+                                });
+                            }).CopyToDataTable();
+
+                        // Remove SortOrder column if present
+                        if (grouped.Columns.Contains("SortOrder"))
+                            grouped.Columns.Remove("SortOrder");
+
+                        bindingSource.DataSource = grouped;
                         dgvDocStat.DataSource = bindingSource;
                         dgvDocStat.ReadOnly = true;
-                        //if (statusComboBox.SelectedItem == "Rejected" || statusComboBox.SelectedItem == "Draft")
-                        //{
-                        //    dgvDocStat.ReadOnly = true;
-                        //}
-                        //else
-                        //{
-                        //    dgvDocStat.ReadOnly = false;
-                        //}
-                        
 
+                        dgvDocStat.RowPrePaint -= dgvDocStat_RowPrePaint;
+                        dgvDocStat.RowPrePaint += dgvDocStat_RowPrePaint;
                     }
                 }
                 catch (Exception ex)
@@ -153,6 +139,37 @@ namespace LogPriceChange0._1
                     MessageBox.Show("An error occurred while loading data: " + ex.Message,
                         "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+
+        // Function to determine the type of row based on column suffixes
+        private int GetRowType(DataRow row)
+        {
+            foreach (DataColumn column in row.Table.Columns)
+            {
+                var colName = column.ColumnName.ToLower();
+                if (colName.EndsWith("_sup") && !string.IsNullOrEmpty(row[column]?.ToString()))
+                    return 1; // sup row
+                if (colName.EndsWith("_promo") && !string.IsNullOrEmpty(row[column]?.ToString()))
+                    return 2; // promo row
+            }
+            return 0; // default: normal
+        }
+
+        // Color only first row (with DocID) green
+        private void dgvDocStat_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
+        {
+            var dgv = sender as DataGridView;
+            var row = dgv.Rows[e.RowIndex];
+
+            var docIdValue = row.Cells["DocID"].Value;
+            if (docIdValue != DBNull.Value && docIdValue != null && !string.IsNullOrEmpty(docIdValue.ToString()))
+            {
+                row.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#FFECA1"); 
+            }
+            else
+            {
+                row.DefaultCellStyle.BackColor = Color.White;
             }
         }
 
@@ -213,7 +230,52 @@ namespace LogPriceChange0._1
 
             MessageBox.Show("Only changed rows updated, DocStatus set to 'ForApproval'.");
         }
-       
+        private DataTable TransformToVerticalView(DataRow sourceRow)
+        {
+            // 🧱 List of base field names (no _SUP or _USRINT suffixes)
+            var baseFields = new List<string>
+    {
+        "FREE", "PLFOB", "NWF", "NWFR",
+        "PC_PF", "PC_PFL", "PC_RP", "PC_PA", "PC_PLSRP", "PC_LSRP",
+        "PC_PPA2LP", "PC_LP", "PC_PPA2WA", "PC_WA", "PC_PPA2WB", "PC_WB",
+        "PC_PPA2WC", "PC_WC", "PC_PPA2LC", "PC_LC", "PC_PPA2PG", "PC_PG",
+        "PC_PPA2PH", "PC_PH", "PC_PPA2PB", "PC_PB", "PC_PPA2PD", "PC_PD",
+        "LPP_AMT", "LPP_REF", "PC_PPA2PC", "PC_PC"
+    };
+
+            // 🧱 Setup vertical table
+            DataTable verticalTable = new DataTable();
+            verticalTable.Columns.Add("Version"); // Normal, Supplier, Promo
+
+            foreach (var field in baseFields)
+            {
+                verticalTable.Columns.Add(field);
+            }
+
+            // 🧱 Build rows: Normal, Supplier, Promo
+            string[] suffixes = { "", "_SUP", "_USRINT" };
+            string[] labels = { "Normal", "Supplier", "Promo" };
+
+            for (int i = 0; i < suffixes.Length; i++)
+            {
+                var row = verticalTable.NewRow();
+                row["Version"] = labels[i];
+
+                foreach (var field in baseFields)
+                {
+                    string fullFieldName = field + suffixes[i];
+
+                    if (sourceRow.Table.Columns.Contains(fullFieldName))
+                        row[field] = sourceRow[fullFieldName];
+                    else
+                        row[field] = DBNull.Value;
+                }
+
+                verticalTable.Rows.Add(row);
+            }
+
+            return verticalTable;
+        }
 
         #endregion
 
@@ -221,12 +283,10 @@ namespace LogPriceChange0._1
         {
             InitializeComponent();
             connection = new OleDbConnection(connectionString);
-            LoadDataAndStatus();
         }
-
         private void ctrDashboard_Load_1(object sender, EventArgs e)
         {
-
+            LoadDataAndStatus();
         }
 
         private void statusComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -394,7 +454,20 @@ namespace LogPriceChange0._1
             }
         }
 
-       
+
         #endregion
+
+        private void dgvDocStat_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            //if (e.RowIndex >= 0)
+            //{
+            //    var rowView = dgvDocStat.Rows[e.RowIndex].DataBoundItem as DataRowView;
+            //    if (rowView != null)
+            //    {
+            //        var verticalTable = TransformToVerticalView(rowView.Row);
+            //        .DataSource = verticalTable;
+            //    }
+            //}
+        }
     }
 }

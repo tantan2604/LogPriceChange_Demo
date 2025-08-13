@@ -24,7 +24,6 @@ namespace LogPriceChange0._1
     public partial class ctrLogPriceChange : UserControl
     {
         string username = UserSession.Username;
-
         OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;");
         private static Dictionary<string, int> lastNumbers = new Dictionary<string, int>();
         private DataGridViewRow rightClickedRow;
@@ -161,7 +160,7 @@ namespace LogPriceChange0._1
             public string RateColumn { get; set; }
         }
 
-        private readonly List<ColumnMapping> columnMappings = new List<ColumnMapping>        
+        private readonly List<ColumnMapping> columnMappings = new List<ColumnMapping>
         {
             new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LSRP", RateColumn = "PC_PLSRP"},
             new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LP",   RateColumn = "PC_PPA2LP"},
@@ -174,9 +173,8 @@ namespace LogPriceChange0._1
             new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PB",   RateColumn = "PC_PPA2PB"},
             new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PD",   RateColumn = "PC_PPA2PD"},
             new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PC",   RateColumn = "PC_PPA2PC"}
-        }
-;
-
+        };
+       
         private void UpdateDependentValues(int rowIndex, string editedColumn)
         {
             if (rowIndex < 0 || rowIndex >= lpc_dgv_dbvalue.Rows.Count) return;
@@ -272,85 +270,6 @@ namespace LogPriceChange0._1
             }
         }
 
-        //private void lpc_dgv_searchbycode_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        //{
-        //    try
-        //    {
-        //        // Ensure connection is closed before opening again for the query
-        //        if (connection.State == ConnectionState.Open)
-        //        {
-        //            connection.Close();
-        //        }
-
-        //        connection.Open();
-        //        string query = "SELECT * FROM tbl_billptmp";
-        //        OleDbDataAdapter da = new OleDbDataAdapter(query, connection);
-        //        DataTable dt = new DataTable();
-        //        da.Fill(dt);
-
-        //        if (e.RowIndex >= 0)
-        //        {
-        //            DataGridViewRow selectedRow = lpc_dgv_searchbycode.Rows[e.RowIndex];
-
-        //            // Check if the product is already added to prevent duplicates
-        //            string prodCode = selectedRow.Cells["PROD_C"].Value?.ToString();
-        //            bool productAlreadyAdded = false;
-        //            for (int i = 0; i < lpc_dgv_dbvalue.Rows.Count; i += 3)
-        //            {
-        //                if (lpc_dgv_dbvalue.Rows[i].Cells["PROD_C"].Value?.ToString() == prodCode)
-        //                {
-        //                    productAlreadyAdded = true;
-        //                    break;
-        //                }
-        //            }
-
-        //            if (productAlreadyAdded)
-        //            {
-        //                MessageBox.Show("This product has already been added.", "Duplicate Product", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //                return;
-        //            }
-
-        //            // Create three rows for the selected product
-        //            int mainRowIndex = lpc_dgv_dbvalue.Rows.Add();
-        //            int suppRowIndex = lpc_dgv_dbvalue.Rows.Add();
-        //            int promoRowIndex = lpc_dgv_dbvalue.Rows.Add();
-
-        //            // Fill mainRow with selected data
-        //            DataGridViewRow mainRow = lpc_dgv_dbvalue.Rows[mainRowIndex];
-        //            for (int i = 0; i < selectedRow.Cells.Count && i < lpc_dgv_dbvalue.Columns.Count; i++)
-        //            {
-        //                mainRow.Cells[i].Value = selectedRow.Cells[i].Value;
-        //            }
-
-        //            // Set row header labels
-        //            lpc_dgv_dbvalue.Rows[mainRowIndex].HeaderCell.Value = "Database Value";
-        //            lpc_dgv_dbvalue.Rows[suppRowIndex].HeaderCell.Value = "Supplier Price";
-        //            lpc_dgv_dbvalue.Rows[promoRowIndex].HeaderCell.Value = "Promo Value";
-
-        //            // Optionally make main row read-only
-        //            lpc_dgv_dbvalue.Rows[mainRowIndex].ReadOnly = true;
-        //            lpc_dgv_dbvalue.Rows[mainRowIndex].DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#FFECA1");
-        //            // Clear the search textbox after adding
-        //            lpc_tb_searchbycode.Clear();
-        //            lpc_dgv_searchbycode.Visible = false; // Hide search results
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("An error occurred: " + ex.Message);
-        //    }
-        //    finally
-        //    {
-        //        if (connection.State == ConnectionState.Open)
-        //        {
-        //            connection.Close();
-        //        }
-        //    }
-        //}
-
-        /**************************************************Start For DataGridview Insert Update *******************************************************************************************************************************************************************************************************************************************************************************************************************************/
-        
-        //************************************************Upsert*******************************************************************************************************************
         #region
         public void InsertData(string docStatus)
         {
@@ -609,8 +528,8 @@ namespace LogPriceChange0._1
 
         private void btnlpcsubmit_Click(object sender, EventArgs e)
         {
-            // Correct call for submitting for approval
-            DialogResult result = MessageBox.Show("Are you sure you want to submit this for approval?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+           
+             DialogResult result = MessageBox.Show("Are you sure you want to submit this for approval?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
             {
                 InsertData("ForApproval");
@@ -635,6 +554,7 @@ namespace LogPriceChange0._1
 
         private void lpc_dgv_searchbycode_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            
             if (e.RowIndex >= 0 && lpc_dgv_searchbycode.Columns[e.ColumnIndex].Name == "Select")
             {
                 DataGridViewRow selectedRow = lpc_dgv_searchbycode.Rows[e.RowIndex];

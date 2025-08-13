@@ -30,27 +30,27 @@
         {
             this.pnl_navbar = new System.Windows.Forms.Panel();
             this.pnl_footer = new System.Windows.Forms.Panel();
-            this.pnl_sidebar = new System.Windows.Forms.Panel();
-            this.panel7 = new System.Windows.Forms.Panel();
             this.btn_logout = new System.Windows.Forms.Button();
             this.btn_dashboard = new System.Windows.Forms.Button();
             this.btn_lpc = new System.Windows.Forms.Button();
             this.btn_claimbysellout = new System.Windows.Forms.Button();
             this.btn_claimbyinventory = new System.Windows.Forms.Button();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.dashb_lbl_userlogged = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pnl_main = new System.Windows.Forms.Panel();
-            this.pnl_sidebar.SuspendLayout();
-            this.panel7.SuspendLayout();
-            this.panel5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.dashb_lbl_userlogged = new System.Windows.Forms.Label();
+            this.pnl_navbar.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnl_navbar
             // 
             this.pnl_navbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
+            this.pnl_navbar.Controls.Add(this.btn_dashboard);
+            this.pnl_navbar.Controls.Add(this.btn_lpc);
+            this.pnl_navbar.Controls.Add(this.btn_claimbysellout);
+            this.pnl_navbar.Controls.Add(this.btn_claimbyinventory);
+            this.pnl_navbar.Controls.Add(this.btn_logout);
+            this.pnl_navbar.Controls.Add(this.dashb_lbl_userlogged);
             this.pnl_navbar.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnl_navbar.ForeColor = System.Drawing.Color.White;
             this.pnl_navbar.Location = new System.Drawing.Point(0, 0);
             this.pnl_navbar.Name = "pnl_navbar";
             this.pnl_navbar.Size = new System.Drawing.Size(1233, 43);
@@ -58,128 +58,116 @@
             // 
             // pnl_footer
             // 
+            this.pnl_footer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
             this.pnl_footer.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnl_footer.Location = new System.Drawing.Point(0, 601);
             this.pnl_footer.Name = "pnl_footer";
             this.pnl_footer.Size = new System.Drawing.Size(1233, 30);
             this.pnl_footer.TabIndex = 0;
             // 
-            // pnl_sidebar
-            // 
-            this.pnl_sidebar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(15)))), ((int)(((byte)(255)))));
-            this.pnl_sidebar.Controls.Add(this.panel7);
-            this.pnl_sidebar.Controls.Add(this.panel5);
-            this.pnl_sidebar.Dock = System.Windows.Forms.DockStyle.Left;
-            this.pnl_sidebar.Location = new System.Drawing.Point(0, 43);
-            this.pnl_sidebar.Name = "pnl_sidebar";
-            this.pnl_sidebar.Size = new System.Drawing.Size(221, 558);
-            this.pnl_sidebar.TabIndex = 0;
-            // 
-            // panel7
-            // 
-            this.panel7.Controls.Add(this.btn_logout);
-            this.panel7.Controls.Add(this.btn_dashboard);
-            this.panel7.Controls.Add(this.btn_lpc);
-            this.panel7.Controls.Add(this.btn_claimbysellout);
-            this.panel7.Controls.Add(this.btn_claimbyinventory);
-            this.panel7.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel7.Font = new System.Drawing.Font("Arial Rounded MT Bold", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.panel7.Location = new System.Drawing.Point(0, 185);
-            this.panel7.Margin = new System.Windows.Forms.Padding(3, 3, 3, 15);
-            this.panel7.Name = "panel7";
-            this.panel7.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.panel7.Size = new System.Drawing.Size(221, 373);
-            this.panel7.TabIndex = 6;
-            // 
             // btn_logout
             // 
-            this.btn_logout.Location = new System.Drawing.Point(0, 327);
+            this.btn_logout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
+            this.btn_logout.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
+            this.btn_logout.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
+            this.btn_logout.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
+            this.btn_logout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_logout.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_logout.ForeColor = System.Drawing.Color.Silver;
+            this.btn_logout.Location = new System.Drawing.Point(1110, 0);
             this.btn_logout.Name = "btn_logout";
-            this.btn_logout.Size = new System.Drawing.Size(221, 45);
+            this.btn_logout.Size = new System.Drawing.Size(123, 43);
             this.btn_logout.TabIndex = 2;
             this.btn_logout.Text = "Log out";
-            this.btn_logout.UseVisualStyleBackColor = true;
+            this.btn_logout.UseVisualStyleBackColor = false;
             this.btn_logout.Click += new System.EventHandler(this.btn_logout_Click);
             // 
             // btn_dashboard
             // 
-            this.btn_dashboard.Location = new System.Drawing.Point(0, 3);
+            this.btn_dashboard.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
+            this.btn_dashboard.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
+            this.btn_dashboard.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
+            this.btn_dashboard.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
+            this.btn_dashboard.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_dashboard.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_dashboard.ForeColor = System.Drawing.Color.Silver;
+            this.btn_dashboard.Location = new System.Drawing.Point(516, 0);
             this.btn_dashboard.Name = "btn_dashboard";
-            this.btn_dashboard.Size = new System.Drawing.Size(221, 45);
+            this.btn_dashboard.Size = new System.Drawing.Size(105, 44);
             this.btn_dashboard.TabIndex = 0;
             this.btn_dashboard.Text = "Dashboard";
-            this.btn_dashboard.UseVisualStyleBackColor = true;
+            this.btn_dashboard.UseVisualStyleBackColor = false;
             this.btn_dashboard.Click += new System.EventHandler(this.btn_dashboard_Click);
             // 
             // btn_lpc
             // 
-            this.btn_lpc.Location = new System.Drawing.Point(0, 47);
+            this.btn_lpc.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
+            this.btn_lpc.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
+            this.btn_lpc.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
+            this.btn_lpc.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
+            this.btn_lpc.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_lpc.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_lpc.ForeColor = System.Drawing.Color.Silver;
+            this.btn_lpc.Location = new System.Drawing.Point(622, 0);
             this.btn_lpc.Name = "btn_lpc";
-            this.btn_lpc.Size = new System.Drawing.Size(221, 45);
+            this.btn_lpc.Size = new System.Drawing.Size(167, 43);
             this.btn_lpc.TabIndex = 1;
             this.btn_lpc.Text = "Log Price Change";
-            this.btn_lpc.UseVisualStyleBackColor = true;
+            this.btn_lpc.UseVisualStyleBackColor = false;
             this.btn_lpc.Click += new System.EventHandler(this.btn_lpc_Click);
             // 
             // btn_claimbysellout
             // 
-            this.btn_claimbysellout.Location = new System.Drawing.Point(0, 91);
+            this.btn_claimbysellout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
+            this.btn_claimbysellout.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
+            this.btn_claimbysellout.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
+            this.btn_claimbysellout.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
+            this.btn_claimbysellout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_claimbysellout.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_claimbysellout.ForeColor = System.Drawing.Color.Silver;
+            this.btn_claimbysellout.Location = new System.Drawing.Point(790, 0);
             this.btn_claimbysellout.Name = "btn_claimbysellout";
-            this.btn_claimbysellout.Size = new System.Drawing.Size(221, 45);
+            this.btn_claimbysellout.Size = new System.Drawing.Size(157, 43);
             this.btn_claimbysellout.TabIndex = 0;
             this.btn_claimbysellout.Text = "Claim By Sell Out";
-            this.btn_claimbysellout.UseVisualStyleBackColor = true;
+            this.btn_claimbysellout.UseVisualStyleBackColor = false;
             this.btn_claimbysellout.Click += new System.EventHandler(this.btn_claimbysellout_Click);
             // 
             // btn_claimbyinventory
             // 
-            this.btn_claimbyinventory.Location = new System.Drawing.Point(0, 135);
+            this.btn_claimbyinventory.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
+            this.btn_claimbyinventory.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
+            this.btn_claimbyinventory.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
+            this.btn_claimbyinventory.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
+            this.btn_claimbyinventory.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_claimbyinventory.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_claimbyinventory.ForeColor = System.Drawing.Color.Silver;
+            this.btn_claimbyinventory.Location = new System.Drawing.Point(948, 0);
             this.btn_claimbyinventory.Name = "btn_claimbyinventory";
-            this.btn_claimbyinventory.Size = new System.Drawing.Size(221, 45);
+            this.btn_claimbyinventory.Size = new System.Drawing.Size(161, 43);
             this.btn_claimbyinventory.TabIndex = 0;
             this.btn_claimbyinventory.Text = "Claim By Inventory";
-            this.btn_claimbyinventory.UseVisualStyleBackColor = true;
+            this.btn_claimbyinventory.UseVisualStyleBackColor = false;
             this.btn_claimbyinventory.Click += new System.EventHandler(this.btn_claimbyinventory_Click);
-            // 
-            // panel5
-            // 
-            this.panel5.Controls.Add(this.dashb_lbl_userlogged);
-            this.panel5.Controls.Add(this.pictureBox1);
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel5.Location = new System.Drawing.Point(0, 0);
-            this.panel5.Margin = new System.Windows.Forms.Padding(3, 3, 3, 15);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(221, 185);
-            this.panel5.TabIndex = 0;
-            // 
-            // dashb_lbl_userlogged
-            // 
-            this.dashb_lbl_userlogged.AutoSize = true;
-            this.dashb_lbl_userlogged.Font = new System.Drawing.Font("Arial Rounded MT Bold", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dashb_lbl_userlogged.Location = new System.Drawing.Point(44, 155);
-            this.dashb_lbl_userlogged.Name = "dashb_lbl_userlogged";
-            this.dashb_lbl_userlogged.Size = new System.Drawing.Size(80, 18);
-            this.dashb_lbl_userlogged.TabIndex = 0;
-            this.dashb_lbl_userlogged.Text = "AHAHAH";
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.pictureBox1.Image = global::LogPriceChange0._1.Properties.Resources.group;
-            this.pictureBox1.Location = new System.Drawing.Point(47, 8);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(128, 128);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
             // 
             // pnl_main
             // 
             this.pnl_main.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pnl_main.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnl_main.Location = new System.Drawing.Point(221, 43);
+            this.pnl_main.Location = new System.Drawing.Point(0, 43);
             this.pnl_main.Name = "pnl_main";
-            this.pnl_main.Size = new System.Drawing.Size(1012, 558);
+            this.pnl_main.Size = new System.Drawing.Size(1233, 558);
             this.pnl_main.TabIndex = 1;
+            // 
+            // dashb_lbl_userlogged
+            // 
+            this.dashb_lbl_userlogged.AutoSize = true;
+            this.dashb_lbl_userlogged.Font = new System.Drawing.Font("Arial Rounded MT Bold", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dashb_lbl_userlogged.Location = new System.Drawing.Point(22, 11);
+            this.dashb_lbl_userlogged.Name = "dashb_lbl_userlogged";
+            this.dashb_lbl_userlogged.Size = new System.Drawing.Size(80, 18);
+            this.dashb_lbl_userlogged.TabIndex = 0;
+            this.dashb_lbl_userlogged.Text = "AHAHAH";
             // 
             // MainForm
             // 
@@ -187,7 +175,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1233, 631);
             this.Controls.Add(this.pnl_main);
-            this.Controls.Add(this.pnl_sidebar);
             this.Controls.Add(this.pnl_footer);
             this.Controls.Add(this.pnl_navbar);
             this.MinimumSize = new System.Drawing.Size(1249, 670);
@@ -196,11 +183,8 @@
             this.Text = "Dashboard";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
-            this.pnl_sidebar.ResumeLayout(false);
-            this.panel7.ResumeLayout(false);
-            this.panel5.ResumeLayout(false);
-            this.panel5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.pnl_navbar.ResumeLayout(false);
+            this.pnl_navbar.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -209,17 +193,13 @@
 
         private System.Windows.Forms.Panel pnl_navbar;
         private System.Windows.Forms.Panel pnl_footer;
-        private System.Windows.Forms.Panel pnl_sidebar;
-        private System.Windows.Forms.Panel panel7;
-        private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Button btn_claimbyinventory;
         private System.Windows.Forms.Button btn_claimbysellout;
-        public System.Windows.Forms.Label dashb_lbl_userlogged;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel pnl_main;
         private System.Windows.Forms.Button btn_dashboard;
         private System.Windows.Forms.Button btn_lpc;
         private System.Windows.Forms.Button btn_logout;
+        public System.Windows.Forms.Label dashb_lbl_userlogged;
     }
 }
 
