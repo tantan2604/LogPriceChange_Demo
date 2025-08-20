@@ -116,16 +116,28 @@ namespace LogPriceChange0._1
         }
 
         #endregion
-
+        public ctrLogPriceChange logPriceChangeControl;
         public MainForm(string username)
         {
-           
+
             InitializeComponent();
             _username = username;
             this.Text = "Employee Dashboard";
             UserSession.Username = _username;
             this.DoubleBuffered = true;
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+
+            logPriceChangeControl = new ctrLogPriceChange();
+            logPriceChangeControl.Dock = DockStyle.Fill;
+            pnl_main.Controls.Add(logPriceChangeControl);
+            logPriceChangeControl.Visible = false;
+        }
+
+        public void ShowLogPriceChange(string docId)
+        {
+            logPriceChangeControl.LoadLogPriceChange(docId, connectionString);
+            logPriceChangeControl.BringToFront();
+            logPriceChangeControl.Visible = true;
         }
         private void MainForm_Load(object sender, EventArgs e)
         {

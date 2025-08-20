@@ -10,6 +10,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
+using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,7 @@ namespace LogPriceChange0._1
         private static Dictionary<string, int> lastNumbers = new Dictionary<string, int>();
         private DataGridViewRow rightClickedRow;
         
+
         private string GetFullName(string username)
         {
             string fullName = string.Empty;
@@ -63,8 +65,6 @@ namespace LogPriceChange0._1
         public ctrLogPriceChange()
         {
             InitializeComponent();
-            
-
             // Set custom format for your DateTimePicker
             lpc_dtp_enddate.CustomFormat = " ";
 
@@ -98,7 +98,7 @@ namespace LogPriceChange0._1
                 chk.Width = 40;
                 lpc_dgv_searchbycode.Columns.Insert(0, chk);
             }
-
+            
             lpc_dgv_searchbycode.CellValueChanged += lpc_dgv_searchbycode_CellValueChanged;
             lpc_dgv_searchbycode.CurrentCellDirtyStateChanged += lpc_dgv_searchbycode_CurrentCellDirtyStateChanged;
         }
@@ -319,8 +319,8 @@ namespace LogPriceChange0._1
             {
                 try
                 {
-                    string insQuery = "INSERT INTO tbl_logpricechange (DocID, DocStatus, CreatedBy,  CreatedDate, TDate, Supplier, PromoTitle, StartDate, EndDate, Promotype, PROD_C, PROD_N, FREE, FREE_SUP, FREE_USRINT, PLFOB, PLFOB_SUP, PLFOB_USRINT, NWF, NWF_SUP, NWF_USRINT, NWFR, PC_PF, PC_PF_SUP, PC_PF_USRINT, PC_PFL, PC_PFL_SUP, PC_PFL_USRINT, PC_RP, PC_RP_SUP, PC_RP_USRINT, PC_PA, PC_PA_SUP, PC_PA_USRINT, PC_PLSRP, PC_PLSRP_SUP, PC_PLSRP_USRINT, PC_LSRP, PC_LSRP_SUP, PC_LSRP_USRINT, PC_PPA2LP, PC_PPA2LP_SUP, PC_PPA2LP_USRINT, PC_LP, PC_LP_SUP, PC_LP_USRINT, PC_PPA2WA, PC_PPA2WA_SUP, PC_PPA2WA_USRINT, PC_WA, PC_WA_SUP, PC_WA_USRINT, PC_PPA2WB, PC_PPA2WB_SUP, PC_PPA2WB_USRINT, PC_WB, PC_WB_SUP, PC_WB_USRINT, PC_PPA2WC, PC_PPA2WC_SUP, PC_PPA2WC_USRINT, PC_WC, PC_WC_SUP, PC_WC_USRINT, PC_PPA2LC, PC_PPA2LC_SUP, PC_PPA2LC_USRINT, PC_LC, PC_LC_SUP, PC_LC_USRINT, PC_PPA2PG, PC_PPA2PG_SUP, PC_PPA2PG_USRINT, PC_PG, PC_PG_SUP, PC_PG_USRINT, PC_PPA2PH, PC_PPA2PH_SUP, PC_PPA2PH_USRINT, PC_PH, PC_PH_SUP, PC_PH_USRINT, PC_PPA2PB, PC_PPA2PB_SUP, PC_PPA2PB_USRINT, PC_PB, PC_PB_SUP, PC_PB_USRINT, PC_PPA2PD, PC_PPA2PD_SUP, PC_PPA2P_USRINT, PC_PD, PC_PD_SUP, PC_PD_USRINT, LPP_AMT, LPP_AMT_SUP, LPP_AMT_USRINT, LPP_REF, LPP_REF_SUP, LPP_REF_USRINT, PC_PPA2PC, PC_PPA2PC_SUP, PC_PPA2PC_USRINT, PC_PC, PC_PC_SUP, PC_PC_USRINT, Claim1, Claim2, ClaimK1, ClaimK2, Remarks1, Remarks2) " +
-                                                                "VALUES ( @DocID,@DocStatus, @CreatedBy, @CreatedDate, @TDate,@Supplier, @PromoTitle, @StartDate, @EndDate, @Promotype,  @PROD_C,@PROD_N,@FREE,@FREE_SUP,@FREE_USRINT,@PLFOB,@PLFOB_SUP,@PLFOB_USRINT,@NWF,@NWF_SUP,@NWF_USRINT,@NWFR,@PC_PF,@PC_PF_SUP,@PC_PF_USRINT,@PC_PFL,@PC_PFL_SUP,@PC_PFL_USRINT,@PC_RP,@PC_RP_SUP,@PC_RP_USRINT,@PC_PA,@PC_PA_SUP,@PC_PA_USRINT,@PC_PLSRP,@PC_PLSRP_SUP,@PC_PLSRP_USRINT,@PC_LSRP,@PC_LSRP_SUP,@PC_LSRP_USRINT,@PC_PPA2LP,@PC_PPA2LP_SUP,@PC_PPA2LP_USRINT,@PC_LP,@PC_LP_SUP,@PC_LP_USRINT,@PC_PPA2WA,@PC_PPA2WA_SUP,@PC_PPA2WA_USRINT,@PC_WA,@PC_WA_SUP,@PC_WA_USRINT,@PC_PPA2WB,@PC_PPA2WB_SUP,@PC_PPA2WB_USRINT,@PC_WB,@PC_WB_SUP,@PC_WB_USRINT,@PC_PPA2WC,@PC_PPA2WC_SUP,@PC_PPA2WC_USRINT,@PC_WC,@PC_WC_SUP,@PC_WC_USRINT,@PC_PPA2LC,@PC_PPA2LC_SUP,@PC_PPA2LC_USRINT,@PC_LC,@PC_LC_SUP,@PC_LC_USRINT,@PC_PPA2PG,@PC_PPA2PG_SUP,@PC_PPA2PG_USRINT,@PC_PG,@PC_PG_SUP,@PC_PG_USRINT,@PC_PPA2PH,@PC_PPA2PH_SUP,@PC_PPA2PH_USRINT,@PC_PH,@PC_PH_SUP,@PC_PH_USRINT,@PC_PPA2PB,@PC_PPA2PB_SUP,@PC_PPA2PB_USRINT,@PC_PB,@PC_PB_SUP,@PC_PB_USRINT,@PC_PPA2PD,@PC_PPA2PD_SUP,@PC_PPA2P_USRINT,@PC_PD,@PC_PD_SUP,@PC_PD_USRINT,@LPP_AMT,@LPP_AMT_SUP,@LPP_AMT_USRINT,@LPP_REF,@LPP_REF_SUP,@LPP_REF_USRINT,@PC_PPA2PC,@PC_PPA2PC_SUP,@PC_PPA2PC_USRINT,@PC_PC,@PC_PC_SUP,@PC_PC_USRINT,@Claim1,@Claim2,@ClaimK1,@ClaimK2,@Remarks1,@Remarks2)";
+                    string insQuery = "INSERT INTO tbl_logpricechange (DocID, DocStatus, CreatedBy,  CreatedDate, TDate, Supplier, PromoTitle, StartDate, EndDate, Promotype, PROD_C, PROD_N, FREE, FREE_SUP, FREE_USRINT, PLFOB, PLFOB_SUP, PLFOB_USRINT, NWF, NWF_SUP, NWF_USRINT, NWFR, PC_PF, PC_PF_SUP, PC_PF_USRINT, PC_PFL, PC_PFL_SUP, PC_PFL_USRINT, PC_RP, PC_RP_SUP, PC_RP_USRINT, PC_PA, PC_PA_SUP, PC_PA_USRINT, PC_PLSRP, PC_PLSRP_SUP, PC_PLSRP_USRINT, PC_LSRP, PC_LSRP_SUP, PC_LSRP_USRINT, PC_PPA2LP, PC_PPA2LP_SUP, PC_PPA2LP_USRINT, PC_LP, PC_LP_SUP, PC_LP_USRINT, PC_PPA2WA, PC_PPA2WA_SUP, PC_PPA2WA_USRINT, PC_WA, PC_WA_SUP, PC_WA_USRINT, PC_PPA2WB, PC_PPA2WB_SUP, PC_PPA2WB_USRINT, PC_WB, PC_WB_SUP, PC_WB_USRINT, PC_PPA2WC, PC_PPA2WC_SUP, PC_PPA2WC_USRINT, PC_WC, PC_WC_SUP, PC_WC_USRINT, PC_PPA2LC, PC_PPA2LC_SUP, PC_PPA2LC_USRINT, PC_LC, PC_LC_SUP, PC_LC_USRINT, PC_PPA2PG, PC_PPA2PG_SUP, PC_PPA2PG_USRINT, PC_PG, PC_PG_SUP, PC_PG_USRINT, PC_PPA2PH, PC_PPA2PH_SUP, PC_PPA2PH_USRINT, PC_PH, PC_PH_SUP, PC_PH_USRINT, PC_PPA2PB, PC_PPA2PB_SUP, PC_PPA2PB_USRINT, PC_PB, PC_PB_SUP, PC_PB_USRINT, PC_PPA2PD, PC_PPA2PD_SUP, PC_PPA2P_USRINT, PC_PD, PC_PD_SUP, PC_PD_USRINT, LPP_AMT, LPP_AMT_SUP, LPP_AMT_USRINT, LPP_REF, LPP_REF_SUP, LPP_REF_USRINT, PC_PPA2PC, PC_PPA2PC_SUP, PC_PPA2PC_USRINT, PC_PC, PC_PC_SUP, PC_PC_USRINT, Claim, Claim_SUP, Claim_USRINT,ClaimK, ClaimK_SUP,ClaimK_USRINT, Remarks, Remarks_SUP, Remarks_USRINT) " +
+                                                                "VALUES ( @DocID,@DocStatus, @CreatedBy, @CreatedDate, @TDate,@Supplier, @PromoTitle, @StartDate, @EndDate, @Promotype,  @PROD_C,@PROD_N,@FREE,@FREE_SUP,@FREE_USRINT,@PLFOB,@PLFOB_SUP,@PLFOB_USRINT,@NWF,@NWF_SUP,@NWF_USRINT,@NWFR,@PC_PF,@PC_PF_SUP,@PC_PF_USRINT,@PC_PFL,@PC_PFL_SUP,@PC_PFL_USRINT,@PC_RP,@PC_RP_SUP,@PC_RP_USRINT,@PC_PA,@PC_PA_SUP,@PC_PA_USRINT,@PC_PLSRP,@PC_PLSRP_SUP,@PC_PLSRP_USRINT,@PC_LSRP,@PC_LSRP_SUP,@PC_LSRP_USRINT,@PC_PPA2LP,@PC_PPA2LP_SUP,@PC_PPA2LP_USRINT,@PC_LP,@PC_LP_SUP,@PC_LP_USRINT,@PC_PPA2WA,@PC_PPA2WA_SUP,@PC_PPA2WA_USRINT,@PC_WA,@PC_WA_SUP,@PC_WA_USRINT,@PC_PPA2WB,@PC_PPA2WB_SUP,@PC_PPA2WB_USRINT,@PC_WB,@PC_WB_SUP,@PC_WB_USRINT,@PC_PPA2WC,@PC_PPA2WC_SUP,@PC_PPA2WC_USRINT,@PC_WC,@PC_WC_SUP,@PC_WC_USRINT,@PC_PPA2LC,@PC_PPA2LC_SUP,@PC_PPA2LC_USRINT,@PC_LC,@PC_LC_SUP,@PC_LC_USRINT,@PC_PPA2PG,@PC_PPA2PG_SUP,@PC_PPA2PG_USRINT,@PC_PG,@PC_PG_SUP,@PC_PG_USRINT,@PC_PPA2PH,@PC_PPA2PH_SUP,@PC_PPA2PH_USRINT,@PC_PH,@PC_PH_SUP,@PC_PH_USRINT,@PC_PPA2PB,@PC_PPA2PB_SUP,@PC_PPA2PB_USRINT,@PC_PB,@PC_PB_SUP,@PC_PB_USRINT,@PC_PPA2PD,@PC_PPA2PD_SUP,@PC_PPA2P_USRINT,@PC_PD,@PC_PD_SUP,@PC_PD_USRINT,@LPP_AMT,@LPP_AMT_SUP,@LPP_AMT_USRINT,@LPP_REF,@LPP_REF_SUP,@LPP_REF_USRINT,@PC_PPA2PC,@PC_PPA2PC_SUP,@PC_PPA2PC_USRINT,@PC_PC,@PC_PC_SUP,@PC_PC_USRINT, @Claim, @Claim_SUP, @Claim_USRINT, @ClaimK, @ClaimK_SUP, @ClaimK_USRINT, @Remarks, @Remarks_SUP, @Remarks_USRINT)";
                     for (int i = 0; i < totalRows; i += 3)
                     {
                         int dbRow = i, suppRow = i + 1, promoRow = i + 2;
@@ -514,12 +514,15 @@ namespace LogPriceChange0._1
                 cmd.Parameters.AddWithValue("@PC_PC", GetCellValue(dbRow, "PC_PC"));
                 cmd.Parameters.AddWithValue("@PC_PC_SUP", GetCellValue(suppRow, "PC_PC"));
                 cmd.Parameters.AddWithValue("@PC_PC_USRINT", GetCellValue(promoRow, "PC_PC"));
-                cmd.Parameters.AddWithValue("@Claim1", GetCellValue(suppRow, "Claim1"));
-                cmd.Parameters.AddWithValue("@Claim2", GetCellValue(promoRow, "Claim2"));
-                cmd.Parameters.AddWithValue("@ClaimK1", GetCellValue(suppRow, "ClaimK1"));
-                cmd.Parameters.AddWithValue("@ClaimK2", GetCellValue(promoRow, "ClaimK2"));
-                cmd.Parameters.AddWithValue("@Remarks1", GetCellValue(suppRow, "Remarks1"));
-                cmd.Parameters.AddWithValue("@Remarks2", GetCellValue(promoRow, "Remarks2"));
+                cmd.Parameters.AddWithValue("@Claim", GetCellValue(suppRow, "Claim1"));
+                cmd.Parameters.AddWithValue("@Claim_SUP", GetCellValue(promoRow, "Claim_SUP"));
+                cmd.Parameters.AddWithValue("@Claim_USRINT", GetCellValue(promoRow, "Claim_USRINT"));
+                cmd.Parameters.AddWithValue("@ClaimK", GetCellValue(suppRow, "ClaimK"));
+                cmd.Parameters.AddWithValue("@ClaimK_SUP", GetCellValue(promoRow, "ClaimK_SUP"));
+                cmd.Parameters.AddWithValue("@ClaimK_USRINT", GetCellValue(promoRow, "ClaimK_USRINT"));
+                cmd.Parameters.AddWithValue("@Remarks", GetCellValue(suppRow, "Remarks"));
+                cmd.Parameters.AddWithValue("@Remarks_SUP", GetCellValue(suppRow, "Remarks_SUP"));
+                cmd.Parameters.AddWithValue("@Remarks_USRINT", GetCellValue(promoRow, "Remarks_USRINT"));
 
                 cmd.ExecuteNonQuery();
 
@@ -620,5 +623,31 @@ namespace LogPriceChange0._1
             }
         }
 
+
+        public void LoadLogPriceChange(string docId, string connectionString)
+        {
+            MessageBox.Show("Method called with DocID: " + docId); // <-- Add this
+
+            using (OleDbConnection conn = new OleDbConnection(connectionString))
+            {
+                string query = "SELECT * FROM tbl_logpricechange WHERE DocID = ?";
+                using (OleDbDataAdapter adapter = new OleDbDataAdapter(query, conn))
+                {
+                    adapter.SelectCommand.Parameters.AddWithValue("?", docId);
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    MessageBox.Show("Rows returned: " + dt.Rows.Count); // <-- Add this
+
+                    lpc_dgv_dbvalue.DataSource = null;
+                    lpc_dgv_dbvalue.DataSource = dt;
+                }
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //LoadLogPriceChange(UserSession.DocId, connection);
+        }
     }
 }

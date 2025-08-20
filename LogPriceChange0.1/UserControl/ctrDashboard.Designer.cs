@@ -37,6 +37,7 @@
             this.statusComboBox = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btn_loadData = new System.Windows.Forms.Button();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDocStat)).BeginInit();
             this.panel3.SuspendLayout();
@@ -46,6 +47,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.btn_loadData);
             this.panel2.Controls.Add(this.lblDocStat);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 40);
@@ -139,6 +141,16 @@
             this.panel1.Size = new System.Drawing.Size(1012, 40);
             this.panel1.TabIndex = 7;
             // 
+            // btn_loadData
+            // 
+            this.btn_loadData.Location = new System.Drawing.Point(925, 6);
+            this.btn_loadData.Name = "btn_loadData";
+            this.btn_loadData.Size = new System.Drawing.Size(75, 23);
+            this.btn_loadData.TabIndex = 1;
+            this.btn_loadData.Text = "Load Data";
+            this.btn_loadData.UseVisualStyleBackColor = true;
+            this.btn_loadData.Click += new System.EventHandler(this.btn_loadData_Click);
+            // 
             // ctrDashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -171,5 +183,6 @@
         private System.Windows.Forms.ComboBox statusComboBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button btn_loadData;
     }
 }

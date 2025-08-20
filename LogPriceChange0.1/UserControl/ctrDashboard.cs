@@ -13,21 +13,134 @@ namespace LogPriceChange0._1
 {
     public partial class ctrDashboard : UserControl
     {
-       
+
         private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;";
 
-     
+
         private OleDbConnection connection;
 
- 
+
         private BindingSource bindingSource = new BindingSource();
-       
-        
+
+
         private string loggedUsername = UserSession.Username;
-        
+
 
         #region ************************** METHODS **************************
+        // Color only first row (with DocID) green
+        private void dgvDocStat_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
+        {
+            var dgv = sender as DataGridView;
+            var row = dgv.Rows[e.RowIndex];
 
+            var docIdValue = row.Cells["DocID"].Value;
+            if (docIdValue != DBNull.Value && docIdValue != null && !string.IsNullOrEmpty(docIdValue.ToString()))
+            {
+                row.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#FFECA1");
+            }
+            else
+            {
+                row.DefaultCellStyle.BackColor = Color.White;
+            }
+        }
+        private DataTable TransformToVerticalGroupedTable(DataTable originalTable)
+        {
+            var baseFields = new List<string>
+    {
+        "DocID", "FREE", "PLFOB", "NWF", "NWFR",
+        "PC_PF", "PC_PFL", "PC_RP", "PC_PA", "PC_PLSRP", "PC_LSRP",
+        "PC_PPA2LP", "PC_LP", "PC_PPA2WA", "PC_WA", "PC_PPA2WB", "PC_WB",
+        "PC_PPA2WC", "PC_WC", "PC_PPA2LC", "PC_LC", "PC_PPA2PG", "PC_PG",
+        "PC_PPA2PH", "PC_PH", "PC_PPA2PB", "PC_PB", "PC_PPA2PD", "PC_PD",
+        "LPP_AMT", "LPP_REF", "PC_PPA2PC", "PC_PC"
+    };
+
+            string[] suffixes = { "", "_SUP", "_USRINT" };
+            string[] labels = { "Dbvalue", "Supplier", "Promo" };
+
+            DataTable verticalTable = new DataTable();
+            verticalTable.Columns.Add("RowLabel");
+
+            foreach (var field in baseFields)
+                verticalTable.Columns.Add(field);
+
+            var groupedRows = originalTable.AsEnumerable()
+                .GroupBy(r => r.Field<string>("DocID"));
+
+            int groupIndex = 1;
+
+            foreach (var group in groupedRows)
+            {
+                var sourceRow = group.First(); // take one row per DocID
+
+                for (int j = 0; j < suffixes.Length; j++)
+                {
+                    string suffix = suffixes[j];
+                    string label = labels[j];
+
+                    DataRow newRow = verticalTable.NewRow();
+                    newRow["RowLabel"] = $"Row{groupIndex}-{label}";
+
+                    foreach (var field in baseFields)
+                    {
+                        string fullField = field + suffix;
+
+                        if (originalTable.Columns.Contains(fullField))
+                        {
+                            if (field == "DocID" && j != 0)
+                                newRow[field] = DBNull.Value; // hide DocID for Supplier/Promo
+                            else
+                                newRow[field] = sourceRow[fullField];
+                        }
+                        else
+                        {
+                            newRow[field] = DBNull.Value;
+                        }
+                    }
+
+                    verticalTable.Rows.Add(newRow);
+                }
+
+                groupIndex++;
+            }
+
+            return verticalTable;
+        }  
+        private void btn_loadData_Click(object sender, EventArgs e)
+        {
+
+
+            string query = "SELECT * FROM tbl_logpricechange";
+
+            DataTable originalTable = new DataTable();
+
+            using (OleDbConnection conn = new OleDbConnection(connectionString))
+            {
+                conn.Open();
+                OleDbDataAdapter adapter = new OleDbDataAdapter(query, conn);
+                adapter.Fill(originalTable);
+            }
+
+            // Transform to vertical format
+            DataTable transformedTable = TransformToVerticalGroupedTable(originalTable);
+
+            // ✅ Display with performance tweaks
+            dgvDocStat.SuspendLayout();
+            dgvDocStat.DataSource = transformedTable;
+            dgvDocStat.RowHeadersVisible = false;
+            dgvDocStat.AllowUserToResizeRows = false;
+            dgvDocStat.AllowUserToOrderColumns = false;
+            dgvDocStat.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+
+            foreach (DataGridViewColumn col in dgvDocStat.Columns)
+            {
+                col.SortMode = DataGridViewColumnSortMode.NotSortable;
+                col.Width = 100;
+            }
+
+            dgvDocStat.ResumeLayout();
+
+        }
         private string GetFullName(string username)
         {
             string fullName = string.Empty;
@@ -156,126 +269,8 @@ namespace LogPriceChange0._1
             return 0; // default: normal
         }
 
-        // Color only first row (with DocID) green
-        private void dgvDocStat_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
-        {
-            var dgv = sender as DataGridView;
-            var row = dgv.Rows[e.RowIndex];
-
-            var docIdValue = row.Cells["DocID"].Value;
-            if (docIdValue != DBNull.Value && docIdValue != null && !string.IsNullOrEmpty(docIdValue.ToString()))
-            {
-                row.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#FFECA1"); 
-            }
-            else
-            {
-                row.DefaultCellStyle.BackColor = Color.White;
-            }
-        }
-
-        private void UpdateChangedRows()
-        {
-            using (OleDbConnection conn = new OleDbConnection(connectionString))
-            {
-                conn.Open();
-
-                if (bindingSource.DataSource is DataTable table)
-                {
-                    foreach (DataRow dr in table.Rows)
-                    {
-                        if (dr.RowState == DataRowState.Modified)
-                        {
-                            string pkColumn = dgvDocStat.Columns[0].Name;
-
-                            // Build SET clause dynamically, skipping DocStatus
-                            List<string> setClauses = new List<string>();
-                            for (int i = 1; i < dgvDocStat.Columns.Count; i++)
-                            {
-                                string colName = dgvDocStat.Columns[i].Name;
-                                if (!colName.Equals("DocStatus", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    setClauses.Add($"{colName} = ?");
-                                }
-                            }
-
-                            // Append DocStatus manually at the end
-                            setClauses.Add("DocStatus = ?");
-
-                            string query = $"UPDATE tbl_logpricechange SET {string.Join(", ", setClauses)} WHERE {pkColumn} = ?";
-
-                            using (OleDbCommand cmd = new OleDbCommand(query, conn))
-                            {
-                                // Add parameters for all columns except PK and DocStatus
-                                for (int i = 1; i < dgvDocStat.Columns.Count; i++)
-                                {
-                                    string colName = dgvDocStat.Columns[i].Name;
-                                    if (!colName.Equals("DocStatus", StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        cmd.Parameters.AddWithValue("?", dr[colName] ?? DBNull.Value);
-                                    }
-                                }
-
-                                // Add DocStatus param (fixed)
-                                cmd.Parameters.AddWithValue("?", "ForApproval");
-
-                                // Add PK param
-                                cmd.Parameters.AddWithValue("?", dr[pkColumn] ?? DBNull.Value);
-
-                                cmd.ExecuteNonQuery();
-                            }
-                        }
-                    }
-                }
-            }
-
-            MessageBox.Show("Only changed rows updated, DocStatus set to 'ForApproval'.");
-        }
-        private DataTable TransformToVerticalView(DataRow sourceRow)
-        {
-            // 🧱 List of base field names (no _SUP or _USRINT suffixes)
-            var baseFields = new List<string>
-    {
-        "FREE", "PLFOB", "NWF", "NWFR",
-        "PC_PF", "PC_PFL", "PC_RP", "PC_PA", "PC_PLSRP", "PC_LSRP",
-        "PC_PPA2LP", "PC_LP", "PC_PPA2WA", "PC_WA", "PC_PPA2WB", "PC_WB",
-        "PC_PPA2WC", "PC_WC", "PC_PPA2LC", "PC_LC", "PC_PPA2PG", "PC_PG",
-        "PC_PPA2PH", "PC_PH", "PC_PPA2PB", "PC_PB", "PC_PPA2PD", "PC_PD",
-        "LPP_AMT", "LPP_REF", "PC_PPA2PC", "PC_PC"
-    };
-
-            // 🧱 Setup vertical table
-            DataTable verticalTable = new DataTable();
-            verticalTable.Columns.Add("Version"); // Normal, Supplier, Promo
-
-            foreach (var field in baseFields)
-            {
-                verticalTable.Columns.Add(field);
-            }
-
-            // 🧱 Build rows: Normal, Supplier, Promo
-            string[] suffixes = { "", "_SUP", "_USRINT" };
-            string[] labels = { "Normal", "Supplier", "Promo" };
-
-            for (int i = 0; i < suffixes.Length; i++)
-            {
-                var row = verticalTable.NewRow();
-                row["Version"] = labels[i];
-
-                foreach (var field in baseFields)
-                {
-                    string fullFieldName = field + suffixes[i];
-
-                    if (sourceRow.Table.Columns.Contains(fullFieldName))
-                        row[field] = sourceRow[fullFieldName];
-                    else
-                        row[field] = DBNull.Value;
-                }
-
-                verticalTable.Rows.Add(row);
-            }
-
-            return verticalTable;
-        }
+        
+       
 
         #endregion
 
@@ -295,7 +290,7 @@ namespace LogPriceChange0._1
 
             if (string.IsNullOrWhiteSpace(statusComboBox.Text))
             {
-                
+
                 bindingSource.RemoveFilter();
                 return;
             }
@@ -303,7 +298,7 @@ namespace LogPriceChange0._1
             lblDocStat.Visible = true;
             dgvDocStat.Visible = true;
 
-            if (selectedDocStatus =="Rejected" || selectedDocStatus == "Draft")
+            if (selectedDocStatus == "Rejected" || selectedDocStatus == "Draft")
             {
                 btnUpdate.Visible = true;
             }
@@ -319,7 +314,7 @@ namespace LogPriceChange0._1
             {
                 case "ForApproval":
                     lblDocStat.Text = "For Approval";
-                    
+
                     break;
                 case "Approved":
                     lblDocStat.Text = "Approved";
@@ -327,11 +322,11 @@ namespace LogPriceChange0._1
                     break;
                 case "Rejected":
                     lblDocStat.Text = "Rejected";
-                   dgvDocStat.ReadOnly = false;
+                    dgvDocStat.ReadOnly = false;
                     break;
                 case "Draft":
                     lblDocStat.Text = "Draft";
-                   dgvDocStat.ReadOnly = false;
+                    dgvDocStat.ReadOnly = false;
                     break;
                 default:
                     lblDocStat.Text = "";
@@ -459,15 +454,75 @@ namespace LogPriceChange0._1
 
         private void dgvDocStat_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            //if (e.RowIndex >= 0)
-            //{
-            //    var rowView = dgvDocStat.Rows[e.RowIndex].DataBoundItem as DataRowView;
-            //    if (rowView != null)
-            //    {
-            //        var verticalTable = TransformToVerticalView(rowView.Row);
-            //        .DataSource = verticalTable;
-            //    }
-            //}
+            if (e.RowIndex < 0) return;
+
+            string docId = dgvDocStat.Rows[e.RowIndex].Cells["DocID"].Value?.ToString();
+            if (string.IsNullOrEmpty(docId)) return;
+
+            var mainForm = this.FindForm() as MainForm;
+            if (mainForm != null)
+            {
+                mainForm.ShowLogPriceChange(docId);
+            }
+        }
+
+        
+        private void UpdateChangedRows()
+        {
+            using (OleDbConnection conn = new OleDbConnection(connectionString))
+            {
+                conn.Open();
+
+                if (bindingSource.DataSource is DataTable table)
+                {
+                    foreach (DataRow dr in table.Rows)
+                    {
+                        if (dr.RowState == DataRowState.Modified)
+                        {
+                            string pkColumn = dgvDocStat.Columns[0].Name;
+
+                            // Build SET clause dynamically, skipping DocStatus
+                            List<string> setClauses = new List<string>();
+                            for (int i = 1; i < dgvDocStat.Columns.Count; i++)
+                            {
+                                string colName = dgvDocStat.Columns[i].Name;
+                                if (!colName.Equals("DocStatus", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    setClauses.Add($"{colName} = ?");
+                                }
+                            }
+
+                            // Append DocStatus manually at the end
+                            setClauses.Add("DocStatus = ?");
+
+                            string query = $"UPDATE tbl_logpricechange SET {string.Join(", ", setClauses)} WHERE {pkColumn} = ?";
+
+                            using (OleDbCommand cmd = new OleDbCommand(query, conn))
+                            {
+                                // Add parameters for all columns except PK and DocStatus
+                                for (int i = 1; i < dgvDocStat.Columns.Count; i++)
+                                {
+                                    string colName = dgvDocStat.Columns[i].Name;
+                                    if (!colName.Equals("DocStatus", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        cmd.Parameters.AddWithValue("?", dr[colName] ?? DBNull.Value);
+                                    }
+                                }
+
+                                // Add DocStatus param (fixed)
+                                cmd.Parameters.AddWithValue("?", "ForApproval");
+
+                                // Add PK param
+                                cmd.Parameters.AddWithValue("?", dr[pkColumn] ?? DBNull.Value);
+
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                }
+            }
+
+            MessageBox.Show("Only changed rows updated, DocStatus set to 'ForApproval'.");
         }
     }
 }
