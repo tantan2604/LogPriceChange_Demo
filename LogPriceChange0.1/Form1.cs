@@ -8,9 +8,17 @@ namespace LogPriceChange0._1
 {
     public partial class MainForm : Form
     {
+  
+        private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;";
+        private Button activeButton = null;
         wfLoginform loginForm = new wfLoginform();
         private string _username;
-        private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\Desktop\CameraHaus\LogPriceChange_Demo\pricematrix.accdb;";
+        // Define fields to hold control instances
+        private ctrDashboard _ctrDashboard;
+        private ctrLogPriceChange _ctrLogPriceChange;
+        private ctrClaimBySellOut _ctrClaimBySellOut;
+        private ctrClaimByInventory _ctrClaimByInventory;
+
 
         #region Methods
         public string GetFullName(string username)
@@ -63,15 +71,73 @@ namespace LogPriceChange0._1
                 }
             }
         }
-        #endregion
 
+        private void Button_MouseEnter(object sender, EventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn != null && btn != activeButton)
+            {
+                btn.ForeColor = Color.White;  // Text color on hover
+                btn.BackColor = ColorTranslator.FromHtml("#d11018");  // Background color on hover
+            }
+        }
+
+        private void Button_MouseLeave(object sender, EventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn != null && btn != activeButton)
+            {
+                btn.ForeColor = Color.Silver;  // Default text color
+                btn.BackColor = Color.Transparent;  // Default background color
+            }
+        }
+
+        private void Button_Click(object sender, EventArgs e)
+        {
+            Button clickedBtn = sender as Button;
+            if (clickedBtn == null) return;
+
+            // Reset all buttons
+            foreach (Control ctrl in pnl_navbar.Controls)
+            {
+                if (ctrl is Button btn)
+                {
+                    btn.ForeColor = Color.Silver;
+                    btn.BackColor = Color.Transparent;  // Reset background
+                }
+            }
+
+            // Set new active button
+            activeButton = clickedBtn;
+
+            // Highlight clicked button
+            clickedBtn.ForeColor = Color.White;
+            clickedBtn.BackColor = ColorTranslator.FromHtml("#d11018");
+        }
+
+        #endregion
+        public ctrLogPriceChange logPriceChangeControl;
         public MainForm(string username)
         {
-           
+
             InitializeComponent();
             _username = username;
             this.Text = "Employee Dashboard";
             UserSession.Username = _username;
+            this.DoubleBuffered = true;
+            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+
+            logPriceChangeControl = new ctrLogPriceChange();
+            logPriceChangeControl.Dock = DockStyle.Fill;
+            pnl_main.Controls.Add(logPriceChangeControl);
+            logPriceChangeControl.Visible = false;
+        }
+
+        public void ShowLogPriceChange(string docId)
+        {
+            logPriceChangeControl.LoadLogPriceChange(docId, connectionString);
+            logPriceChangeControl.BringToFront();
+            logPriceChangeControl.Visible = true;
         }
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -82,41 +148,59 @@ namespace LogPriceChange0._1
             }
 
             // Load ctrDashboard by default when the form loads
-            pnl_main.Controls.Clear();
+                pnl_main.Controls.Clear();
                 ctrDashboard ctrdash = new ctrDashboard();
                 ctrdash.Dock = DockStyle.Fill;
-                pnl_main.Controls.Add(ctrdash);    
+                pnl_main.Controls.Add(ctrdash);
+
+            foreach (Control ctrl in pnl_navbar.Controls)
+            {
+                if (ctrl is Button btn)
+                {
+                    btn.MouseEnter += Button_MouseEnter;
+                    btn.MouseLeave += Button_MouseLeave;
+                    btn.Click += Button_Click;
+                    
+                }
+            }
+            // Initialize controls once
+            _ctrDashboard = new ctrDashboard() { Dock = DockStyle.Fill };
+            _ctrLogPriceChange = new ctrLogPriceChange() { Dock = DockStyle.Fill };
+            _ctrClaimBySellOut = new ctrClaimBySellOut() { Dock = DockStyle.Fill };
+            _ctrClaimByInventory = new ctrClaimByInventory() { Dock = DockStyle.Fill };
+
+            // Load the default
+            LoadControl(_ctrDashboard);
         }
+
+        private void LoadControl(UserControl ctrl)
+        {
+            pnl_main.SuspendLayout();
+            pnl_main.Controls.Clear();
+            pnl_main.Controls.Add(ctrl);
+            pnl_main.ResumeLayout();
+        }
+
         private void btn_dashboard_Click(object sender, EventArgs e)
         {
-            pnl_main.Controls.Clear();
-            ctrDashboard ctrdash = new ctrDashboard();
-            ctrdash.Dock = DockStyle.Fill;
-            pnl_main.Controls.Add(ctrdash);
+            LoadControl(_ctrDashboard);
         }
-        // Event handlers for button clicks to load different user controls
+
         private void btn_lpc_Click(object sender, EventArgs e)
         {
-            pnl_main.Controls.Clear();
-            ctrLogPriceChange ctrlpc = new ctrLogPriceChange();
-            ctrlpc.Dock = DockStyle.Fill;
-            pnl_main.Controls.Add(ctrlpc);
-
+            LoadControl(_ctrLogPriceChange);
         }
+
         private void btn_claimbysellout_Click(object sender, EventArgs e)
         {
-            pnl_main.Controls.Clear();
-            ctrClaimBySellOut ctrcbso = new ctrClaimBySellOut();
-            ctrcbso.Dock = DockStyle.Fill;
-            pnl_main.Controls.Add(ctrcbso);
+            LoadControl(_ctrClaimBySellOut);
         }
+
         private void btn_claimbyinventory_Click(object sender, EventArgs e)
         {
-            pnl_main.Controls.Clear();
-            ctrClaimByInventory ctrcbi = new ctrClaimByInventory();
-            ctrcbi.Dock = DockStyle.Fill;
-            pnl_main.Controls.Add(ctrcbi);
+            LoadControl(_ctrClaimByInventory);
         }
+
         private void btn_logout_Click(object sender, EventArgs e)
         {
             UpdateIsLoginTofalse();

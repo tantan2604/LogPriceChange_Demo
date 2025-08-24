@@ -10,6 +10,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
+using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,11 +25,11 @@ namespace LogPriceChange0._1
     public partial class ctrLogPriceChange : UserControl
     {
         string username = UserSession.Username;
-
-        OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\Desktop\CameraHaus\LogPriceChange_Demo\pricematrix.accdb;");
+        OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;");
         private static Dictionary<string, int> lastNumbers = new Dictionary<string, int>();
         private DataGridViewRow rightClickedRow;
         
+
         private string GetFullName(string username)
         {
             string fullName = string.Empty;
@@ -64,8 +65,6 @@ namespace LogPriceChange0._1
         public ctrLogPriceChange()
         {
             InitializeComponent();
-            
-
             // Set custom format for your DateTimePicker
             lpc_dtp_enddate.CustomFormat = " ";
 
@@ -79,6 +78,29 @@ namespace LogPriceChange0._1
 
             // Assign the ContextMenuStrip to the DataGridView (if not done in designer)
             lpc_dgv_dbvalue.ContextMenuStrip = cmsRemoveGroup;
+
+            if (!lpc_dgv_searchbycode.Columns.Contains("Select"))
+            {
+                DataGridViewCheckBoxColumn checkBoxColumn = new DataGridViewCheckBoxColumn();
+                checkBoxColumn.HeaderText = "✓";
+                checkBoxColumn.Name = "Select";
+                checkBoxColumn.Width = 30;
+                lpc_dgv_searchbycode.Columns.Insert(0, checkBoxColumn); // Adds to the first column
+            }
+        }
+        private void ctrLogPriceChange_Load(object sender, EventArgs e)
+        {
+            if (!lpc_dgv_searchbycode.Columns.Contains("Select"))
+            {
+                DataGridViewCheckBoxColumn chk = new DataGridViewCheckBoxColumn();
+                chk.Name = "Select";
+                chk.HeaderText = "✓";
+                chk.Width = 40;
+                lpc_dgv_searchbycode.Columns.Insert(0, chk);
+            }
+            
+            lpc_dgv_searchbycode.CellValueChanged += lpc_dgv_searchbycode_CellValueChanged;
+            lpc_dgv_searchbycode.CurrentCellDirtyStateChanged += lpc_dgv_searchbycode_CurrentCellDirtyStateChanged;
         }
 
         //***********************************************Remove Rows in datagridview**********************************************************************************************************************************************************************************************
@@ -138,7 +160,7 @@ namespace LogPriceChange0._1
             public string RateColumn { get; set; }
         }
 
-        private readonly List<ColumnMapping> columnMappings = new List<ColumnMapping>        
+        private readonly List<ColumnMapping> columnMappings = new List<ColumnMapping>
         {
             new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LSRP", RateColumn = "PC_PLSRP"},
             new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LP",   RateColumn = "PC_PPA2LP"},
@@ -151,9 +173,8 @@ namespace LogPriceChange0._1
             new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PB",   RateColumn = "PC_PPA2PB"},
             new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PD",   RateColumn = "PC_PPA2PD"},
             new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PC",   RateColumn = "PC_PPA2PC"}
-        }
-;
-
+        };
+       
         private void UpdateDependentValues(int rowIndex, string editedColumn)
         {
             if (rowIndex < 0 || rowIndex >= lpc_dgv_dbvalue.Rows.Count) return;
@@ -184,8 +205,6 @@ namespace LogPriceChange0._1
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
                 UpdateDependentValues(e.RowIndex, lpc_dgv_dbvalue.Columns[e.ColumnIndex].Name);
         }
-
-
 
         #endregion
         //************************************************End Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
@@ -251,85 +270,6 @@ namespace LogPriceChange0._1
             }
         }
 
-        private void lpc_dgv_searchbycode_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            try
-            {
-                // Ensure connection is closed before opening again for the query
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-
-                connection.Open();
-                string query = "SELECT * FROM tbl_billptmp";
-                OleDbDataAdapter da = new OleDbDataAdapter(query, connection);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-
-                if (e.RowIndex >= 0)
-                {
-                    DataGridViewRow selectedRow = lpc_dgv_searchbycode.Rows[e.RowIndex];
-
-                    // Check if the product is already added to prevent duplicates
-                    string prodCode = selectedRow.Cells["PROD_C"].Value?.ToString();
-                    bool productAlreadyAdded = false;
-                    for (int i = 0; i < lpc_dgv_dbvalue.Rows.Count; i += 3)
-                    {
-                        if (lpc_dgv_dbvalue.Rows[i].Cells["PROD_C"].Value?.ToString() == prodCode)
-                        {
-                            productAlreadyAdded = true;
-                            break;
-                        }
-                    }
-
-                    if (productAlreadyAdded)
-                    {
-                        MessageBox.Show("This product has already been added.", "Duplicate Product", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
-
-                    // Create three rows for the selected product
-                    int mainRowIndex = lpc_dgv_dbvalue.Rows.Add();
-                    int suppRowIndex = lpc_dgv_dbvalue.Rows.Add();
-                    int promoRowIndex = lpc_dgv_dbvalue.Rows.Add();
-
-                    // Fill mainRow with selected data
-                    DataGridViewRow mainRow = lpc_dgv_dbvalue.Rows[mainRowIndex];
-                    for (int i = 0; i < selectedRow.Cells.Count && i < lpc_dgv_dbvalue.Columns.Count; i++)
-                    {
-                        mainRow.Cells[i].Value = selectedRow.Cells[i].Value;
-                    }
-
-                    // Set row header labels
-                    lpc_dgv_dbvalue.Rows[mainRowIndex].HeaderCell.Value = "Database Value";
-                    lpc_dgv_dbvalue.Rows[suppRowIndex].HeaderCell.Value = "Supplier Price";
-                    lpc_dgv_dbvalue.Rows[promoRowIndex].HeaderCell.Value = "Promo Value";
-
-                    // Optionally make main row read-only
-                    lpc_dgv_dbvalue.Rows[mainRowIndex].ReadOnly = true;
-
-                    // Clear the search textbox after adding
-                    lpc_tb_searchbycode.Clear();
-                    lpc_dgv_searchbycode.Visible = false; // Hide search results
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred: " + ex.Message);
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
-        }
-
-        /**************************************************Start For DataGridview Insert Update *******************************************************************************************************************************************************************************************************************************************************************************************************************************/
-        
-        //************************************************Upsert*******************************************************************************************************************
         #region
         public void InsertData(string docStatus)
         {
@@ -379,8 +319,8 @@ namespace LogPriceChange0._1
             {
                 try
                 {
-                    string insQuery = "INSERT INTO tbl_logpricechange (DocID, DocStatus, CreatedBy,  CreatedDate, TDate, Supplier, PromoTitle, StartDate, EndDate, Promotype, PROD_C, PROD_N, FREE, FREE_SUP, FREE_USRINT, PLFOB, PLFOB_SUP, PLFOB_USRINT, NWF, NWF_SUP, NWF_USRINT, NWFR, PC_PF, PC_PF_SUP, PC_PF_USRINT, PC_PFL, PC_PFL_SUP, PC_PFL_USRINT, PC_RP, PC_RP_SUP, PC_RP_USRINT, PC_PA, PC_PA_SUP, PC_PA_USRINT, PC_PLSRP, PC_PLSRP_SUP, PC_PLSRP_USRINT, PC_LSRP, PC_LSRP_SUP, PC_LSRP_USRINT, PC_PPA2LP, PC_PPA2LP_SUP, PC_PPA2LP_USRINT, PC_LP, PC_LP_SUP, PC_LP_USRINT, PC_PPA2WA, PC_PPA2WA_SUP, PC_PPA2WA_USRINT, PC_WA, PC_WA_SUP, PC_WA_USRINT, PC_PPA2WB, PC_PPA2WB_SUP, PC_PPA2WB_USRINT, PC_WB, PC_WB_SUP, PC_WB_USRINT, PC_PPA2WC, PC_PPA2WC_SUP, PC_PPA2WC_USRINT, PC_WC, PC_WC_SUP, PC_WC_USRINT, PC_PPA2LC, PC_PPA2LC_SUP, PC_PPA2LC_USRINT, PC_LC, PC_LC_SUP, PC_LC_USRINT, PC_PPA2PG, PC_PPA2PG_SUP, PC_PPA2PG_USRINT, PC_PG, PC_PG_SUP, PC_PG_USRINT, PC_PPA2PH, PC_PPA2PH_SUP, PC_PPA2PH_USRINT, PC_PH, PC_PH_SUP, PC_PH_USRINT, PC_PPA2PB, PC_PPA2PB_SUP, PC_PPA2PB_USRINT, PC_PB, PC_PB_SUP, PC_PB_USRINT, PC_PPA2PD, PC_PPA2PD_SUP, PC_PPA2P_USRINT, PC_PD, PC_PD_SUP, PC_PD_USRINT, LPP_AMT, LPP_AMT_SUP, LPP_AMT_USRINT, LPP_REF, LPP_REF_SUP, LPP_REF_USRINT, PC_PPA2PC, PC_PPA2PC_SUP, PC_PPA2PC_USRINT, PC_PC, PC_PC_SUP, PC_PC_USRINT, Claim1, Claim2, ClaimK1, ClaimK2, Remarks1, Remarks2) " +
-                                                                "VALUES ( @DocID,@DocStatus, @CreatedBy, @CreatedDate, @TDate,@Supplier, @PromoTitle, @StartDate, @EndDate, @Promotype,  @PROD_C,@PROD_N,@FREE,@FREE_SUP,@FREE_USRINT,@PLFOB,@PLFOB_SUP,@PLFOB_USRINT,@NWF,@NWF_SUP,@NWF_USRINT,@NWFR,@PC_PF,@PC_PF_SUP,@PC_PF_USRINT,@PC_PFL,@PC_PFL_SUP,@PC_PFL_USRINT,@PC_RP,@PC_RP_SUP,@PC_RP_USRINT,@PC_PA,@PC_PA_SUP,@PC_PA_USRINT,@PC_PLSRP,@PC_PLSRP_SUP,@PC_PLSRP_USRINT,@PC_LSRP,@PC_LSRP_SUP,@PC_LSRP_USRINT,@PC_PPA2LP,@PC_PPA2LP_SUP,@PC_PPA2LP_USRINT,@PC_LP,@PC_LP_SUP,@PC_LP_USRINT,@PC_PPA2WA,@PC_PPA2WA_SUP,@PC_PPA2WA_USRINT,@PC_WA,@PC_WA_SUP,@PC_WA_USRINT,@PC_PPA2WB,@PC_PPA2WB_SUP,@PC_PPA2WB_USRINT,@PC_WB,@PC_WB_SUP,@PC_WB_USRINT,@PC_PPA2WC,@PC_PPA2WC_SUP,@PC_PPA2WC_USRINT,@PC_WC,@PC_WC_SUP,@PC_WC_USRINT,@PC_PPA2LC,@PC_PPA2LC_SUP,@PC_PPA2LC_USRINT,@PC_LC,@PC_LC_SUP,@PC_LC_USRINT,@PC_PPA2PG,@PC_PPA2PG_SUP,@PC_PPA2PG_USRINT,@PC_PG,@PC_PG_SUP,@PC_PG_USRINT,@PC_PPA2PH,@PC_PPA2PH_SUP,@PC_PPA2PH_USRINT,@PC_PH,@PC_PH_SUP,@PC_PH_USRINT,@PC_PPA2PB,@PC_PPA2PB_SUP,@PC_PPA2PB_USRINT,@PC_PB,@PC_PB_SUP,@PC_PB_USRINT,@PC_PPA2PD,@PC_PPA2PD_SUP,@PC_PPA2P_USRINT,@PC_PD,@PC_PD_SUP,@PC_PD_USRINT,@LPP_AMT,@LPP_AMT_SUP,@LPP_AMT_USRINT,@LPP_REF,@LPP_REF_SUP,@LPP_REF_USRINT,@PC_PPA2PC,@PC_PPA2PC_SUP,@PC_PPA2PC_USRINT,@PC_PC,@PC_PC_SUP,@PC_PC_USRINT,@Claim1,@Claim2,@ClaimK1,@ClaimK2,@Remarks1,@Remarks2)";
+                    string insQuery = "INSERT INTO tbl_logpricechange (DocID, DocStatus, CreatedBy,  CreatedDate, TDate, Supplier, PromoTitle, StartDate, EndDate, Promotype, PROD_C, PROD_N, FREE, FREE_SUP, FREE_USRINT, PLFOB, PLFOB_SUP, PLFOB_USRINT, NWF, NWF_SUP, NWF_USRINT, NWFR, PC_PF, PC_PF_SUP, PC_PF_USRINT, PC_PFL, PC_PFL_SUP, PC_PFL_USRINT, PC_RP, PC_RP_SUP, PC_RP_USRINT, PC_PA, PC_PA_SUP, PC_PA_USRINT, PC_PLSRP, PC_PLSRP_SUP, PC_PLSRP_USRINT, PC_LSRP, PC_LSRP_SUP, PC_LSRP_USRINT, PC_PPA2LP, PC_PPA2LP_SUP, PC_PPA2LP_USRINT, PC_LP, PC_LP_SUP, PC_LP_USRINT, PC_PPA2WA, PC_PPA2WA_SUP, PC_PPA2WA_USRINT, PC_WA, PC_WA_SUP, PC_WA_USRINT, PC_PPA2WB, PC_PPA2WB_SUP, PC_PPA2WB_USRINT, PC_WB, PC_WB_SUP, PC_WB_USRINT, PC_PPA2WC, PC_PPA2WC_SUP, PC_PPA2WC_USRINT, PC_WC, PC_WC_SUP, PC_WC_USRINT, PC_PPA2LC, PC_PPA2LC_SUP, PC_PPA2LC_USRINT, PC_LC, PC_LC_SUP, PC_LC_USRINT, PC_PPA2PG, PC_PPA2PG_SUP, PC_PPA2PG_USRINT, PC_PG, PC_PG_SUP, PC_PG_USRINT, PC_PPA2PH, PC_PPA2PH_SUP, PC_PPA2PH_USRINT, PC_PH, PC_PH_SUP, PC_PH_USRINT, PC_PPA2PB, PC_PPA2PB_SUP, PC_PPA2PB_USRINT, PC_PB, PC_PB_SUP, PC_PB_USRINT, PC_PPA2PD, PC_PPA2PD_SUP, PC_PPA2P_USRINT, PC_PD, PC_PD_SUP, PC_PD_USRINT, LPP_AMT, LPP_AMT_SUP, LPP_AMT_USRINT, LPP_REF, LPP_REF_SUP, LPP_REF_USRINT, PC_PPA2PC, PC_PPA2PC_SUP, PC_PPA2PC_USRINT, PC_PC, PC_PC_SUP, PC_PC_USRINT, Claim, Claim_SUP, Claim_USRINT,ClaimK, ClaimK_SUP,ClaimK_USRINT, Remarks, Remarks_SUP, Remarks_USRINT) " +
+                                                                "VALUES ( @DocID,@DocStatus, @CreatedBy, @CreatedDate, @TDate,@Supplier, @PromoTitle, @StartDate, @EndDate, @Promotype,  @PROD_C,@PROD_N,@FREE,@FREE_SUP,@FREE_USRINT,@PLFOB,@PLFOB_SUP,@PLFOB_USRINT,@NWF,@NWF_SUP,@NWF_USRINT,@NWFR,@PC_PF,@PC_PF_SUP,@PC_PF_USRINT,@PC_PFL,@PC_PFL_SUP,@PC_PFL_USRINT,@PC_RP,@PC_RP_SUP,@PC_RP_USRINT,@PC_PA,@PC_PA_SUP,@PC_PA_USRINT,@PC_PLSRP,@PC_PLSRP_SUP,@PC_PLSRP_USRINT,@PC_LSRP,@PC_LSRP_SUP,@PC_LSRP_USRINT,@PC_PPA2LP,@PC_PPA2LP_SUP,@PC_PPA2LP_USRINT,@PC_LP,@PC_LP_SUP,@PC_LP_USRINT,@PC_PPA2WA,@PC_PPA2WA_SUP,@PC_PPA2WA_USRINT,@PC_WA,@PC_WA_SUP,@PC_WA_USRINT,@PC_PPA2WB,@PC_PPA2WB_SUP,@PC_PPA2WB_USRINT,@PC_WB,@PC_WB_SUP,@PC_WB_USRINT,@PC_PPA2WC,@PC_PPA2WC_SUP,@PC_PPA2WC_USRINT,@PC_WC,@PC_WC_SUP,@PC_WC_USRINT,@PC_PPA2LC,@PC_PPA2LC_SUP,@PC_PPA2LC_USRINT,@PC_LC,@PC_LC_SUP,@PC_LC_USRINT,@PC_PPA2PG,@PC_PPA2PG_SUP,@PC_PPA2PG_USRINT,@PC_PG,@PC_PG_SUP,@PC_PG_USRINT,@PC_PPA2PH,@PC_PPA2PH_SUP,@PC_PPA2PH_USRINT,@PC_PH,@PC_PH_SUP,@PC_PH_USRINT,@PC_PPA2PB,@PC_PPA2PB_SUP,@PC_PPA2PB_USRINT,@PC_PB,@PC_PB_SUP,@PC_PB_USRINT,@PC_PPA2PD,@PC_PPA2PD_SUP,@PC_PPA2P_USRINT,@PC_PD,@PC_PD_SUP,@PC_PD_USRINT,@LPP_AMT,@LPP_AMT_SUP,@LPP_AMT_USRINT,@LPP_REF,@LPP_REF_SUP,@LPP_REF_USRINT,@PC_PPA2PC,@PC_PPA2PC_SUP,@PC_PPA2PC_USRINT,@PC_PC,@PC_PC_SUP,@PC_PC_USRINT, @Claim, @Claim_SUP, @Claim_USRINT, @ClaimK, @ClaimK_SUP, @ClaimK_USRINT, @Remarks, @Remarks_SUP, @Remarks_USRINT)";
                     for (int i = 0; i < totalRows; i += 3)
                     {
                         int dbRow = i, suppRow = i + 1, promoRow = i + 2;
@@ -574,12 +514,15 @@ namespace LogPriceChange0._1
                 cmd.Parameters.AddWithValue("@PC_PC", GetCellValue(dbRow, "PC_PC"));
                 cmd.Parameters.AddWithValue("@PC_PC_SUP", GetCellValue(suppRow, "PC_PC"));
                 cmd.Parameters.AddWithValue("@PC_PC_USRINT", GetCellValue(promoRow, "PC_PC"));
-                cmd.Parameters.AddWithValue("@Claim1", GetCellValue(suppRow, "Claim1"));
-                cmd.Parameters.AddWithValue("@Claim2", GetCellValue(promoRow, "Claim2"));
-                cmd.Parameters.AddWithValue("@ClaimK1", GetCellValue(suppRow, "ClaimK1"));
-                cmd.Parameters.AddWithValue("@ClaimK2", GetCellValue(promoRow, "ClaimK2"));
-                cmd.Parameters.AddWithValue("@Remarks1", GetCellValue(suppRow, "Remarks1"));
-                cmd.Parameters.AddWithValue("@Remarks2", GetCellValue(promoRow, "Remarks2"));
+                cmd.Parameters.AddWithValue("@Claim", GetCellValue(suppRow, "Claim1"));
+                cmd.Parameters.AddWithValue("@Claim_SUP", GetCellValue(promoRow, "Claim_SUP"));
+                cmd.Parameters.AddWithValue("@Claim_USRINT", GetCellValue(promoRow, "Claim_USRINT"));
+                cmd.Parameters.AddWithValue("@ClaimK", GetCellValue(suppRow, "ClaimK"));
+                cmd.Parameters.AddWithValue("@ClaimK_SUP", GetCellValue(promoRow, "ClaimK_SUP"));
+                cmd.Parameters.AddWithValue("@ClaimK_USRINT", GetCellValue(promoRow, "ClaimK_USRINT"));
+                cmd.Parameters.AddWithValue("@Remarks", GetCellValue(suppRow, "Remarks"));
+                cmd.Parameters.AddWithValue("@Remarks_SUP", GetCellValue(suppRow, "Remarks_SUP"));
+                cmd.Parameters.AddWithValue("@Remarks_USRINT", GetCellValue(promoRow, "Remarks_USRINT"));
 
                 cmd.ExecuteNonQuery();
 
@@ -588,8 +531,8 @@ namespace LogPriceChange0._1
 
         private void btnlpcsubmit_Click(object sender, EventArgs e)
         {
-            // Correct call for submitting for approval
-            DialogResult result = MessageBox.Show("Are you sure you want to submit this for approval?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+           
+             DialogResult result = MessageBox.Show("Are you sure you want to submit this for approval?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
             {
                 InsertData("ForApproval");
@@ -600,9 +543,111 @@ namespace LogPriceChange0._1
         {
             InsertData("Draft");
         }
+
+
+
         #endregion
-        
+        private void lpc_dgv_searchbycode_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (lpc_dgv_searchbycode.IsCurrentCellDirty)
+            {
+                lpc_dgv_searchbycode.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
+        }
+
+        private void lpc_dgv_searchbycode_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            
+            if (e.RowIndex >= 0 && lpc_dgv_searchbycode.Columns[e.ColumnIndex].Name == "Select")
+            {
+                DataGridViewRow selectedRow = lpc_dgv_searchbycode.Rows[e.RowIndex];
+                bool isChecked = Convert.ToBoolean(selectedRow.Cells["Select"].Value);
+                string prodCode = selectedRow.Cells["PROD_C"].Value?.ToString();
+
+                if (isChecked)
+                {
+                    // Add to dgv_dbvalue
+                    bool alreadyAdded = false;
+                    for (int i = 0; i < lpc_dgv_dbvalue.Rows.Count; i += 3)
+                    {
+                        if (lpc_dgv_dbvalue.Rows[i].Cells["PROD_C"].Value?.ToString() == prodCode)
+                        {
+                            alreadyAdded = true;
+                            break;
+                        }
+                    }
+
+                    if (alreadyAdded)
+                        return;
+
+                    int mainRowIndex = lpc_dgv_dbvalue.Rows.Add();
+                    int suppRowIndex = lpc_dgv_dbvalue.Rows.Add();
+                    int promoRowIndex = lpc_dgv_dbvalue.Rows.Add();
+
+                    // Fill data
+                    DataGridViewRow mainRow = lpc_dgv_dbvalue.Rows[mainRowIndex];
+                    for (int i = 0; i < selectedRow.Cells.Count; i++)
+                    {
+                        string columnName = selectedRow.Cells[i].OwningColumn.Name;
+                        if (lpc_dgv_dbvalue.Columns.Contains(columnName))
+                        {
+                            mainRow.Cells[columnName].Value = selectedRow.Cells[columnName].Value;
+                        }
+                    }
+
+                    mainRow.HeaderCell.Value = "Database Value";
+                    lpc_dgv_dbvalue.Rows[suppRowIndex].HeaderCell.Value = "Supplier Price";
+                    lpc_dgv_dbvalue.Rows[promoRowIndex].HeaderCell.Value = "Promo Value";
+
+                    mainRow.ReadOnly = true;
+                    mainRow.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#FFECA1");
+                }
+                else
+                {
+                    // Remove from dgv_dbvalue
+                    for (int i = 0; i < lpc_dgv_dbvalue.Rows.Count; i++)
+                    {
+                        if (lpc_dgv_dbvalue.Rows[i].Cells["PROD_C"].Value?.ToString() == prodCode)
+                        {
+                            // Remove 3 rows starting from i
+                            if (i + 2 < lpc_dgv_dbvalue.Rows.Count)
+                            {
+                                lpc_dgv_dbvalue.Rows.RemoveAt(i);     // Promo
+                                lpc_dgv_dbvalue.Rows.RemoveAt(i);     // Supplier
+                                lpc_dgv_dbvalue.Rows.RemoveAt(i);     // Main
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
 
+        public void LoadLogPriceChange(string docId, string connectionString)
+        {
+            MessageBox.Show("Method called with DocID: " + docId); // <-- Add this
+
+            using (OleDbConnection conn = new OleDbConnection(connectionString))
+            {
+                string query = "SELECT * FROM tbl_logpricechange WHERE DocID = ?";
+                using (OleDbDataAdapter adapter = new OleDbDataAdapter(query, conn))
+                {
+                    adapter.SelectCommand.Parameters.AddWithValue("?", docId);
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    MessageBox.Show("Rows returned: " + dt.Rows.Count); // <-- Add this
+
+                    lpc_dgv_dbvalue.DataSource = null;
+                    lpc_dgv_dbvalue.DataSource = dt;
+                }
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //LoadLogPriceChange(UserSession.DocId, connection);
+        }
     }
 }
