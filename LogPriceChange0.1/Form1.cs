@@ -9,7 +9,7 @@ namespace LogPriceChange0._1
     public partial class MainForm : Form
     {
   
-        private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;";
+        private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\Desktop\CameraHaus\LogPriceChange_Demo\pricematrix.accdb;";
         private Button activeButton = null;
         wfLoginform loginForm = new wfLoginform();
         private string _username;
@@ -133,12 +133,6 @@ namespace LogPriceChange0._1
             logPriceChangeControl.Visible = false;
         }
 
-        public void ShowLogPriceChange(string docId)
-        {
-            logPriceChangeControl.LoadLogPriceChange(docId, connectionString);
-            logPriceChangeControl.BringToFront();
-            logPriceChangeControl.Visible = true;
-        }
         private void MainForm_Load(object sender, EventArgs e)
         {
             if (this.Controls.Find("dashb_lbl_userlogged", true).Length > 0)
@@ -147,11 +141,11 @@ namespace LogPriceChange0._1
                 userLabel.Text = GetFullName(_username);
             }
 
-            // Load ctrDashboard by default when the form loads
-                pnl_main.Controls.Clear();
-                ctrDashboard ctrdash = new ctrDashboard();
-                ctrdash.Dock = DockStyle.Fill;
-                pnl_main.Controls.Add(ctrdash);
+            //Load ctrDashboard by default when the form loads
+            pnl_main.Controls.Clear();
+            ctrDashboard ctrdash = new ctrDashboard();
+            ctrdash.Dock = DockStyle.Fill;
+            pnl_main.Controls.Add(ctrdash);
 
             foreach (Control ctrl in pnl_navbar.Controls)
             {
@@ -160,7 +154,7 @@ namespace LogPriceChange0._1
                     btn.MouseEnter += Button_MouseEnter;
                     btn.MouseLeave += Button_MouseLeave;
                     btn.Click += Button_Click;
-                    
+
                 }
             }
             // Initialize controls once
@@ -169,9 +163,17 @@ namespace LogPriceChange0._1
             _ctrClaimBySellOut = new ctrClaimBySellOut() { Dock = DockStyle.Fill };
             _ctrClaimByInventory = new ctrClaimByInventory() { Dock = DockStyle.Fill };
 
-            // Load the default
+            //Load the default
             LoadControl(_ctrDashboard);
         }
+
+        public void ShowLogPriceChange(string docId)
+        {
+          
+            logPriceChangeControl.BringToFront();
+            logPriceChangeControl.Visible = true;
+        }
+        
 
         private void LoadControl(UserControl ctrl)
         {
@@ -212,6 +214,11 @@ namespace LogPriceChange0._1
             UpdateIsLoginTofalse();
 
             Application.Exit();
+        }
+
+        private void pnl_main_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

@@ -1,227 +1,697 @@
-﻿using System;
-using System.Collections;
+﻿using PriceMatrix.Class;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
-using System.Data.Common;
 using System.Data.OleDb;
-using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Cryptography;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+
 
 namespace LogPriceChange0._1
 {
-    
+
     public partial class ctrLogPriceChange : UserControl
     {
-        string username = UserSession.Username;
-        OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;");
+
+        string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\Desktop\CameraHaus\LogPriceChange_Demo\pricematrix.accdb;";
         private static Dictionary<string, int> lastNumbers = new Dictionary<string, int>();
         private DataGridViewRow rightClickedRow;
-        
+        private string _docId;
+        private DataTable mainTable = new DataTable();
+        private AutoComputeRate autoRate;
+        private string selectedId;
+        private int _idValue;
+        private string _promoType;
+
+        private void InitializeMainTable()
+        {
+            string[] columns = {
+        "ID","DocID", "PROD_C", "PROD_N", "FREE", "PLFOB", "NWF", "NWFR", "PC_PF", "PC_PFL", "PC_RP",
+        "PC_PA", "PC_PLSRP", "PC_LSRP", "PC_PPA2LP", "PC_LP", "PC_PPA2WA", "PC_WA", "PC_PPA2WB", "PC_WB",
+        "PC_PPA2WC", "PC_WC", "PC_PPA2LC", "PC_LC", "PC_PPA2PG", "PC_PG", "PC_PPA2PH", "PC_PH",
+        "PC_PPA2PB", "PC_PB", "PC_PPA2PD", "PC_PD", "LPP_AMT", "LPP_REF", "PC_PPA2PC", "PC_PC",
+        "Claim", "ClaimK", "Remarks"
+         };
+
+            foreach (string col in columns)
+                mainTable.Columns.Add(col);
+
+            dgv_Main.DataSource = mainTable;
+
+            foreach (DataGridViewColumn column in dgv_Main.Columns)
+            {
+                column.SortMode = DataGridViewColumnSortMode.NotSortable;
+
+            }
+
+            typeof(DataGridView).InvokeMember("DoubleBuffered",
+              System.Reflection.BindingFlags.NonPublic |
+              System.Reflection.BindingFlags.Instance |
+              System.Reflection.BindingFlags.SetProperty,
+              null, dgv_Main, new object[] { true });
+            lpc_dgv_searchbycode.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+
+            autoRate = new AutoComputeRate(dgv_Main);
+            dgv_Main.CellEndEdit += autoRate.dgv_Main_CellEndEdit;
+
+           
+        }
+
+        private void ClearForm()
+        {
+            foreach (DataGridViewRow row in dgv_Main.Rows)
+            {
+                if (row.HeaderCell.Value?.ToString() == "DB Price" ||
+                    row.HeaderCell.Value?.ToString() == "Supplier Price" ||
+                    row.HeaderCell.Value?.ToString() == "Promo Price")
+                {
+                    dgv_Main.Rows.Remove(row);
+                }
+            }
+            lpc_tb_searchbycode.Clear();
+            lpc_tb_promotitle.Clear();
+            lpc_tb_supplier.Clear();
+            lpc_rbtn_permanent.Checked = true;
+            lpc_dtp_startdate.Value = DateTime.Now;
+            lpc_dtp_enddate.Value = DateTime.Now.AddDays(7);
+            lpc_dtp_memodate.Value = DateTime.Now;
+            mainTable.Clear();
+            tb_docID.Clear();
+
+        }
 
         private string GetFullName(string username)
         {
             string fullName = string.Empty;
             string query = "SELECT Lastname, Firstname FROM tbl_employee WHERE Username = ?";
-            using (OleDbCommand command = new OleDbCommand(query, connection))
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
             {
-                // The parameter is for the username
-                command.Parameters.Add("?", username);
+                using (OleDbCommand command = new OleDbCommand(query, connection))
+                {
+                    // The parameter is for the username
+                    command.Parameters.Add("?", username);
+
+                    try
+                    {
+                        connection.Open();
+                        using (OleDbDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // Concatenate Lastname and Firstname from the database
+                                string lastName = reader["Lastname"].ToString();
+                                string firstName = reader["Firstname"].ToString();
+                                fullName = $"{lastName} {firstName}";
+                            }
+                        }
+                        connection.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error retrieving full name: " + ex.Message, "Database Error");
+                    }
+                }
+                return fullName;
+
+            }
+        }
+
+        private void RemoveGroupRowsByProdCode(string prodCode)
+        {
+            // Find all rows in mainTable with matching PROD_C and header "DB Price"
+            var rowsToRemove = mainTable.AsEnumerable()
+                .Where(r => r.Table.Columns.Contains("PROD_C") &&
+                            r["PROD_C"].ToString() == prodCode)
+                .ToList();
+
+            foreach (var row in rowsToRemove)
+            {
+                mainTable.Rows.Remove(row);
+            }
+        }
+
+        private DataRow LoadBillpDataToRow(int id)
+        {
+
+            string query = @"SELECT  ID, PROD_C, PROD_N, FREE, PLFOB, NWF, NWFR, PC_PF, PC_PFL, PC_RP, PC_PA, PC_PLSRP, PC_LSRP, 
+                         PC_PPA2LP, PC_LP, PC_PPA2WA, PC_WA, PC_PPA2WB, PC_WB, PC_PPA2WC, PC_WC, PC_PPA2LC, PC_LC, 
+                         PC_PPA2PG, PC_PG, PC_PPA2PH, PC_PH, PC_PPA2PB, PC_PB, PC_PPA2PD, PC_PD, 
+                         LPP_AMT, LPP_REF, PC_PPA2PC, PC_PC
+                         FROM tbl_billptmp 
+                         WHERE ID = ?";
+
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
+            {
+                using (OleDbCommand cmd = new OleDbCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("?", id);
+
+                    OleDbDataAdapter adapter = new OleDbDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+
+                    connection.Open();
+                    adapter.Fill(dt);
+                    connection.Close();
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        return dt.Rows[0];
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+
+
+
+        }
+
+        private string GenerateNewDocID()
+        {
+            string prefix = DateTime.Now.ToString("yyyyMM"); // e.g. "202508"
+            string newDocID = "";
+            string maxDocID = null;
+
+            // Query to find max DocID for this year-month
+            string query = "SELECT MAX(DocID) FROM tbl_logpricechange WHERE DocID LIKE ?";
+
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
+            {
+                using (OleDbCommand cmd = new OleDbCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("@prefix", prefix + "%");
+                    connection.Open();
+                    object result = cmd.ExecuteScalar();
+                    if (result != DBNull.Value && result != null)
+                    {
+                        maxDocID = result.ToString();
+
+                    }
+                    if (maxDocID == null)
+                    {
+                        // No record yet for this month, start at 000001
+                        newDocID = prefix + "-000001";
+                    }
+                    else
+                    {
+                        // Extract the last 6 digits from maxDocID
+                        string lastSix = maxDocID.Substring(maxDocID.Length - 6);
+                        int lastNumber = int.Parse(lastSix);
+
+                        int newNumber = lastNumber + 1;
+                        string newNumberStr = newNumber.ToString("D6"); // pad with zeros
+
+                        newDocID = prefix + "-" + newNumberStr;
+                    }
+
+                    return newDocID;
+                }
+            }
+        }
+
+        private DataTable LoadlpcUpdateAll(string docID)
+        {
+            string query = "SELECT * FROM tbl_logpricechange WHERE DocID = ?";
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
+            {
+                using (OleDbCommand cmd = new OleDbCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("?", docID);
+
+                    OleDbDataAdapter adapter = new OleDbDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+
+                    connection.Open();
+                    adapter.Fill(dt);
+                    connection.Close();
+
+                    return dt;
+                }
+            }
+
+        }
+
+        private void Add(string docStatus)
+        {
+
+            string docIdToUse = tb_docID.Text;
+            string promoName = lpc_tb_promotitle.Text.ToString();
+            string promoType = lpc_rbtn_permanent.Checked ? "Permanent" :
+                               lpc_rbtn_temporary.Checked ? "Temporary" : null; ;
+            DateTime startDate = lpc_dtp_startdate.Value;
+            DateTime endDate = lpc_dtp_enddate.Value;
+            string loggedUser = Environment.UserName;
+            int rowCount = dgv_Main.AllowUserToAddRows ? dgv_Main.Rows.Count - 1 : dgv_Main.Rows.Count;
+            DateTime memoDate = lpc_dtp_memodate.Value;
+            string supplier = lpc_tb_supplier.Text.Trim();
+            string insertQuery = @"
+            INSERT INTO tbl_logpricechange (
+                DocID, DocStatus, CreatedBy, CreatedDate, ApprovedBy, ApprovedDate, TDate, Supplier, PromoTitle, StartDate, EndDate, Promotype, PROD_C, PROD_N, FREE, FREE_SUP, FREE_USRINT, PLFOB, PLFOB_SUP, PLFOB_USRINT, NWF, NWF_SUP, NWF_USRINT, NWFR, NWFR_SUP, NWFR_USRINT, PC_PF, PC_PF_SUP, PC_PF_USRINT, PC_PFL, PC_PFL_SUP, PC_PFL_USRINT, PC_RP, PC_RP_SUP, PC_RP_USRINT, PC_PA, PC_PA_SUP, PC_PA_USRINT, PC_PLSRP, PC_PLSRP_SUP, PC_PLSRP_USRINT, PC_LSRP, PC_LSRP_SUP, PC_LSRP_USRINT, PC_PPA2LP, PC_PPA2LP_SUP, PC_PPA2LP_USRINT, PC_LP, PC_LP_SUP, PC_LP_USRINT, PC_PPA2WA, PC_PPA2WA_SUP, PC_PPA2WA_USRINT, PC_WA, PC_WA_SUP, PC_WA_USRINT, PC_PPA2WB, PC_PPA2WB_SUP, PC_PPA2WB_USRINT, PC_WB, PC_WB_SUP, PC_WB_USRINT, PC_PPA2WC, PC_PPA2WC_SUP, PC_PPA2WC_USRINT, PC_WC, PC_WC_SUP, PC_WC_USRINT, PC_PPA2LC, PC_PPA2LC_SUP, PC_PPA2LC_USRINT, PC_LC, PC_LC_SUP, PC_LC_USRINT, PC_PPA2PG, PC_PPA2PG_SUP, PC_PPA2PG_USRINT, PC_PG, PC_PG_SUP, PC_PG_USRINT, PC_PPA2PH, PC_PPA2PH_SUP, PC_PPA2PH_USRINT, PC_PH, PC_PH_SUP, PC_PH_USRINT, PC_PPA2PB, PC_PPA2PB_SUP, PC_PPA2PB_USRINT, PC_PB, PC_PB_SUP, PC_PB_USRINT, PC_PPA2PD, PC_PPA2PD_SUP, PC_PPA2P_USRINT, PC_PD, PC_PD_SUP, PC_PD_USRINT, LPP_AMT, LPP_AMT_SUP, LPP_AMT_USRINT, LPP_REF, LPP_REF_SUP, LPP_REF_USRINT, PC_PPA2PC, PC_PPA2PC_SUP, PC_PPA2PC_USRINT, PC_PC, PC_PC_SUP, PC_PC_USRINT, Claim, Claim_SUP, Claim_USRINT, ClaimK, ClaimK_SUP, ClaimK_USRINT, Remarks, Remarks_SUP, Remarks_USRINT)
+            VALUES
+                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
+            {
+                connection.Open();
+                OleDbTransaction tx = connection.BeginTransaction();
+
+
+                var inserter = new ProductInserter(connection, tx, insertQuery);
 
                 try
                 {
-                    connection.Open();
-                    using (OleDbDataReader reader = command.ExecuteReader())
+                    int validRowCount = 0;
+                    for (int i = 0; i < rowCount; i++)
                     {
-                        if (reader.Read())
+                        var prodCode = dgv_Main.Rows[i].Cells["PROD_C"].Value?.ToString();
+                        if (!string.IsNullOrWhiteSpace(prodCode))
                         {
-                            // Concatenate Lastname and Firstname from the database
-                            string lastName = reader["Lastname"].ToString();
-                            string firstName = reader["Firstname"].ToString();
-                            fullName = $"{lastName} {firstName}";
+                            validRowCount++;
                         }
                     }
-                    connection.Close();
+
+                    for (int i = 0; i < validRowCount; i += 3)
+                    {
+                        string prodCode = dgv_Main.Rows[i].Cells["PROD_C"].Value?.ToString();
+
+                        if (!string.IsNullOrWhiteSpace(prodCode))
+                        {
+                            // ✅ Check if product already exists in DB
+                            if (!ProductExists(connection, tx, prodCode, docIdToUse))
+                            {
+                                inserter.InsertProductRow(
+                                    docIdToUse,
+                                    i,
+                                    i + 1,
+                                    i + 2,
+                                    promoName,
+                                    promoType,
+                                    startDate,
+                                    endDate,
+                                    loggedUser,
+                                    docStatus,
+                                    memoDate,
+                                    supplier,
+                                    dgv_Main
+                                );
+                            }
+                            else
+                            {
+                                Console.WriteLine($"meron na Skipped duplicate PROD_C: {prodCode}");
+                            }
+                        }
+                    }
+
+                    MessageBox.Show($"Valid rows with PROD_C: {validRowCount}");
+                    tx.Commit();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error retrieving full name: " + ex.Message, "Database Error");
+                    tx.Rollback();
+                    MessageBox.Show("Insert failed: " + ex.Message);
+                }
+
+            }
+        }
+
+        private bool ProductExists(OleDbConnection conn, OleDbTransaction tx, string prodCode, string docId)
+        {
+            // 🔹 OPTION A: Check globally (all documents)
+            string checkQuery = "SELECT COUNT(*) FROM tbl_logpricechange WHERE PROD_C = ?";
+
+            // 🔹 OPTION B: Check only within the same DocID
+            // string checkQuery = "SELECT COUNT(*) FROM tbl_logpricechange WHERE PROD_C = ? AND DocID = ?";
+
+            using (OleDbCommand cmd = new OleDbCommand(checkQuery, conn, tx))
+            {
+                cmd.Parameters.AddWithValue("?", prodCode);
+
+                // If using OPTION B, uncomment this:
+                // cmd.Parameters.AddWithValue("?", docId);
+
+                int count = Convert.ToInt32(cmd.ExecuteScalar());
+                return count > 0;
+            }
+        }
+
+
+        private void PopulateHeaderFields(string docID)
+        {
+            DataTable dt = LoadlpcUpdateAll(docID);
+
+            if (dt.Rows.Count == 0)
+            {
+                MessageBox.Show("No data found.");
+                return;
+            }
+
+            DataRow row = dt.Rows[0];
+
+            if (DateTime.TryParse(row["Tdate"]?.ToString(), out DateTime tdate))
+                lpc_dtp_memodate.Value = tdate;
+
+            lpc_tb_supplier.Text = row["Supplier"]?.ToString();
+            lpc_tb_promotitle.Text = row["PromoTitle"]?.ToString();
+
+            string promoType = row["PromoType"]?.ToString();
+            lpc_rbtn_permanent.Checked = promoType == "Permanent";
+            lpc_rbtn_temporary.Checked = promoType == "Temporary";
+
+            if (DateTime.TryParse(row["StartDate"]?.ToString(), out DateTime startDate))
+                lpc_dtp_startdate.Value = startDate;
+
+            if (DateTime.TryParse(row["EndDate"]?.ToString(), out DateTime endDate))
+                lpc_dtp_enddate.Value = endDate;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ClearForm();
+        }
+
+        private void Update(string docStatus)
+        {
+            string docIdToUse = selectedId;
+            string promoName = lpc_tb_promotitle.Text.Trim();
+            string promoType = lpc_rbtn_permanent.Checked ? "Permanent" :
+                               lpc_rbtn_temporary.Checked ? "Temporary" : null;
+            DateTime startDate = lpc_dtp_startdate.Value.Date;
+            DateTime endDate = lpc_dtp_enddate.Value.Date;
+            string loggedUser = Environment.UserName;
+            DateTime memoDate = lpc_dtp_memodate.Value.Date;
+            string supplier = lpc_tb_supplier.Text.Trim();
+            int rowCount = dgv_Main.AllowUserToAddRows ? dgv_Main.Rows.Count - 1 : dgv_Main.Rows.Count;
+            string updateQuery = @"
+                                     UPDATE tbl_logpricechange SET
+                                        DocStatus = ?,
+                                        PromoTitle = ?, 
+                                        PromoType = ?, 
+                                        StartDate = ?, 
+                                        EndDate = ?, 
+                                        CreatedBy = ?, 
+                                        CreatedDate = ?, 
+                                        TDate = ?,
+                                        Supplier = ?,
+                                        PROD_N = ?,
+                                        FREE = ?,
+                                        FREE_SUP = ?,
+                                        FREE_USRINT = ?,
+                                        PLFOB = ?,
+                                        PLFOB_SUP = ?,
+                                        PLFOB_USRINT = ?,
+                                        NWF = ?,
+                                        NWF_SUP = ?,
+                                        NWF_USRINT = ?,
+                                        NWFR = ?,
+                                        NWFR_SUP = ?,
+                                        NWFR_USRINT = ?,
+                                        PC_PF = ?,
+                                        PC_PF_SUP = ?,
+                                        PC_PF_USRINT = ?,
+                                        PC_PFL = ?,
+                                        PC_PFL_SUP = ?,
+                                        PC_PFL_USRINT = ?,
+                                        PC_RP = ?,
+                                        PC_RP_SUP = ?,
+                                        PC_RP_USRINT = ?,
+                                        PC_PA = ?,
+                                        PC_PA_SUP = ?,
+                                        PC_PA_USRINT = ?,
+                                        PC_PLSRP = ?,
+                                        PC_PLSRP_SUP = ?,
+                                        PC_PLSRP_USRINT = ?,
+                                        PC_LSRP = ?,
+                                        PC_LSRP_SUP = ?,
+                                        PC_LSRP_USRINT = ?,
+                                        PC_PPA2LP = ?,
+                                        PC_PPA2LP_SUP = ?,
+                                        PC_PPA2LP_USRINT = ?,
+                                        PC_LP = ?,
+                                        PC_LP_SUP = ?,
+                                        PC_LP_USRINT = ?,
+                                        PC_PPA2WA = ?,
+                                        PC_PPA2WA_SUP = ?,
+                                        PC_PPA2WA_USRINT = ?,
+                                        PC_WA = ?,
+                                        PC_WA_SUP = ?,
+                                        PC_WA_USRINT = ?,
+                                        PC_PPA2WB = ?,
+                                        PC_PPA2WB_SUP = ?,
+                                        PC_PPA2WB_USRINT = ?,
+                                        PC_WB = ?,
+                                        PC_WB_SUP = ?,
+                                        PC_WB_USRINT = ?,
+                                        PC_PPA2WC = ?,
+                                        PC_PPA2WC_SUP = ?,
+                                        PC_PPA2WC_USRINT = ?,
+                                        PC_WC = ?,
+                                        PC_WC_SUP = ?,
+                                        PC_WC_USRINT = ?,
+                                        PC_PPA2LC = ?,
+                                        PC_PPA2LC_SUP = ?,
+                                        PC_PPA2LC_USRINT = ?,
+                                        PC_LC = ?,
+                                        PC_LC_SUP = ?,
+                                        PC_LC_USRINT = ?,
+                                        PC_PPA2PG = ?,
+                                        PC_PPA2PG_SUP = ?,
+                                        PC_PPA2PG_USRINT = ?,
+                                        PC_PG = ?,
+                                        PC_PG_SUP = ?,
+                                        PC_PG_USRINT = ?,
+                                        PC_PPA2PH = ?,
+                                        PC_PPA2PH_SUP = ?,
+                                        PC_PPA2PH_USRINT = ?,
+                                        PC_PH = ?,
+                                        PC_PH_SUP = ?,
+                                        PC_PH_USRINT = ?,
+                                        PC_PPA2PB = ?,
+                                        PC_PPA2PB_SUP = ?,
+                                        PC_PPA2PB_USRINT = ?,
+                                        PC_PB = ?,
+                                        PC_PB_SUP = ?,
+                                        PC_PB_USRINT = ?,
+                                        PC_PPA2PD = ?,
+                                        PC_PPA2PD_SUP = ?,
+                                        PC_PPA2P_USRINT = ?,
+                                        PC_PD = ?,
+                                        PC_PD_SUP = ?,
+                                        PC_PD_USRINT = ?,
+                                        LPP_AMT = ?,
+                                        LPP_AMT_SUP = ?,
+                                        LPP_AMT_USRINT = ?,
+                                        LPP_REF = ?,
+                                        LPP_REF_SUP = ?,
+                                        LPP_REF_USRINT = ?,
+                                        PC_PPA2PC = ?,
+                                        PC_PPA2PC_SUP = ?,
+                                        PC_PPA2PC_USRINT = ?,
+                                        PC_PC = ?,
+                                        PC_PC_SUP = ?,
+                                        PC_PC_USRINT = ?,
+                                        Claim = ?,
+                                        Claim_SUP = ?,
+                                        Claim_USRINT = ?,
+                                        ClaimK = ?,
+                                        ClaimK_SUP = ?,
+                                        ClaimK_USRINT = ?,
+                                        Remarks = ?,
+                                        Remarks_SUP = ?,
+                                        Remarks_USRINT = ?
+                                    WHERE DocID = ? AND PROD_C = ?;";
+
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
+            {
+                connection.Open();
+                OleDbTransaction tx = connection.BeginTransaction();
+
+                try
+                {
+                    var updater = new ProductUpdater(connection, tx, updateQuery);
+
+                    for (int i = 0; i < rowCount; i += 3)
+                    {
+                        if (i + 2 >= rowCount) break; // prevent out of range
+
+                        string prodCode = dgv_Main.Rows[i].Cells["PROD_C"].Value?.ToString();
+                        if (!string.IsNullOrWhiteSpace(prodCode))
+                        {
+                            updater.UpdateProductRow(
+                                docIdToUse,
+                                i,
+                                i + 1,
+                                i + 2,
+                                promoName,
+                                promoType,
+                                startDate,
+                                endDate,
+                                loggedUser,
+                                docStatus,
+                                memoDate,
+                                supplier,
+                                dgv_Main
+                            );
+                        }
+                    }
+
+                    tx.Commit();
+                    MessageBox.Show("Draft updated successfully.\nDocID: " + docIdToUse);
+                }
+                catch (Exception ex)
+                {
+                    tx.Rollback();
+                    MessageBox.Show("Update failed: " + ex.Message);
                 }
             }
-            return fullName;
         }
 
         public ctrLogPriceChange()
         {
             InitializeComponent();
-            // Set custom format for your DateTimePicker
-            lpc_dtp_enddate.CustomFormat = " ";
-
-            // Hook up events
-            this.lpc_dgv_dbvalue.CellEndEdit += lpc_dgv_dbvalue_CellEndEdit;
-            this.lpc_dgv_dbvalue.CellMouseDown += lpc_dgv_dbvalue_CellMouseDown;
-
-            // Ensure context menu item is connected
-            cmsRemoveGroupItem.Click += cmsRemoveGroupItem_Click;
-            cmsRemoveGroup.Opening += cmsRemoveGroup_Opening;
-
-            // Assign the ContextMenuStrip to the DataGridView (if not done in designer)
-            lpc_dgv_dbvalue.ContextMenuStrip = cmsRemoveGroup;
-
-            if (!lpc_dgv_searchbycode.Columns.Contains("Select"))
-            {
-                DataGridViewCheckBoxColumn checkBoxColumn = new DataGridViewCheckBoxColumn();
-                checkBoxColumn.HeaderText = "✓";
-                checkBoxColumn.Name = "Select";
-                checkBoxColumn.Width = 30;
-                lpc_dgv_searchbycode.Columns.Insert(0, checkBoxColumn); // Adds to the first column
-            }
+            InitializeMainTable();
         }
+
         private void ctrLogPriceChange_Load(object sender, EventArgs e)
         {
-            if (!lpc_dgv_searchbycode.Columns.Contains("Select"))
-            {
-                DataGridViewCheckBoxColumn chk = new DataGridViewCheckBoxColumn();
-                chk.Name = "Select";
-                chk.HeaderText = "✓";
-                chk.Width = 40;
-                lpc_dgv_searchbycode.Columns.Insert(0, chk);
-            }
-            
-            lpc_dgv_searchbycode.CellValueChanged += lpc_dgv_searchbycode_CellValueChanged;
-            lpc_dgv_searchbycode.CurrentCellDirtyStateChanged += lpc_dgv_searchbycode_CurrentCellDirtyStateChanged;
+
         }
 
-        //***********************************************Remove Rows in datagridview**********************************************************************************************************************************************************************************************
-        #region RightClick remove in lpc_dgv_dbvalue 
-        private void lpc_dgv_dbvalue_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        public ctrLogPriceChange(string docId) : this()
         {
-            if (e.Button == MouseButtons.Right && e.RowIndex >= 0 && e.ColumnIndex >= 0)
-            {
-                rightClickedRow = lpc_dgv_dbvalue.Rows[e.RowIndex];
-                lpc_dgv_dbvalue.ClearSelection();
-                lpc_dgv_dbvalue.CurrentCell = rightClickedRow.Cells[e.ColumnIndex];
-                rightClickedRow.Selected = true;
-            }
+            _docId = docId;
+            tb_docID.Text = _docId;
+            dgv_Main.Columns["ID"].Visible = false;
+           
         }
 
-        private void cmsRemoveGroup_Opening(object sender, CancelEventArgs e)
+        private void Insert(string docStatus)
         {
-            // Disable context menu if no valid row was right-clicked
-            if (rightClickedRow == null)
-                e.Cancel = true;
-        }
 
-        private void cmsRemoveGroupItem_Click(object sender, EventArgs e)
-        {
-            if (rightClickedRow == null)
-                return;
+            string docIdToUse = GenerateNewDocID();
+            string promoName = lpc_tb_promotitle.Text.ToString();
+            string promoType = lpc_rbtn_permanent.Checked ? "Permanent" :
+                               lpc_rbtn_temporary.Checked ? "Temporary" : null; ;
+            DateTime startDate = lpc_dtp_startdate.Value;
+            DateTime endDate = lpc_dtp_enddate.Value;
+            string loggedUser = GetFullName(UserSession.Username); 
+            int rowCount = dgv_Main.AllowUserToAddRows ? dgv_Main.Rows.Count - 1 : dgv_Main.Rows.Count;
+            DateTime memoDate = lpc_dtp_memodate.Value;
+            string supplier = lpc_tb_supplier.Text.Trim();
+            string insertQuery = @"
+            INSERT INTO tbl_logpricechange (
+                DocID, DocStatus, CreatedBy, CreatedDate, ApprovedBy, ApprovedDate, TDate, Supplier, PromoTitle, StartDate, EndDate, Promotype, PROD_C, PROD_N, FREE, FREE_SUP, FREE_USRINT, PLFOB, PLFOB_SUP, PLFOB_USRINT, NWF, NWF_SUP, NWF_USRINT, NWFR, NWFR_SUP, NWFR_USRINT, PC_PF, PC_PF_SUP, PC_PF_USRINT, PC_PFL, PC_PFL_SUP, PC_PFL_USRINT, PC_RP, PC_RP_SUP, PC_RP_USRINT, PC_PA, PC_PA_SUP, PC_PA_USRINT, PC_PLSRP, PC_PLSRP_SUP, PC_PLSRP_USRINT, PC_LSRP, PC_LSRP_SUP, PC_LSRP_USRINT, PC_PPA2LP, PC_PPA2LP_SUP, PC_PPA2LP_USRINT, PC_LP, PC_LP_SUP, PC_LP_USRINT, PC_PPA2WA, PC_PPA2WA_SUP, PC_PPA2WA_USRINT, PC_WA, PC_WA_SUP, PC_WA_USRINT, PC_PPA2WB, PC_PPA2WB_SUP, PC_PPA2WB_USRINT, PC_WB, PC_WB_SUP, PC_WB_USRINT, PC_PPA2WC, PC_PPA2WC_SUP, PC_PPA2WC_USRINT, PC_WC, PC_WC_SUP, PC_WC_USRINT, PC_PPA2LC, PC_PPA2LC_SUP, PC_PPA2LC_USRINT, PC_LC, PC_LC_SUP, PC_LC_USRINT, PC_PPA2PG, PC_PPA2PG_SUP, PC_PPA2PG_USRINT, PC_PG, PC_PG_SUP, PC_PG_USRINT, PC_PPA2PH, PC_PPA2PH_SUP, PC_PPA2PH_USRINT, PC_PH, PC_PH_SUP, PC_PH_USRINT, PC_PPA2PB, PC_PPA2PB_SUP, PC_PPA2PB_USRINT, PC_PB, PC_PB_SUP, PC_PB_USRINT, PC_PPA2PD, PC_PPA2PD_SUP, PC_PPA2P_USRINT, PC_PD, PC_PD_SUP, PC_PD_USRINT, LPP_AMT, LPP_AMT_SUP, LPP_AMT_USRINT, LPP_REF, LPP_REF_SUP, LPP_REF_USRINT, PC_PPA2PC, PC_PPA2PC_SUP, PC_PPA2PC_USRINT, PC_PC, PC_PC_SUP, PC_PC_USRINT, Claim, Claim_SUP, Claim_USRINT, ClaimK, ClaimK_SUP, ClaimK_USRINT, Remarks, Remarks_SUP, Remarks_USRINT)
+            VALUES
+                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            int rowIndex = rightClickedRow.Index;
-            int groupStart = rowIndex - (rowIndex % 3);
 
-            // Safety: Ensure 3 rows exist in group
-            if (groupStart + 2 >= lpc_dgv_dbvalue.Rows.Count)
+
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
             {
-                MessageBox.Show("Unable to remove group. Not enough rows.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+                connection.Open();
+                OleDbTransaction tx = connection.BeginTransaction();
 
-            // Remove from bottom up to avoid index shifting
-            for (int i = 2; i >= 0; i--)
-            {
-                int rowToRemove = groupStart + i;
-                if (rowToRemove < lpc_dgv_dbvalue.Rows.Count)
-                    lpc_dgv_dbvalue.Rows.RemoveAt(rowToRemove);
-            }
+                var inserter = new ProductInserter(connection, tx, insertQuery);
 
-            rightClickedRow = null;
-        }
-        #endregion
-        //***********************************************End of Remove Rows in datagridview*************************************************************************************************************************************************************************************************************************
-
-        //************************************************Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
-        #region ColumnMapping for Auto Compute
-        private class ColumnMapping
-        {
-            public string BaseColumn { get; set; }
-            public string ValueColumn { get; set; }
-            public string RateColumn { get; set; }
-        }
-
-        private readonly List<ColumnMapping> columnMappings = new List<ColumnMapping>
-        {
-            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LSRP", RateColumn = "PC_PLSRP"},
-            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LP",   RateColumn = "PC_PPA2LP"},
-            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_WA",   RateColumn = "PC_PPA2WA"},
-            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_WB",   RateColumn = "PC_PPA2WB"},
-            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_WC",   RateColumn = "PC_PPA2WC"},
-            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_LC",   RateColumn = "PC_PPA2LC"},
-            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PG",   RateColumn = "PC_PPA2PG"},
-            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PH",   RateColumn = "PC_PPA2PH"},
-            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PB",   RateColumn = "PC_PPA2PB"},
-            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PD",   RateColumn = "PC_PPA2PD"},
-            new ColumnMapping { BaseColumn = "PC_PA", ValueColumn = "PC_PC",   RateColumn = "PC_PPA2PC"}
-        };
-       
-        private void UpdateDependentValues(int rowIndex, string editedColumn)
-        {
-            if (rowIndex < 0 || rowIndex >= lpc_dgv_dbvalue.Rows.Count) return;
-
-            var row = lpc_dgv_dbvalue.Rows[rowIndex];
-
-            foreach (var map in columnMappings)
-            {
-                if (editedColumn != map.ValueColumn && editedColumn != map.RateColumn) continue;
-                if (!decimal.TryParse(row.Cells[map.BaseColumn]?.Value?.ToString(), out decimal baseVal) || baseVal == 0) return;
-
-                if (editedColumn == map.ValueColumn &&
-                    decimal.TryParse(row.Cells[map.ValueColumn]?.Value?.ToString(), out decimal val))
+                try
                 {
-                    row.Cells[map.RateColumn].Value = Math.Round(val / baseVal * 100);
+                    int validRowCount = 0;
+                    for (int i = 0; i < rowCount; i++)
+                    {
+                        var prodCode = dgv_Main.Rows[i].Cells["PROD_C"].Value?.ToString();
+                        if (!string.IsNullOrWhiteSpace(prodCode))
+                        {
+                            validRowCount++;
+                        }
+                    }
+
+                    for (int i = 0; i < validRowCount; i += 3)
+                    {
+                        inserter.InsertProductRow(
+                            docIdToUse,
+                            i,
+                            i + 1,
+                            i + 2,
+                            promoName,
+                            promoType,
+                            startDate,
+                            endDate,
+                            loggedUser,
+                            docStatus,
+                            memoDate,
+                            supplier,
+                            dgv_Main
+                        );
+                    }
+
+
+                    MessageBox.Show($"Valid rows with PROD_C: {validRowCount}");
+                    tx.Commit();
+
                 }
-                else if (editedColumn == map.RateColumn &&
-                         decimal.TryParse(row.Cells[map.RateColumn]?.Value?.ToString(), out decimal rate))
+                catch (Exception ex)
                 {
-                    row.Cells[map.ValueColumn].Value = Math.Round(baseVal * rate / 100);
+                    tx.Rollback();
+                    MessageBox.Show("Insert failed: " + ex.Message);
                 }
-                break; // No need to check further mappings for this edit
             }
         }
 
-        private void lpc_dgv_dbvalue_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private void LoadSearchInsert()
         {
-            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
-                UpdateDependentValues(e.RowIndex, lpc_dgv_dbvalue.Columns[e.ColumnIndex].Name);
-        }
+            string searchCode = lpc_tb_searchbycode.Text.Trim();
+            string query = @"SELECT ID, PROD_C,PROD_CN, PROD_BRAND, PROD_N 
+                         FROM tbl_billptmp
+                         WHERE PROD_C LIKE ? OR PROD_BRAND LIKE ? OR PROD_N LIKE ?";
 
-        #endregion
-        //************************************************End Column Mapping for DataGridView  lpc_dgv_dbvalue ****************************************************************
 
-        private void lpc_rbtn_permanent_CheckedChanged(object sender, EventArgs e)
-        {
-            if (lpc_rbtn_permanent.Checked)
+            using (OleDbConnection connection = new OleDbConnection(connectionString))
             {
-                lpc_dtp_enddate.Enabled = false;
-                lpc_dtp_enddate.CustomFormat = " "; // Use a space to effectively hide the date display
-                lpc_dtp_enddate.Format = DateTimePickerFormat.Custom;
-            }
-            else if (lpc_rbtn_temporary.Checked)
-            {
-                lpc_dtp_enddate.Enabled = true;
-                lpc_dtp_enddate.CustomFormat = "MM / dd / yyyy hh: mm: ss tt";
-                lpc_dtp_enddate.Format = DateTimePickerFormat.Custom;
+                using (OleDbCommand cmd = new OleDbCommand(query, connection))
+                {
+                    string likeParam = "%" + searchCode + "%";
+
+                    cmd.Parameters.AddWithValue("?", likeParam); // PROD_C
+                    cmd.Parameters.AddWithValue("?", likeParam); // PROD_BRAND
+                    cmd.Parameters.AddWithValue("?", likeParam); // PROD_N
+
+                    OleDbDataAdapter adapter = new OleDbDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+
+                    connection.Open();
+                    adapter.Fill(dt);
+                    connection.Close();
+
+                    lpc_dgv_searchbycode.DataSource = dt;
+                    if (lpc_dgv_searchbycode.Columns.Contains("Select"))
+                    {
+                        lpc_dgv_searchbycode.Columns.Remove("Select");
+                    }
+
+                    DataGridViewCheckBoxColumn chk = new DataGridViewCheckBoxColumn
+                    {
+                        Name = "Select",
+                        HeaderText = "✓",
+                        Width = 40
+                    };
+                    lpc_dgv_searchbycode.Columns.Insert(0, chk);
+
+
+
+                    if (lpc_dgv_searchbycode.Columns.Contains("ID"))
+                        lpc_dgv_searchbycode.Columns["ID"].Visible = false;
+
+                    foreach (DataGridViewColumn column in lpc_dgv_searchbycode.Columns)
+                    {
+                        column.SortMode = DataGridViewColumnSortMode.NotSortable;
+
+
+                    }
+                }
             }
         }
 
@@ -233,318 +703,49 @@ namespace LogPriceChange0._1
                 lpc_dgv_searchbycode.Visible = false;
                 return;
             }
-
-            lpc_dgv_searchbycode.Visible = true;
-
-            try
+            else 
             {
-                connection.Open();
-                string dbsearch = @"SELECT PROD_C, PROD_N, FREE, PLFOB, NWF, NWFR, PC_PF, PC_PFL, PC_RP, PC_PA, PC_PLSRP, PC_LSRP, PC_PPA2LP, PC_LP, PC_PPA2WA, PC_WA, PC_PPA2WB, PC_WB, PC_PPA2WC, PC_WC, PC_PPA2LC, PC_LC, PC_PPA2PG, PC_PG, PC_PPA2PH, PC_PH, PC_PPA2PB, PC_PB, PC_PPA2PD, PC_PD, LPP_AMT, LPP_REF, PC_PPA2PC, PC_PC FROM tbl_billPTMP WHERE PROD_C LIKE @searchText OR PROD_CN LIKE @searchText";
-                using (OleDbCommand cmd = new OleDbCommand(dbsearch, connection))
-                {
-                    cmd.Parameters.AddWithValue("@searchText", "%" + this.lpc_tb_searchbycode.Text + "%");
-                    OleDbDataAdapter da = new OleDbDataAdapter(cmd);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-                    lpc_dgv_searchbycode.DataSource = dt;
-
-                    int lastColumnIndex = lpc_dgv_searchbycode.Columns.Count - 1;
-                    foreach (DataGridViewColumn column in lpc_dgv_searchbycode.Columns)
-                    {
-                        column.AutoSizeMode = (column.Index == lastColumnIndex) ?
-                            DataGridViewAutoSizeColumnMode.Fill :
-                            DataGridViewAutoSizeColumnMode.AllCells;
-                    }
-                }
+                lpc_dgv_searchbycode.Visible = true;
+                LoadSearchInsert();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
+          
         }
 
         #region
-        public void InsertData(string docStatus)
-        {
-            // The DocStatus is now passed as a parameter.
-            // Call this method with "ForApproval" for the Submit button
-            // and "Draft" for the Draft button.
-
-            if (lpc_tb_promotitle.Text.Trim() == "")
-            {
-                MessageBox.Show("Please enter a Promo Name.");
-                return;
-            }
-            string promoName = lpc_tb_promotitle.Text.Trim();
-            string promoType = lpc_rbtn_permanent.Checked ? "Permanent"
-                                : lpc_rbtn_temporary.Checked ? "Temporary"
-                                : null;
-            if (promoType == null)
-            {
-                MessageBox.Show("Please select a Promotion Type.");
-                return;
-            }
-            DateTime startDate = lpc_dtp_startdate.Value;
-            DateTime endDate = lpc_dtp_enddate.Value;
-            string loggedUser = GetFullName(UserSession.Username);
-            string promoDate = DateTime.Now.ToString("yyyyMM");
-            int docIdSequence = 1;
-            connection.Open();
-            using (var maxCmd = new OleDbCommand("SELECT MAX(CInt(Mid(DocID,8))) FROM tbl_logpricechange WHERE DocID LIKE ?", connection))
-            {
-                maxCmd.Parameters.AddWithValue("?", promoDate + "-%");
-                object res = maxCmd.ExecuteScalar();
-                if (res != null && res != DBNull.Value && int.TryParse(res.ToString(), out int mx))
-                    docIdSequence = mx + 1;
-            }
-            string formattedSeq = docIdSequence.ToString("D6");
-            string commonDocId = $"{promoDate}-{formattedSeq}";
-
-            int totalRows = lpc_dgv_dbvalue.Rows.Count;
-            if (totalRows < 3 || totalRows % 3 != 0)
-            {
-                MessageBox.Show("Grid must contain rows in exact multiples of 3.");
-                connection.Close();
-                return;
-            }
-
-            using (var transaction = connection.BeginTransaction())
-            {
-                try
-                {
-                    string insQuery = "INSERT INTO tbl_logpricechange (DocID, DocStatus, CreatedBy,  CreatedDate, TDate, Supplier, PromoTitle, StartDate, EndDate, Promotype, PROD_C, PROD_N, FREE, FREE_SUP, FREE_USRINT, PLFOB, PLFOB_SUP, PLFOB_USRINT, NWF, NWF_SUP, NWF_USRINT, NWFR, PC_PF, PC_PF_SUP, PC_PF_USRINT, PC_PFL, PC_PFL_SUP, PC_PFL_USRINT, PC_RP, PC_RP_SUP, PC_RP_USRINT, PC_PA, PC_PA_SUP, PC_PA_USRINT, PC_PLSRP, PC_PLSRP_SUP, PC_PLSRP_USRINT, PC_LSRP, PC_LSRP_SUP, PC_LSRP_USRINT, PC_PPA2LP, PC_PPA2LP_SUP, PC_PPA2LP_USRINT, PC_LP, PC_LP_SUP, PC_LP_USRINT, PC_PPA2WA, PC_PPA2WA_SUP, PC_PPA2WA_USRINT, PC_WA, PC_WA_SUP, PC_WA_USRINT, PC_PPA2WB, PC_PPA2WB_SUP, PC_PPA2WB_USRINT, PC_WB, PC_WB_SUP, PC_WB_USRINT, PC_PPA2WC, PC_PPA2WC_SUP, PC_PPA2WC_USRINT, PC_WC, PC_WC_SUP, PC_WC_USRINT, PC_PPA2LC, PC_PPA2LC_SUP, PC_PPA2LC_USRINT, PC_LC, PC_LC_SUP, PC_LC_USRINT, PC_PPA2PG, PC_PPA2PG_SUP, PC_PPA2PG_USRINT, PC_PG, PC_PG_SUP, PC_PG_USRINT, PC_PPA2PH, PC_PPA2PH_SUP, PC_PPA2PH_USRINT, PC_PH, PC_PH_SUP, PC_PH_USRINT, PC_PPA2PB, PC_PPA2PB_SUP, PC_PPA2PB_USRINT, PC_PB, PC_PB_SUP, PC_PB_USRINT, PC_PPA2PD, PC_PPA2PD_SUP, PC_PPA2P_USRINT, PC_PD, PC_PD_SUP, PC_PD_USRINT, LPP_AMT, LPP_AMT_SUP, LPP_AMT_USRINT, LPP_REF, LPP_REF_SUP, LPP_REF_USRINT, PC_PPA2PC, PC_PPA2PC_SUP, PC_PPA2PC_USRINT, PC_PC, PC_PC_SUP, PC_PC_USRINT, Claim, Claim_SUP, Claim_USRINT,ClaimK, ClaimK_SUP,ClaimK_USRINT, Remarks, Remarks_SUP, Remarks_USRINT) " +
-                                                                "VALUES ( @DocID,@DocStatus, @CreatedBy, @CreatedDate, @TDate,@Supplier, @PromoTitle, @StartDate, @EndDate, @Promotype,  @PROD_C,@PROD_N,@FREE,@FREE_SUP,@FREE_USRINT,@PLFOB,@PLFOB_SUP,@PLFOB_USRINT,@NWF,@NWF_SUP,@NWF_USRINT,@NWFR,@PC_PF,@PC_PF_SUP,@PC_PF_USRINT,@PC_PFL,@PC_PFL_SUP,@PC_PFL_USRINT,@PC_RP,@PC_RP_SUP,@PC_RP_USRINT,@PC_PA,@PC_PA_SUP,@PC_PA_USRINT,@PC_PLSRP,@PC_PLSRP_SUP,@PC_PLSRP_USRINT,@PC_LSRP,@PC_LSRP_SUP,@PC_LSRP_USRINT,@PC_PPA2LP,@PC_PPA2LP_SUP,@PC_PPA2LP_USRINT,@PC_LP,@PC_LP_SUP,@PC_LP_USRINT,@PC_PPA2WA,@PC_PPA2WA_SUP,@PC_PPA2WA_USRINT,@PC_WA,@PC_WA_SUP,@PC_WA_USRINT,@PC_PPA2WB,@PC_PPA2WB_SUP,@PC_PPA2WB_USRINT,@PC_WB,@PC_WB_SUP,@PC_WB_USRINT,@PC_PPA2WC,@PC_PPA2WC_SUP,@PC_PPA2WC_USRINT,@PC_WC,@PC_WC_SUP,@PC_WC_USRINT,@PC_PPA2LC,@PC_PPA2LC_SUP,@PC_PPA2LC_USRINT,@PC_LC,@PC_LC_SUP,@PC_LC_USRINT,@PC_PPA2PG,@PC_PPA2PG_SUP,@PC_PPA2PG_USRINT,@PC_PG,@PC_PG_SUP,@PC_PG_USRINT,@PC_PPA2PH,@PC_PPA2PH_SUP,@PC_PPA2PH_USRINT,@PC_PH,@PC_PH_SUP,@PC_PH_USRINT,@PC_PPA2PB,@PC_PPA2PB_SUP,@PC_PPA2PB_USRINT,@PC_PB,@PC_PB_SUP,@PC_PB_USRINT,@PC_PPA2PD,@PC_PPA2PD_SUP,@PC_PPA2P_USRINT,@PC_PD,@PC_PD_SUP,@PC_PD_USRINT,@LPP_AMT,@LPP_AMT_SUP,@LPP_AMT_USRINT,@LPP_REF,@LPP_REF_SUP,@LPP_REF_USRINT,@PC_PPA2PC,@PC_PPA2PC_SUP,@PC_PPA2PC_USRINT,@PC_PC,@PC_PC_SUP,@PC_PC_USRINT, @Claim, @Claim_SUP, @Claim_USRINT, @ClaimK, @ClaimK_SUP, @ClaimK_USRINT, @Remarks, @Remarks_SUP, @Remarks_USRINT)";
-                    for (int i = 0; i < totalRows; i += 3)
-                    {
-                        int dbRow = i, suppRow = i + 1, promoRow = i + 2;
-                        string currentPROD_C = GetCellValue(dbRow, "PROD_C")?.ToString();
-
-                        // case1: both PROD_C + PromoTitle exist?
-                        using (var cmd = new OleDbCommand("SELECT COUNT(*) FROM tbl_logpricechange WHERE PROD_C = ? AND PromoTitle = ?", connection, transaction))
-                        {
-                            cmd.Parameters.AddWithValue("?", currentPROD_C);
-                            cmd.Parameters.AddWithValue("?", promoName);
-                            int both = Convert.ToInt32(cmd.ExecuteScalar());
-                            if (both > 0)
-                            {
-                                // UPDATE
-                                using (var upd = new OleDbCommand(
-                                    "UPDATE tbl_logpricechange SET CreatedBy = ?, CreatedDate = ?, TDate = ?, Supplier = ?, StartDate = ?, EndDate = ?, PromoType = ?, DocStatus = ?, FREE = ?, FREE_SUP = ?, FREE_USRINT = ? WHERE PROD_C = ? AND PromoTitle = ?",
-                                    connection, transaction))
-                                {
-                                    upd.Parameters.AddWithValue("?", loggedUser);
-                                    upd.Parameters.AddWithValue("?", DateTime.Now);
-                                    upd.Parameters.AddWithValue("?", lpc_dtp_memodate.Value.Date);
-                                    upd.Parameters.AddWithValue("?", string.IsNullOrEmpty(lpc_tb_supplier.Text) ? (object)DBNull.Value : lpc_tb_supplier.Text);
-                                    upd.Parameters.AddWithValue("?", startDate);
-                                    upd.Parameters.AddWithValue("?", promoType == "Permanent" ? (object)DBNull.Value : (object)endDate);
-                                    upd.Parameters.AddWithValue("?", promoType);
-                                    upd.Parameters.AddWithValue("?", docStatus); // Use the new parameter
-                                    upd.Parameters.AddWithValue("?", GetCellValue(dbRow, "FREE"));
-                                    upd.Parameters.AddWithValue("?", GetCellValue(suppRow, "FREE"));
-                                    upd.Parameters.AddWithValue("?", GetCellValue(promoRow, "FREE"));
-                                    upd.Parameters.AddWithValue("?", currentPROD_C);
-                                    upd.Parameters.AddWithValue("?", promoName);
-                                    upd.ExecuteNonQuery();
-                                }
-                                continue;
-                            }
-                        }
-
-                        // case2 or case3
-                        string docIdToUse = commonDocId;
-                        using (var cmd2 = new OleDbCommand("SELECT TOP 1 DocID FROM tbl_logpricechange WHERE PromoTitle = ?", connection, transaction))
-                        {
-                            cmd2.Parameters.AddWithValue("?", promoName);
-                            object f = cmd2.ExecuteScalar();
-                            if (f != null) docIdToUse = f.ToString();
-                        }
-
-                        // INSERT with correct docId
-                        InsertProductRow(connection, transaction, docIdToUse, dbRow, suppRow, promoRow, commonDocId, promoName, promoType, startDate, endDate, loggedUser, insQuery, docStatus); // Pass the new parameter
-
-                    }
-
-                    transaction.Commit();
-                    MessageBox.Show($"Inserted/Updated successfully under DocID: {commonDocId}");
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    MessageBox.Show("Error: " + ex.Message);
-                }
-            }
-
-            connection.Close();
-            // Reset controls
-            lpc_dgv_dbvalue.Rows.Clear();
-            lpc_tb_promotitle.Clear();
-            lpc_tb_supplier.Clear();
-            lpc_dtp_startdate.Value = DateTime.Now;
-            lpc_dtp_startdate.Checked = true;
-        }
-
-        private object GetCellValue(int row, string col)
-        {
-            var cell = lpc_dgv_dbvalue.Rows[row].Cells[col];
-            if (cell == null || cell.Value == null || (cell.Value is string s && s.Trim() == ""))
-                return DBNull.Value;
-            return cell.Value;
-        }
-
-        private void InsertProductRow(OleDbConnection conn, OleDbTransaction tx,
-        string docIdToUse, int dbRow, int suppRow, int promoRow,
-        string commonDocId, string promoName, string promoType,
-        DateTime startDate, DateTime endDate, string loggedUser,
-        string insQuery, string docStatus)
-        {
-            using (var cmd = new OleDbCommand(insQuery, conn, tx))
-            {
-                cmd.Parameters.AddWithValue("@DocID", docIdToUse);
-                cmd.Parameters.AddWithValue("@DocStatus", docStatus); // Use the new parameter
-                cmd.Parameters.AddWithValue("@CreatedBy", loggedUser);
-                cmd.Parameters.AddWithValue("@CreatedDate", DateTime.Now);
-                cmd.Parameters.AddWithValue("@TDate", lpc_dtp_memodate.Value.Date);
-                cmd.Parameters.AddWithValue("@Supplier", string.IsNullOrEmpty(lpc_tb_supplier.Text) ? (object)DBNull.Value : lpc_tb_supplier.Text);
-                cmd.Parameters.AddWithValue("@PromoTitle", promoName);
-                cmd.Parameters.AddWithValue("@StartDate", startDate);
-                cmd.Parameters.AddWithValue("@EndDate", promoType == "Permanent" ? (object)DBNull.Value : (object)endDate);
-                cmd.Parameters.AddWithValue("@PromoType", promoType);
-
-                cmd.Parameters.AddWithValue("@PROD_C", GetCellValue(dbRow, "PROD_C"));
-                cmd.Parameters.AddWithValue("@PROD_N", GetCellValue(dbRow, "PROD_N"));
-                cmd.Parameters.AddWithValue("@FREE", GetCellValue(dbRow, "FREE")); // Assuming SFREE is actually FREE in the source DGV
-                cmd.Parameters.AddWithValue("@FREE_SUP", GetCellValue(suppRow, "FREE"));
-                cmd.Parameters.AddWithValue("@FREE_USRINT", GetCellValue(promoRow, "FREE"));
-                cmd.Parameters.AddWithValue("@PLFOB", GetCellValue(dbRow, "PLFOB"));
-                cmd.Parameters.AddWithValue("@PLFOB_SUP", GetCellValue(suppRow, "PLFOB"));
-                cmd.Parameters.AddWithValue("@PLFOB_USRINT", GetCellValue(promoRow, "PLFOB"));
-                cmd.Parameters.AddWithValue("@NWF", GetCellValue(dbRow, "NWF"));
-                cmd.Parameters.AddWithValue("@NWF_SUP", GetCellValue(suppRow, "NWF"));
-                cmd.Parameters.AddWithValue("@NWF_USRINT", GetCellValue(promoRow, "NWF"));
-                cmd.Parameters.AddWithValue("@NWFR", GetCellValue(dbRow, "NWFR"));
-                cmd.Parameters.AddWithValue("@PC_PF", GetCellValue(dbRow, "PC_PF"));
-                cmd.Parameters.AddWithValue("@PC_PF_SUP", GetCellValue(suppRow, "PC_PF"));
-                cmd.Parameters.AddWithValue("@PC_PF_USRINT", GetCellValue(promoRow, "PC_PF"));
-                cmd.Parameters.AddWithValue("@PC_PFL", GetCellValue(dbRow, "PC_PFL"));
-                cmd.Parameters.AddWithValue("@PC_PFL_SUP", GetCellValue(suppRow, "PC_PFL"));
-                cmd.Parameters.AddWithValue("@PC_PFL_USRINT", GetCellValue(promoRow, "PC_PFL"));
-                cmd.Parameters.AddWithValue("@PC_RP", GetCellValue(dbRow, "PC_RP"));
-                cmd.Parameters.AddWithValue("@PC_RP_SUP", GetCellValue(suppRow, "PC_RP"));
-                cmd.Parameters.AddWithValue("@PC_RP_USRINT", GetCellValue(promoRow, "PC_RP"));
-                cmd.Parameters.AddWithValue("@PC_PA", GetCellValue(dbRow, "PC_PA"));
-                cmd.Parameters.AddWithValue("@PC_PA_SUP", GetCellValue(suppRow, "PC_PA"));
-                cmd.Parameters.AddWithValue("@PC_PA_USRINT", GetCellValue(promoRow, "PC_PA"));
-                cmd.Parameters.AddWithValue("@PC_PLSRP", GetCellValue(dbRow, "PC_PLSRP"));
-                cmd.Parameters.AddWithValue("@PC_PLSRP_SUP", GetCellValue(suppRow, "PC_PLSRP"));
-                cmd.Parameters.AddWithValue("@PC_PLSRP_USRINT", GetCellValue(promoRow, "PC_PLSRP"));
-                cmd.Parameters.AddWithValue("@PC_LSRP", GetCellValue(dbRow, "PC_LSRP"));
-                cmd.Parameters.AddWithValue("@PC_LSRP_SUP", GetCellValue(suppRow, "PC_LSRP"));
-                cmd.Parameters.AddWithValue("@PC_LSRP_USRINT", GetCellValue(promoRow, "PC_LSRP"));
-                cmd.Parameters.AddWithValue("@PC_PPA2LP", GetCellValue(dbRow, "PC_PPA2LP"));
-                cmd.Parameters.AddWithValue("@PC_PPA2LP_SUP", GetCellValue(suppRow, "PC_PPA2LP"));
-                cmd.Parameters.AddWithValue("@PC_PPA2LP_USRINT", GetCellValue(promoRow, "PC_PPA2LP"));
-                cmd.Parameters.AddWithValue("@PC_LP", GetCellValue(dbRow, "PC_LP"));
-                cmd.Parameters.AddWithValue("@PC_LP_SUP", GetCellValue(suppRow, "PC_LP"));
-                cmd.Parameters.AddWithValue("@PC_LP_USRINT", GetCellValue(promoRow, "PC_LP"));
-                cmd.Parameters.AddWithValue("@PC_PPA2WA", GetCellValue(dbRow, "PC_PPA2WA"));
-                cmd.Parameters.AddWithValue("@PC_PPA2WA_SUP", GetCellValue(suppRow, "PC_PPA2WA"));
-                cmd.Parameters.AddWithValue("@PC_PPA2WA_USRINT", GetCellValue(promoRow, "PC_PPA2WA"));
-                cmd.Parameters.AddWithValue("@PC_WA", GetCellValue(dbRow, "PC_WA"));
-                cmd.Parameters.AddWithValue("@PC_WA_SUP", GetCellValue(suppRow, "PC_WA"));
-                cmd.Parameters.AddWithValue("@PC_WA_USRINT", GetCellValue(promoRow, "PC_WA"));
-                cmd.Parameters.AddWithValue("@PC_PPA2WB", GetCellValue(dbRow, "PC_PPA2WB"));
-                cmd.Parameters.AddWithValue("@PC_PPA2WB_SUP", GetCellValue(suppRow, "PC_PPA2WB"));
-                cmd.Parameters.AddWithValue("@PC_PPA2WB_USRINT", GetCellValue(promoRow, "PC_PPA2WB"));
-                cmd.Parameters.AddWithValue("@PC_WB", GetCellValue(dbRow, "PC_WB"));
-                cmd.Parameters.AddWithValue("@PC_WB_SUP", GetCellValue(suppRow, "PC_WB"));
-                cmd.Parameters.AddWithValue("@PC_WB_USRINT", GetCellValue(promoRow, "PC_WB"));
-                cmd.Parameters.AddWithValue("@PC_PPA2WC", GetCellValue(dbRow, "PC_PPA2WC"));
-                cmd.Parameters.AddWithValue("@PC_PPA2WC_SUP", GetCellValue(suppRow, "PC_PPA2WC"));
-                cmd.Parameters.AddWithValue("@PC_PPA2WC_USRINT", GetCellValue(promoRow, "PC_PPA2WC"));
-                cmd.Parameters.AddWithValue("@PC_WC", GetCellValue(dbRow, "PC_WC"));
-                cmd.Parameters.AddWithValue("@PC_WC_SUP", GetCellValue(suppRow, "PC_WC"));
-                cmd.Parameters.AddWithValue("@PC_WC_USRINT", GetCellValue(promoRow, "PC_WC"));
-                cmd.Parameters.AddWithValue("@PC_PPA2LC", GetCellValue(dbRow, "PC_PPA2LC"));
-                cmd.Parameters.AddWithValue("@PC_PPA2LC_SUP", GetCellValue(suppRow, "PC_PPA2LC"));
-                cmd.Parameters.AddWithValue("@PC_PPA2LC_USRINT", GetCellValue(promoRow, "PC_PPA2LC"));
-                cmd.Parameters.AddWithValue("@PC_LC", GetCellValue(dbRow, "PC_LC"));
-                cmd.Parameters.AddWithValue("@PC_LC_SUP", GetCellValue(suppRow, "PC_LC"));
-                cmd.Parameters.AddWithValue("@PC_LC_USRINT", GetCellValue(promoRow, "PC_LC"));
-                cmd.Parameters.AddWithValue("@PC_PPA2PG", GetCellValue(dbRow, "PC_PPA2PG"));
-                cmd.Parameters.AddWithValue("@PC_PPA2PG_SUP", GetCellValue(suppRow, "PC_PPA2PG"));
-                cmd.Parameters.AddWithValue("@PC_PPA2PG_USRINT", GetCellValue(promoRow, "PC_PPA2PG"));
-                cmd.Parameters.AddWithValue("@PC_PG", GetCellValue(dbRow, "PC_PG"));
-                cmd.Parameters.AddWithValue("@PC_PG_SUP", GetCellValue(suppRow, "PC_PG"));
-                cmd.Parameters.AddWithValue("@PC_PG_USRINT", GetCellValue(promoRow, "PC_PG"));
-                cmd.Parameters.AddWithValue("@PC_PPA2PH", GetCellValue(dbRow, "PC_PPA2PH"));
-                cmd.Parameters.AddWithValue("@PC_PPA2PH_SUP", GetCellValue(suppRow, "PC_PPA2PH"));
-                cmd.Parameters.AddWithValue("@PC_PPA2PH_USRINT", GetCellValue(promoRow, "PC_PPA2PH"));
-                cmd.Parameters.AddWithValue("@PC_PH", GetCellValue(dbRow, "PC_PH"));
-                cmd.Parameters.AddWithValue("@PC_PH_SUP", GetCellValue(suppRow, "PC_PH"));
-                cmd.Parameters.AddWithValue("@PC_PH_USRINT", GetCellValue(promoRow, "PC_PH"));
-                cmd.Parameters.AddWithValue("@PC_PPA2PB", GetCellValue(dbRow, "PC_PPA2PB"));
-                cmd.Parameters.AddWithValue("@PC_PPA2PB_SUP", GetCellValue(suppRow, "PC_PPA2PB"));
-                cmd.Parameters.AddWithValue("@PC_PPA2PB_USRINT", GetCellValue(promoRow, "PC_PPA2PB"));
-                cmd.Parameters.AddWithValue("@PC_PB", GetCellValue(dbRow, "PC_PB"));
-                cmd.Parameters.AddWithValue("@PC_PB_SUP", GetCellValue(suppRow, "PC_PB"));
-                cmd.Parameters.AddWithValue("@PC_PB_USRINT", GetCellValue(promoRow, "PC_PB"));
-                cmd.Parameters.AddWithValue("@PC_PPA2PD", GetCellValue(dbRow, "PC_PPA2PD"));
-                cmd.Parameters.AddWithValue("@PC_PPA2PD_SUP", GetCellValue(suppRow, "PC_PPA2PD"));
-                cmd.Parameters.AddWithValue("@PC_PPA2P_USRINT", GetCellValue(promoRow, "PC_PPA2PD"));
-                cmd.Parameters.AddWithValue("@PC_PD", GetCellValue(dbRow, "PC_PD"));
-                cmd.Parameters.AddWithValue("@PC_PD_SUP", GetCellValue(suppRow, "PC_PD"));
-                cmd.Parameters.AddWithValue("@PC_PD_USRINT", GetCellValue(promoRow, "PC_PD"));
-                cmd.Parameters.AddWithValue("@LPP_AMT", GetCellValue(dbRow, "LPP_AMT"));
-                cmd.Parameters.AddWithValue("@LPP_AMT_SUP", GetCellValue(suppRow, "LPP_AMT"));
-                cmd.Parameters.AddWithValue("@LPP_AMT_USRINT", GetCellValue(promoRow, "LPP_AMT"));
-                cmd.Parameters.AddWithValue("@LPP_REF", GetCellValue(dbRow, "LPP_REF"));
-                cmd.Parameters.AddWithValue("@LPP_REF_SUP", GetCellValue(suppRow, "LPP_REF"));
-                cmd.Parameters.AddWithValue("@LPP_REF_USRINT", GetCellValue(promoRow, "LPP_REF"));
-                cmd.Parameters.AddWithValue("@PC_PPA2PC", GetCellValue(dbRow, "PC_PPA2PC"));
-                cmd.Parameters.AddWithValue("@PC_PPA2PC_SUP", GetCellValue(suppRow, "PC_PPA2PC"));
-                cmd.Parameters.AddWithValue("@PC_PPA2PC_USRINT", GetCellValue(promoRow, "PC_PPA2PC"));
-                cmd.Parameters.AddWithValue("@PC_PC", GetCellValue(dbRow, "PC_PC"));
-                cmd.Parameters.AddWithValue("@PC_PC_SUP", GetCellValue(suppRow, "PC_PC"));
-                cmd.Parameters.AddWithValue("@PC_PC_USRINT", GetCellValue(promoRow, "PC_PC"));
-                cmd.Parameters.AddWithValue("@Claim", GetCellValue(suppRow, "Claim1"));
-                cmd.Parameters.AddWithValue("@Claim_SUP", GetCellValue(promoRow, "Claim_SUP"));
-                cmd.Parameters.AddWithValue("@Claim_USRINT", GetCellValue(promoRow, "Claim_USRINT"));
-                cmd.Parameters.AddWithValue("@ClaimK", GetCellValue(suppRow, "ClaimK"));
-                cmd.Parameters.AddWithValue("@ClaimK_SUP", GetCellValue(promoRow, "ClaimK_SUP"));
-                cmd.Parameters.AddWithValue("@ClaimK_USRINT", GetCellValue(promoRow, "ClaimK_USRINT"));
-                cmd.Parameters.AddWithValue("@Remarks", GetCellValue(suppRow, "Remarks"));
-                cmd.Parameters.AddWithValue("@Remarks_SUP", GetCellValue(suppRow, "Remarks_SUP"));
-                cmd.Parameters.AddWithValue("@Remarks_USRINT", GetCellValue(promoRow, "Remarks_USRINT"));
-
-                cmd.ExecuteNonQuery();
-
-            }
-        }
 
         private void btnlpcsubmit_Click(object sender, EventArgs e)
         {
-           
-             DialogResult result = MessageBox.Show("Are you sure you want to submit this for approval?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (result == DialogResult.Yes)
+            if (!string.IsNullOrWhiteSpace(tb_docID.Text))
             {
-                InsertData("ForApproval");
+                Update("For Approval");
+                MessageBox.Show("Update sucessfully! for approval");
+                ClearForm();
+            }
+            else
+            {
+                Insert("For Approval");
+                MessageBox.Show("Submit sucessfully!");
+                ClearForm();
             }
         }
 
         private void btn_draft_Click(object sender, EventArgs e)
         {
-            InsertData("Draft");
+            if (!string.IsNullOrWhiteSpace(tb_docID.Text))
+            {
+                Update("Draft");
+                Add("Draft");
+                MessageBox.Show("Draft updated successfully.");
+                
+            }
+            else
+            {
+                Insert("Draft");
+                MessageBox.Show("Draft saved successfully.");
+            }
+
+            ClearForm();
         }
-
-
 
         #endregion
         private void lpc_dgv_searchbycode_CurrentCellDirtyStateChanged(object sender, EventArgs e)
@@ -554,100 +755,231 @@ namespace LogPriceChange0._1
                 lpc_dgv_searchbycode.CommitEdit(DataGridViewDataErrorContexts.Commit);
             }
         }
-
+   
         private void lpc_dgv_searchbycode_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            
-            if (e.RowIndex >= 0 && lpc_dgv_searchbycode.Columns[e.ColumnIndex].Name == "Select")
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
-                DataGridViewRow selectedRow = lpc_dgv_searchbycode.Rows[e.RowIndex];
-                bool isChecked = Convert.ToBoolean(selectedRow.Cells["Select"].Value);
-                string prodCode = selectedRow.Cells["PROD_C"].Value?.ToString();
+                var column = lpc_dgv_searchbycode.Columns[e.ColumnIndex];
 
-                if (isChecked)
+                if (column.Name == "Select")
                 {
-                    // Add to dgv_dbvalue
-                    bool alreadyAdded = false;
-                    for (int i = 0; i < lpc_dgv_dbvalue.Rows.Count; i += 3)
+                    DataGridViewRow selectedRow = lpc_dgv_searchbycode.Rows[e.RowIndex];
+                    object value = selectedRow.Cells["Select"].Value;
+
+                    bool isChecked = false;
+
+                    if (value != null && bool.TryParse(value.ToString(), out bool parsed))
                     {
-                        if (lpc_dgv_dbvalue.Rows[i].Cells["PROD_C"].Value?.ToString() == prodCode)
-                        {
-                            alreadyAdded = true;
-                            break;
-                        }
+                        isChecked = parsed;
                     }
 
-                    if (alreadyAdded)
-                        return;
+                    string prodCode = selectedRow.Cells["PROD_C"].Value?.ToString();
+                    if (string.IsNullOrEmpty(prodCode)) return;
 
-                    int mainRowIndex = lpc_dgv_dbvalue.Rows.Add();
-                    int suppRowIndex = lpc_dgv_dbvalue.Rows.Add();
-                    int promoRowIndex = lpc_dgv_dbvalue.Rows.Add();
-
-                    // Fill data
-                    DataGridViewRow mainRow = lpc_dgv_dbvalue.Rows[mainRowIndex];
-                    for (int i = 0; i < selectedRow.Cells.Count; i++)
+                    if (isChecked)
                     {
-                        string columnName = selectedRow.Cells[i].OwningColumn.Name;
-                        if (lpc_dgv_dbvalue.Columns.Contains(columnName))
+                        if (int.TryParse(selectedRow.Cells["ID"].Value?.ToString(), out int id))
                         {
-                            mainRow.Cells[columnName].Value = selectedRow.Cells[columnName].Value;
-                        }
-                    }
+                            _idValue = id;
+                            selectedId = _idValue.ToString();
 
-                    mainRow.HeaderCell.Value = "Database Value";
-                    lpc_dgv_dbvalue.Rows[suppRowIndex].HeaderCell.Value = "Supplier Price";
-                    lpc_dgv_dbvalue.Rows[promoRowIndex].HeaderCell.Value = "Promo Value";
-
-                    mainRow.ReadOnly = true;
-                    mainRow.DefaultCellStyle.BackColor = ColorTranslator.FromHtml("#FFECA1");
-                }
-                else
-                {
-                    // Remove from dgv_dbvalue
-                    for (int i = 0; i < lpc_dgv_dbvalue.Rows.Count; i++)
-                    {
-                        if (lpc_dgv_dbvalue.Rows[i].Cells["PROD_C"].Value?.ToString() == prodCode)
-                        {
-                            // Remove 3 rows starting from i
-                            if (i + 2 < lpc_dgv_dbvalue.Rows.Count)
+                            DataRow dbRow = LoadBillpDataToRow(_idValue);
+                            if (dbRow == null)
                             {
-                                lpc_dgv_dbvalue.Rows.RemoveAt(i);     // Promo
-                                lpc_dgv_dbvalue.Rows.RemoveAt(i);     // Supplier
-                                lpc_dgv_dbvalue.Rows.RemoveAt(i);     // Main
+                                MessageBox.Show("Data not found.");
+                                return;
                             }
-                            break;
+
+                            // Check if product already exists
+                            bool alreadyExists = dgv_Main.Rows
+                                .Cast<DataGridViewRow>()
+                                .Any(r => r.HeaderCell.Value?.ToString() == "DB Price" &&
+                                          r.Cells["PROD_C"].Value?.ToString() == dbRow["PROD_C"].ToString());
+
+                            if (alreadyExists)
+                            {
+                                var confirm = MessageBox.Show("This product already exists. Remove the 3 rows?", "Confirm", MessageBoxButtons.YesNo);
+                                if (confirm == DialogResult.Yes)
+                                {
+                                    for (int i = 0; i < dgv_Main.Rows.Count; i++)
+                                    {
+                                        if (dgv_Main.Rows[i].HeaderCell.Value?.ToString() == "DB Price" &&
+                                            dgv_Main.Rows[i].Cells["PROD_C"].Value?.ToString() == dbRow["PROD_C"].ToString())
+                                        {
+                                            RemoveGroupRowsByProdCode(prodCode);
+                                            selectedRow.Cells["Select"].Value = false;
+                                            return;
+                                        }
+                                    }
+                                }
+                                else return;
+                            }
+
+                            // Insert 3 rows
+                            dgv_Main.SuspendLayout();
+
+                            int startRowIndex = mainTable.Rows.Count;
+
+                            DataRow dbPriceRow = mainTable.NewRow();
+                            foreach (DataColumn col in mainTable.Columns)
+                            {
+                                if (dbRow.Table.Columns.Contains(col.ColumnName))
+                                    dbPriceRow[col.ColumnName] = dbRow[col.ColumnName];
+                            }
+
+                            mainTable.Rows.Add(dbPriceRow);
+                            DataRow supplierRow = mainTable.NewRow();
+                            supplierRow["PROD_C"] = dbRow["PROD_C"];
+                            supplierRow["PROD_N"] = dbRow["PROD_N"];
+                            mainTable.Rows.Add(supplierRow);
+
+                            DataRow promoRow = mainTable.NewRow();
+                            promoRow["PROD_C"] = dbRow["PROD_C"];
+                            promoRow["PROD_N"] = dbRow["PROD_N"];
+                            mainTable.Rows.Add(promoRow);
+
+
+
+                            dgv_Main.RowHeadersWidth = 200;
+                            dgv_Main.ResumeLayout();
+                            
+                        }
+                    }
+                    else
+                    {
+                        // Remove rows
+                        for (int i = 0; i < dgv_Main.Rows.Count; i++)
+                        {
+                            if (dgv_Main.Rows[i].HeaderCell.Value?.ToString() == "Db Price" &&
+                                dgv_Main.Rows[i].Cells["PROD_C"].Value?.ToString() == prodCode)
+                            {
+                                RemoveGroupRowsByProdCode(prodCode);
+                                break;
+                            }
+                            
                         }
                     }
                 }
+            
+                dgv_Main.Columns["ID"].Visible = false;
+                dgv_Main.Columns["DocID"].Visible = false;
             }
+
+
         }
 
-
-        public void LoadLogPriceChange(string docId, string connectionString)
+        private void lpc_rbtn_permanent_CheckedChanged(object sender, EventArgs e)
         {
-            MessageBox.Show("Method called with DocID: " + docId); // <-- Add this
-
-            using (OleDbConnection conn = new OleDbConnection(connectionString))
+            if (lpc_rbtn_permanent.Checked)
             {
-                string query = "SELECT * FROM tbl_logpricechange WHERE DocID = ?";
-                using (OleDbDataAdapter adapter = new OleDbDataAdapter(query, conn))
-                {
-                    adapter.SelectCommand.Parameters.AddWithValue("?", docId);
-                    DataTable dt = new DataTable();
-                    adapter.Fill(dt);
-
-                    MessageBox.Show("Rows returned: " + dt.Rows.Count); // <-- Add this
-
-                    lpc_dgv_dbvalue.DataSource = null;
-                    lpc_dgv_dbvalue.DataSource = dt;
-                }
+                _promoType = "Permanent";
+                lpc_dtp_enddate.Enabled = false;
+            }
+            else if (lpc_rbtn_temporary.Checked)
+            {
+                _promoType = "Temporary";
+                lpc_dtp_enddate.Enabled = true;
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void tb_docID_TextChanged(object sender, EventArgs e)
         {
-            //LoadLogPriceChange(UserSession.DocId, connection);
+            
+            if (string.IsNullOrWhiteSpace(tb_docID.Text))
+            {
+                tb_docID.Visible = false;
+                return;
+            }
+            else
+            {
+                tb_docID.Visible = true;
+            }
+
+            if (string.IsNullOrEmpty(_docId))
+            {
+              
+                return;
+            }
+
+            var selectedDocID = _docId;
+            MessageBox.Show(selectedDocID);
+
+            PopulateHeaderFields(selectedDocID);
+            DataTable dbRows = LoadlpcUpdateAll(selectedDocID);
+
+            if (dbRows.Rows.Count == 0)
+            {
+                MessageBox.Show("No products found for this DocID.");
+                return;
+            }
+
+            foreach (DataRow dbRow in dbRows.Rows)
+            {
+        
+                // ✅ Insert 3 grouped rows
+                dgv_Main.SuspendLayout();
+
+                int startRowIndex = mainTable.Rows.Count;
+                string[] headerNames = { "Normal", "Supplier Price", "Promo Price" };
+
+                for (int i = 0; i < 3; i++)
+                {
+                    DataRow newRow = mainTable.NewRow();
+
+                    foreach (DataColumn col in mainTable.Columns)
+                    {
+                        string colName = col.ColumnName;
+
+                        if (i == 0 && dbRow.Table.Columns.Contains(colName) &&
+                            !colName.EndsWith("_SUP") && !colName.EndsWith("_USRINT"))
+                        {
+                            newRow[colName] = dbRow[colName];
+                        }
+                        else if (i == 1 && dbRow.Table.Columns.Contains(colName + "_SUP"))
+                        {
+                            newRow[colName] = dbRow[colName + "_SUP"];
+                        }
+                        else if (i == 2 && dbRow.Table.Columns.Contains(colName + "_USRINT"))
+                        {
+                            newRow[colName] = dbRow[colName + "_USRINT"];
+                        }
+                    }
+
+                    newRow["PROD_C"] = dbRow["PROD_C"];
+                    newRow["PROD_N"] = dbRow["PROD_N"];
+                    newRow["DocID"] = dbRow["DocID"];
+
+                    mainTable.Rows.Add(newRow);
+
+                    // ✅ Assign header here
+                    dgv_Main.Rows[startRowIndex + i].HeaderCell.Value = headerNames[i];
+                }
+
+                dgv_Main.RowHeadersWidth = 200;
+                dgv_Main.ResumeLayout();
+            }
+        }
+
+        private void dgv_Main_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            for (int i = 0; i < dgv_Main.Rows.Count; i += 3)
+            {
+                dgv_Main.Rows[i].ReadOnly = true;
+                dgv_Main.Rows[i].DefaultCellStyle.BackColor = Color.LightCoral;
+
+            }
+            if (e.RowIndex >= 0)
+            {
+                string[] headerNames = { "Db Price", "Supplier Price", "Promo Price" };
+
+                // assign header based on modulo
+                int groupIndex = e.RowIndex % 3;
+                dgv_Main.Rows[e.RowIndex].HeaderCell.Value = headerNames[groupIndex];
+
+               
+            }
         }
     }
+
 }

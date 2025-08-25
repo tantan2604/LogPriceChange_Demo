@@ -29,20 +29,17 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.cmsRemoveGroup = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmsRemoveGroupItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnlpcsubmit = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnClear = new System.Windows.Forms.Button();
             this.btn_draft = new System.Windows.Forms.Button();
             this.lblMessage = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.lpc_dgv_dbvalue = new System.Windows.Forms.DataGridView();
+            this.dgv_Main = new System.Windows.Forms.DataGridView();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.tb_docID = new System.Windows.Forms.TextBox();
             this.lpc_dgv_searchbycode = new System.Windows.Forms.DataGridView();
             this.label8 = new System.Windows.Forms.Label();
             this.lpc_rbtn_temporary = new System.Windows.Forms.RadioButton();
@@ -60,47 +57,10 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.PROD_C = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PROD_N = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FREE = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PLFOB = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.NWF = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.NWFR = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PF = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PFL = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_RP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PA = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PLSRP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_LSRP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PPA2LP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_LP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PPA2WA = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_WA = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PPA2WB = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_WB = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PPA2WC = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_WC = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PPA2LC = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_LC = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PPA2PG = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PG = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PPA2PH = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PH = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PPA2PB = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PB = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PPA2PD = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PD = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LPP_AMT = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LPP_REf = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PPA2PC = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PC_PC = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Claim1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ClaimK = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Remarks = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cmsRemoveGroup.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_dbvalue)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_Main)).BeginInit();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_searchbycode)).BeginInit();
             this.SuspendLayout();
@@ -111,7 +71,6 @@
             this.cmsRemoveGroupItem});
             this.cmsRemoveGroup.Name = "cmsRemoveGroup";
             this.cmsRemoveGroup.Size = new System.Drawing.Size(199, 26);
-            this.cmsRemoveGroup.Opening += new System.ComponentModel.CancelEventHandler(this.cmsRemoveGroup_Opening);
             // 
             // cmsRemoveGroupItem
             // 
@@ -121,12 +80,11 @@
             // 
             // btnlpcsubmit
             // 
-            this.btnlpcsubmit.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnlpcsubmit.Dock = System.Windows.Forms.DockStyle.Right;
             this.btnlpcsubmit.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnlpcsubmit.Location = new System.Drawing.Point(977, 3);
+            this.btnlpcsubmit.Location = new System.Drawing.Point(997, 5);
             this.btnlpcsubmit.Name = "btnlpcsubmit";
-            this.btnlpcsubmit.Size = new System.Drawing.Size(101, 45);
+            this.btnlpcsubmit.Size = new System.Drawing.Size(101, 40);
             this.btnlpcsubmit.TabIndex = 0;
             this.btnlpcsubmit.Text = "Submit";
             this.btnlpcsubmit.UseVisualStyleBackColor = true;
@@ -134,36 +92,35 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.button1);
+            this.panel1.Controls.Add(this.btnClear);
             this.panel1.Controls.Add(this.btn_draft);
             this.panel1.Controls.Add(this.btnlpcsubmit);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(10, 558);
             this.panel1.Name = "panel1";
+            this.panel1.Padding = new System.Windows.Forms.Padding(5, 5, 10, 5);
             this.panel1.Size = new System.Drawing.Size(1108, 50);
             this.panel1.TabIndex = 15;
             // 
-            // button1
+            // btnClear
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(750, 0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(101, 45);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Save Draft";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnClear.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnClear.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnClear.Location = new System.Drawing.Point(795, 5);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(101, 40);
+            this.btnClear.TabIndex = 1;
+            this.btnClear.Text = "Clear form";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.button1_Click);
             // 
             // btn_draft
             // 
-            this.btn_draft.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_draft.Dock = System.Windows.Forms.DockStyle.Right;
             this.btn_draft.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_draft.Location = new System.Drawing.Point(870, 2);
+            this.btn_draft.Location = new System.Drawing.Point(896, 5);
             this.btn_draft.Name = "btn_draft";
-            this.btn_draft.Size = new System.Drawing.Size(101, 45);
+            this.btn_draft.Size = new System.Drawing.Size(101, 40);
             this.btn_draft.TabIndex = 1;
             this.btn_draft.Text = "Save Draft";
             this.btn_draft.UseVisualStyleBackColor = true;
@@ -179,79 +136,28 @@
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.lpc_dgv_dbvalue);
+            this.panel2.Controls.Add(this.dgv_Main);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(10, 210);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1108, 348);
             this.panel2.TabIndex = 17;
             // 
-            // lpc_dgv_dbvalue
+            // dgv_Main
             // 
-            this.lpc_dgv_dbvalue.AllowUserToAddRows = false;
-            this.lpc_dgv_dbvalue.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.lpc_dgv_dbvalue.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            this.lpc_dgv_dbvalue.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.lpc_dgv_dbvalue.BackgroundColor = System.Drawing.Color.White;
-            this.lpc_dgv_dbvalue.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.lpc_dgv_dbvalue.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.PROD_C,
-            this.PROD_N,
-            this.FREE,
-            this.PLFOB,
-            this.NWF,
-            this.NWFR,
-            this.PC_PF,
-            this.PC_PFL,
-            this.PC_RP,
-            this.PC_PA,
-            this.PC_PLSRP,
-            this.PC_LSRP,
-            this.PC_PPA2LP,
-            this.PC_LP,
-            this.PC_PPA2WA,
-            this.PC_WA,
-            this.PC_PPA2WB,
-            this.PC_WB,
-            this.PC_PPA2WC,
-            this.PC_WC,
-            this.PC_PPA2LC,
-            this.PC_LC,
-            this.PC_PPA2PG,
-            this.PC_PG,
-            this.PC_PPA2PH,
-            this.PC_PH,
-            this.PC_PPA2PB,
-            this.PC_PB,
-            this.PC_PPA2PD,
-            this.PC_PD,
-            this.LPP_AMT,
-            this.LPP_REf,
-            this.PC_PPA2PC,
-            this.PC_PC,
-            this.Claim1,
-            this.ClaimK,
-            this.Remarks});
-            this.lpc_dgv_dbvalue.ContextMenuStrip = this.cmsRemoveGroup;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Arial Narrow", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.lpc_dgv_dbvalue.DefaultCellStyle = dataGridViewCellStyle3;
-            this.lpc_dgv_dbvalue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lpc_dgv_dbvalue.Location = new System.Drawing.Point(0, 0);
-            this.lpc_dgv_dbvalue.Name = "lpc_dgv_dbvalue";
-            this.lpc_dgv_dbvalue.RowHeadersWidth = 150;
-            this.lpc_dgv_dbvalue.Size = new System.Drawing.Size(1108, 348);
-            this.lpc_dgv_dbvalue.TabIndex = 9;
+            this.dgv_Main.AllowUserToAddRows = false;
+            this.dgv_Main.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.dgv_Main.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_Main.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_Main.Location = new System.Drawing.Point(0, 0);
+            this.dgv_Main.Name = "dgv_Main";
+            this.dgv_Main.Size = new System.Drawing.Size(1108, 348);
+            this.dgv_Main.TabIndex = 5;
+            this.dgv_Main.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dgv_Main_RowPostPaint);
             // 
             // panel3
             // 
-            this.panel3.Controls.Add(this.comboBox1);
+            this.panel3.Controls.Add(this.tb_docID);
             this.panel3.Controls.Add(this.lpc_dgv_searchbycode);
             this.panel3.Controls.Add(this.label8);
             this.panel3.Controls.Add(this.lpc_rbtn_temporary);
@@ -275,32 +181,29 @@
             this.panel3.Size = new System.Drawing.Size(1108, 200);
             this.panel3.TabIndex = 18;
             // 
-            // comboBox1
+            // tb_docID
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "INSERT",
-            "ADD",
-            "UPDATE"});
-            this.comboBox1.Location = new System.Drawing.Point(440, 152);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
-            this.comboBox1.TabIndex = 30;
+            this.tb_docID.Location = new System.Drawing.Point(362, 6);
+            this.tb_docID.Name = "tb_docID";
+            this.tb_docID.Size = new System.Drawing.Size(138, 20);
+            this.tb_docID.TabIndex = 35;
+            this.tb_docID.Visible = false;
+            this.tb_docID.TextChanged += new System.EventHandler(this.tb_docID_TextChanged);
             // 
             // lpc_dgv_searchbycode
             // 
             this.lpc_dgv_searchbycode.AllowUserToAddRows = false;
             this.lpc_dgv_searchbycode.AllowUserToDeleteRows = false;
-            this.lpc_dgv_searchbycode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lpc_dgv_searchbycode.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.lpc_dgv_searchbycode.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader;
             this.lpc_dgv_searchbycode.BackgroundColor = System.Drawing.Color.White;
             this.lpc_dgv_searchbycode.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.lpc_dgv_searchbycode.Location = new System.Drawing.Point(673, 36);
+            this.lpc_dgv_searchbycode.Location = new System.Drawing.Point(673, 39);
             this.lpc_dgv_searchbycode.Name = "lpc_dgv_searchbycode";
-            this.lpc_dgv_searchbycode.Size = new System.Drawing.Size(432, 161);
-            this.lpc_dgv_searchbycode.TabIndex = 29;
+            this.lpc_dgv_searchbycode.Size = new System.Drawing.Size(432, 144);
+            this.lpc_dgv_searchbycode.TabIndex = 34;
             this.lpc_dgv_searchbycode.Visible = false;
+            this.lpc_dgv_searchbycode.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.lpc_dgv_searchbycode_CellValueChanged);
+            this.lpc_dgv_searchbycode.CurrentCellDirtyStateChanged += new System.EventHandler(this.lpc_dgv_searchbycode_CurrentCellDirtyStateChanged);
             // 
             // label8
             // 
@@ -335,6 +238,7 @@
             this.lpc_rbtn_permanent.TabStop = true;
             this.lpc_rbtn_permanent.Text = "Permanent";
             this.lpc_rbtn_permanent.UseVisualStyleBackColor = true;
+            this.lpc_rbtn_permanent.CheckedChanged += new System.EventHandler(this.lpc_rbtn_permanent_CheckedChanged);
             // 
             // label7
             // 
@@ -463,195 +367,6 @@
             this.label1.TabIndex = 15;
             this.label1.Text = "Log Price Change";
             // 
-            // PROD_C
-            // 
-            this.PROD_C.HeaderText = "MODEL CODE";
-            this.PROD_C.Name = "PROD_C";
-            // 
-            // PROD_N
-            // 
-            this.PROD_N.HeaderText = "MODEL NAME";
-            this.PROD_N.Name = "PROD_N";
-            // 
-            // FREE
-            // 
-            this.FREE.HeaderText = "FREE";
-            this.FREE.Name = "FREE";
-            // 
-            // PLFOB
-            // 
-            this.PLFOB.HeaderText = "PLFOB";
-            this.PLFOB.Name = "PLFOB";
-            // 
-            // NWF
-            // 
-            this.NWF.HeaderText = "PLFOBVAT";
-            this.NWF.Name = "NWF";
-            // 
-            // NWFR
-            // 
-            this.NWFR.HeaderText = "NWFR";
-            this.NWFR.Name = "NWFR";
-            // 
-            // PC_PF
-            // 
-            this.PC_PF.HeaderText = "DFP";
-            this.PC_PF.Name = "PC_PF";
-            // 
-            // PC_PFL
-            // 
-            this.PC_PFL.HeaderText = "LDFP";
-            this.PC_PFL.Name = "PC_PFL";
-            // 
-            // PC_RP
-            // 
-            this.PC_RP.HeaderText = "RP";
-            this.PC_RP.Name = "PC_RP";
-            // 
-            // PC_PA
-            // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle2.Format = "##,###.00";
-            dataGridViewCellStyle2.NullValue = "0.00";
-            this.PC_PA.DefaultCellStyle = dataGridViewCellStyle2;
-            this.PC_PA.HeaderText = "SRP";
-            this.PC_PA.Name = "PC_PA";
-            // 
-            // PC_PLSRP
-            // 
-            this.PC_PLSRP.HeaderText = "%LSRP";
-            this.PC_PLSRP.Name = "PC_PLSRP";
-            // 
-            // PC_LSRP
-            // 
-            this.PC_LSRP.HeaderText = "LSRP";
-            this.PC_LSRP.Name = "PC_LSRP";
-            // 
-            // PC_PPA2LP
-            // 
-            this.PC_PPA2LP.HeaderText = "%MP";
-            this.PC_PPA2LP.Name = "PC_PPA2LP";
-            // 
-            // PC_LP
-            // 
-            this.PC_LP.HeaderText = "MP";
-            this.PC_LP.Name = "PC_LP";
-            // 
-            // PC_PPA2WA
-            // 
-            this.PC_PPA2WA.HeaderText = "%WA";
-            this.PC_PPA2WA.Name = "PC_PPA2WA";
-            // 
-            // PC_WA
-            // 
-            this.PC_WA.HeaderText = "WA";
-            this.PC_WA.Name = "PC_WA";
-            // 
-            // PC_PPA2WB
-            // 
-            this.PC_PPA2WB.HeaderText = "%WB";
-            this.PC_PPA2WB.Name = "PC_PPA2WB";
-            // 
-            // PC_WB
-            // 
-            this.PC_WB.HeaderText = "WB";
-            this.PC_WB.Name = "PC_WB";
-            // 
-            // PC_PPA2WC
-            // 
-            this.PC_PPA2WC.HeaderText = "%WC";
-            this.PC_PPA2WC.Name = "PC_PPA2WC";
-            // 
-            // PC_WC
-            // 
-            this.PC_WC.HeaderText = "WC";
-            this.PC_WC.Name = "PC_WC";
-            // 
-            // PC_PPA2LC
-            // 
-            this.PC_PPA2LC.HeaderText = "%LCASH";
-            this.PC_PPA2LC.Name = "PC_PPA2LC";
-            // 
-            // PC_LC
-            // 
-            this.PC_LC.HeaderText = "LCASH";
-            this.PC_LC.Name = "PC_LC";
-            // 
-            // PC_PPA2PG
-            // 
-            this.PC_PPA2PG.HeaderText = "%AUTH";
-            this.PC_PPA2PG.Name = "PC_PPA2PG";
-            // 
-            // PC_PG
-            // 
-            this.PC_PG.HeaderText = "AUTH";
-            this.PC_PG.Name = "PC_PG";
-            // 
-            // PC_PPA2PH
-            // 
-            this.PC_PPA2PH.HeaderText = "%APPV";
-            this.PC_PPA2PH.Name = "PC_PPA2PH";
-            // 
-            // PC_PH
-            // 
-            this.PC_PH.HeaderText = "APPV";
-            this.PC_PH.Name = "PC_PH";
-            // 
-            // PC_PPA2PB
-            // 
-            this.PC_PPA2PB.HeaderText = "%DP";
-            this.PC_PPA2PB.Name = "PC_PPA2PB";
-            // 
-            // PC_PB
-            // 
-            this.PC_PB.HeaderText = "DP";
-            this.PC_PB.Name = "PC_PB";
-            // 
-            // PC_PPA2PD
-            // 
-            this.PC_PPA2PD.HeaderText = "%AP";
-            this.PC_PPA2PD.Name = "PC_PPA2PD";
-            // 
-            // PC_PD
-            // 
-            this.PC_PD.HeaderText = "AP";
-            this.PC_PD.Name = "PC_PD";
-            // 
-            // LPP_AMT
-            // 
-            this.LPP_AMT.HeaderText = "LPP";
-            this.LPP_AMT.Name = "LPP_AMT";
-            // 
-            // LPP_REf
-            // 
-            this.LPP_REf.HeaderText = "LPP_Ref";
-            this.LPP_REf.Name = "LPP_REf";
-            // 
-            // PC_PPA2PC
-            // 
-            this.PC_PPA2PC.HeaderText = "%LB";
-            this.PC_PPA2PC.Name = "PC_PPA2PC";
-            // 
-            // PC_PC
-            // 
-            this.PC_PC.HeaderText = "LB";
-            this.PC_PC.Name = "PC_PC";
-            // 
-            // Claim1
-            // 
-            this.Claim1.HeaderText = "Claim";
-            this.Claim1.Name = "Claim1";
-            // 
-            // ClaimK
-            // 
-            this.ClaimK.HeaderText = "ClaimK1";
-            this.ClaimK.Name = "ClaimK";
-            // 
-            // Remarks
-            // 
-            this.Remarks.HeaderText = "Remarks1";
-            this.Remarks.Name = "Remarks";
-            // 
             // ctrLogPriceChange
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -669,7 +384,7 @@
             this.cmsRemoveGroup.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_dbvalue)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_Main)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.lpc_dgv_searchbycode)).EndInit();
@@ -686,9 +401,7 @@
         private System.Windows.Forms.ToolStripMenuItem cmsRemoveGroupItem;
         private System.Windows.Forms.Button btn_draft;
         private System.Windows.Forms.Panel panel2;
-        public System.Windows.Forms.DataGridView lpc_dgv_dbvalue;
         private System.Windows.Forms.Panel panel3;
-        public System.Windows.Forms.DataGridView lpc_dgv_searchbycode;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.RadioButton lpc_rbtn_temporary;
         private System.Windows.Forms.RadioButton lpc_rbtn_permanent;
@@ -705,44 +418,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox lpc_tb_searchbycode;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PROD_C;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PROD_N;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FREE;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PLFOB;
-        private System.Windows.Forms.DataGridViewTextBoxColumn NWF;
-        private System.Windows.Forms.DataGridViewTextBoxColumn NWFR;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PF;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PFL;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_RP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PA;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PLSRP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_LSRP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2LP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_LP;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2WA;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_WA;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2WB;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_WB;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2WC;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_WC;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2LC;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_LC;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2PG;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PG;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2PH;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PH;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2PB;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PB;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2PD;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PD;
-        private System.Windows.Forms.DataGridViewTextBoxColumn LPP_AMT;
-        private System.Windows.Forms.DataGridViewTextBoxColumn LPP_REf;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PPA2PC;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PC_PC;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Claim1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ClaimK;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Remarks;
+        private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.DataGridView dgv_Main;
+        public System.Windows.Forms.DataGridView lpc_dgv_searchbycode;
+        private System.Windows.Forms.TextBox tb_docID;
     }
 }

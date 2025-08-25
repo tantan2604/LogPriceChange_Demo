@@ -11,7 +11,7 @@ namespace LogPriceChange0._1
     public partial class AdminForm : Form
     {
         // Store the connection string in a private field
-        private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;";
+        private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\Desktop\CameraHaus\LogPriceChange_Demo\pricematrix.accdb;";
         private string _username;
         private string _idValue;
         private string _docIDValue;

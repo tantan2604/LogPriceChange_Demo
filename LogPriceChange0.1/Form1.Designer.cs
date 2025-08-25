@@ -29,14 +29,14 @@
         private void InitializeComponent()
         {
             this.pnl_navbar = new System.Windows.Forms.Panel();
-            this.pnl_footer = new System.Windows.Forms.Panel();
-            this.btn_logout = new System.Windows.Forms.Button();
             this.btn_dashboard = new System.Windows.Forms.Button();
             this.btn_lpc = new System.Windows.Forms.Button();
             this.btn_claimbysellout = new System.Windows.Forms.Button();
             this.btn_claimbyinventory = new System.Windows.Forms.Button();
-            this.pnl_main = new System.Windows.Forms.Panel();
+            this.btn_logout = new System.Windows.Forms.Button();
             this.dashb_lbl_userlogged = new System.Windows.Forms.Label();
+            this.pnl_footer = new System.Windows.Forms.Panel();
+            this.pnl_main = new System.Windows.Forms.Panel();
             this.pnl_navbar.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,32 +55,6 @@
             this.pnl_navbar.Name = "pnl_navbar";
             this.pnl_navbar.Size = new System.Drawing.Size(1233, 43);
             this.pnl_navbar.TabIndex = 0;
-            // 
-            // pnl_footer
-            // 
-            this.pnl_footer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
-            this.pnl_footer.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnl_footer.Location = new System.Drawing.Point(0, 601);
-            this.pnl_footer.Name = "pnl_footer";
-            this.pnl_footer.Size = new System.Drawing.Size(1233, 30);
-            this.pnl_footer.TabIndex = 0;
-            // 
-            // btn_logout
-            // 
-            this.btn_logout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
-            this.btn_logout.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
-            this.btn_logout.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
-            this.btn_logout.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
-            this.btn_logout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_logout.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_logout.ForeColor = System.Drawing.Color.Silver;
-            this.btn_logout.Location = new System.Drawing.Point(1110, 0);
-            this.btn_logout.Name = "btn_logout";
-            this.btn_logout.Size = new System.Drawing.Size(123, 43);
-            this.btn_logout.TabIndex = 2;
-            this.btn_logout.Text = "Log out";
-            this.btn_logout.UseVisualStyleBackColor = false;
-            this.btn_logout.Click += new System.EventHandler(this.btn_logout_Click);
             // 
             // btn_dashboard
             // 
@@ -150,14 +124,22 @@
             this.btn_claimbyinventory.UseVisualStyleBackColor = false;
             this.btn_claimbyinventory.Click += new System.EventHandler(this.btn_claimbyinventory_Click);
             // 
-            // pnl_main
+            // btn_logout
             // 
-            this.pnl_main.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pnl_main.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnl_main.Location = new System.Drawing.Point(0, 43);
-            this.pnl_main.Name = "pnl_main";
-            this.pnl_main.Size = new System.Drawing.Size(1233, 558);
-            this.pnl_main.TabIndex = 1;
+            this.btn_logout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
+            this.btn_logout.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
+            this.btn_logout.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
+            this.btn_logout.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
+            this.btn_logout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_logout.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_logout.ForeColor = System.Drawing.Color.Silver;
+            this.btn_logout.Location = new System.Drawing.Point(1110, 0);
+            this.btn_logout.Name = "btn_logout";
+            this.btn_logout.Size = new System.Drawing.Size(123, 43);
+            this.btn_logout.TabIndex = 2;
+            this.btn_logout.Text = "Log out";
+            this.btn_logout.UseVisualStyleBackColor = false;
+            this.btn_logout.Click += new System.EventHandler(this.btn_logout_Click);
             // 
             // dashb_lbl_userlogged
             // 
@@ -168,6 +150,25 @@
             this.dashb_lbl_userlogged.Size = new System.Drawing.Size(80, 18);
             this.dashb_lbl_userlogged.TabIndex = 0;
             this.dashb_lbl_userlogged.Text = "AHAHAH";
+            // 
+            // pnl_footer
+            // 
+            this.pnl_footer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(27)))), ((int)(((byte)(36)))));
+            this.pnl_footer.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnl_footer.Location = new System.Drawing.Point(0, 601);
+            this.pnl_footer.Name = "pnl_footer";
+            this.pnl_footer.Size = new System.Drawing.Size(1233, 30);
+            this.pnl_footer.TabIndex = 0;
+            // 
+            // pnl_main
+            // 
+            this.pnl_main.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.pnl_main.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnl_main.Location = new System.Drawing.Point(0, 43);
+            this.pnl_main.Name = "pnl_main";
+            this.pnl_main.Size = new System.Drawing.Size(1233, 558);
+            this.pnl_main.TabIndex = 1;
+            this.pnl_main.Paint += new System.Windows.Forms.PaintEventHandler(this.pnl_main_Paint);
             // 
             // MainForm
             // 

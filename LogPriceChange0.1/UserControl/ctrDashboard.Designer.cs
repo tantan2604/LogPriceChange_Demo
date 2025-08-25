@@ -33,21 +33,16 @@
             this.dgvDocStat = new System.Windows.Forms.DataGridView();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.btnUpdate = new System.Windows.Forms.Button();
-            this.statusComboBox = new System.Windows.Forms.ComboBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.btn_loadData = new System.Windows.Forms.Button();
+            this.btnloadForm = new System.Windows.Forms.Button();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDocStat)).BeginInit();
             this.panel3.SuspendLayout();
-            this.panel4.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.btn_loadData);
             this.panel2.Controls.Add(this.lblDocStat);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 40);
@@ -67,6 +62,7 @@
             // 
             // dgvDocStat
             // 
+            this.dgvDocStat.AllowUserToAddRows = false;
             this.dgvDocStat.BackgroundColor = System.Drawing.Color.Snow;
             this.dgvDocStat.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvDocStat.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -88,68 +84,33 @@
             // 
             // panel4
             // 
-            this.panel4.Controls.Add(this.btnUpdate);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel4.Location = new System.Drawing.Point(0, 513);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(1012, 45);
             this.panel4.TabIndex = 10;
             // 
-            // btnUpdate
-            // 
-            this.btnUpdate.Location = new System.Drawing.Point(900, 10);
-            this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(75, 23);
-            this.btnUpdate.TabIndex = 0;
-            this.btnUpdate.Text = "UPDATE";
-            this.btnUpdate.UseVisualStyleBackColor = true;
-            this.btnUpdate.Visible = false;
-            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
-            // 
-            // statusComboBox
-            // 
-            this.statusComboBox.FormattingEnabled = true;
-            this.statusComboBox.Items.AddRange(new object[] {
-            "",
-            "ForApproval",
-            "Approved",
-            "Rejected",
-            "Draft"});
-            this.statusComboBox.Location = new System.Drawing.Point(811, 13);
-            this.statusComboBox.Name = "statusComboBox";
-            this.statusComboBox.Size = new System.Drawing.Size(189, 21);
-            this.statusComboBox.TabIndex = 6;
-            this.statusComboBox.SelectedIndexChanged += new System.EventHandler(this.statusComboBox_SelectedIndexChanged);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(675, 17);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(130, 17);
-            this.label5.TabIndex = 7;
-            this.label5.Text = "Document Status :";
-            // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.statusComboBox);
+            this.panel1.Controls.Add(this.btnloadForm);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
+            this.panel1.Padding = new System.Windows.Forms.Padding(5, 5, 30, 5);
             this.panel1.Size = new System.Drawing.Size(1012, 40);
             this.panel1.TabIndex = 7;
             // 
-            // btn_loadData
+            // btnloadForm
             // 
-            this.btn_loadData.Location = new System.Drawing.Point(925, 6);
-            this.btn_loadData.Name = "btn_loadData";
-            this.btn_loadData.Size = new System.Drawing.Size(75, 23);
-            this.btn_loadData.TabIndex = 1;
-            this.btn_loadData.Text = "Load Data";
-            this.btn_loadData.UseVisualStyleBackColor = true;
-            this.btn_loadData.Click += new System.EventHandler(this.btn_loadData_Click);
+            this.btnloadForm.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnloadForm.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnloadForm.Location = new System.Drawing.Point(881, 5);
+            this.btnloadForm.Name = "btnloadForm";
+            this.btnloadForm.Size = new System.Drawing.Size(101, 30);
+            this.btnloadForm.TabIndex = 2;
+            this.btnloadForm.Text = "Load Form";
+            this.btnloadForm.UseVisualStyleBackColor = true;
+            this.btnloadForm.Click += new System.EventHandler(this.btnloadForm_Click);
             // 
             // ctrDashboard
             // 
@@ -166,9 +127,7 @@
             this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDocStat)).EndInit();
             this.panel3.ResumeLayout(false);
-            this.panel4.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -179,10 +138,7 @@
         private System.Windows.Forms.DataGridView dgvDocStat;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Button btnUpdate;
-        private System.Windows.Forms.ComboBox statusComboBox;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button btn_loadData;
+        private System.Windows.Forms.Button btnloadForm;
     }
 }

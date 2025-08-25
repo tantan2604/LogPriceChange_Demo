@@ -13,6 +13,8 @@ namespace LogPriceChange0._1
         public static string Username { get; set; } = "Guest";
         public static string LoggedUser { get; set; } = "Guest";
 
+        
+
         public static string DocId { get; set; }
     }
 

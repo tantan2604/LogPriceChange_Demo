@@ -14,11 +14,11 @@ namespace LogPriceChange0._1
     public partial class ctrDashboard : UserControl
     {
 
-        private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;";
-
+        private string connectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\Desktop\CameraHaus\LogPriceChange_Demo\pricematrix.accdb";
 
         private OleDbConnection connection;
 
+        private ctrLogPriceChange _ctrLogPriceChange;
 
         private BindingSource bindingSource = new BindingSource();
 
@@ -27,7 +27,6 @@ namespace LogPriceChange0._1
 
 
         #region ************************** METHODS **************************
-        // Color only first row (with DocID) green
         private void dgvDocStat_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
         {
             var dgv = sender as DataGridView;
@@ -43,318 +42,60 @@ namespace LogPriceChange0._1
                 row.DefaultCellStyle.BackColor = Color.White;
             }
         }
-        private DataTable TransformToVerticalGroupedTable(DataTable originalTable)
+      
+        private void LoadDataByStatus(string docStatus)
         {
-            var baseFields = new List<string>
-    {
-        "DocID", "FREE", "PLFOB", "NWF", "NWFR",
-        "PC_PF", "PC_PFL", "PC_RP", "PC_PA", "PC_PLSRP", "PC_LSRP",
-        "PC_PPA2LP", "PC_LP", "PC_PPA2WA", "PC_WA", "PC_PPA2WB", "PC_WB",
-        "PC_PPA2WC", "PC_WC", "PC_PPA2LC", "PC_LC", "PC_PPA2PG", "PC_PG",
-        "PC_PPA2PH", "PC_PH", "PC_PPA2PB", "PC_PB", "PC_PPA2PD", "PC_PD",
-        "LPP_AMT", "LPP_REF", "PC_PPA2PC", "PC_PC"
-    };
-
-            string[] suffixes = { "", "_SUP", "_USRINT" };
-            string[] labels = { "Dbvalue", "Supplier", "Promo" };
-
-            DataTable verticalTable = new DataTable();
-            verticalTable.Columns.Add("RowLabel");
-
-            foreach (var field in baseFields)
-                verticalTable.Columns.Add(field);
-
-            var groupedRows = originalTable.AsEnumerable()
-                .GroupBy(r => r.Field<string>("DocID"));
-
-            int groupIndex = 1;
-
-            foreach (var group in groupedRows)
-            {
-                var sourceRow = group.First(); // take one row per DocID
-
-                for (int j = 0; j < suffixes.Length; j++)
-                {
-                    string suffix = suffixes[j];
-                    string label = labels[j];
-
-                    DataRow newRow = verticalTable.NewRow();
-                    newRow["RowLabel"] = $"Row{groupIndex}-{label}";
-
-                    foreach (var field in baseFields)
-                    {
-                        string fullField = field + suffix;
-
-                        if (originalTable.Columns.Contains(fullField))
-                        {
-                            if (field == "DocID" && j != 0)
-                                newRow[field] = DBNull.Value; // hide DocID for Supplier/Promo
-                            else
-                                newRow[field] = sourceRow[fullField];
-                        }
-                        else
-                        {
-                            newRow[field] = DBNull.Value;
-                        }
-                    }
-
-                    verticalTable.Rows.Add(newRow);
-                }
-
-                groupIndex++;
-            }
-
-            return verticalTable;
-        }  
-        private void btn_loadData_Click(object sender, EventArgs e)
-        {
-
-
-            string query = "SELECT * FROM tbl_logpricechange";
-
-            DataTable originalTable = new DataTable();
-
-            using (OleDbConnection conn = new OleDbConnection(connectionString))
-            {
-                conn.Open();
-                OleDbDataAdapter adapter = new OleDbDataAdapter(query, conn);
-                adapter.Fill(originalTable);
-            }
-
-            // Transform to vertical format
-            DataTable transformedTable = TransformToVerticalGroupedTable(originalTable);
-
-            // ✅ Display with performance tweaks
-            dgvDocStat.SuspendLayout();
-            dgvDocStat.DataSource = transformedTable;
-            dgvDocStat.RowHeadersVisible = false;
-            dgvDocStat.AllowUserToResizeRows = false;
-            dgvDocStat.AllowUserToOrderColumns = false;
-            dgvDocStat.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
-
-            foreach (DataGridViewColumn col in dgvDocStat.Columns)
-            {
-                col.SortMode = DataGridViewColumnSortMode.NotSortable;
-                col.Width = 100;
-            }
-
-            dgvDocStat.ResumeLayout();
-
-        }
-        private string GetFullName(string username)
-        {
-            string fullName = string.Empty;
-            string query = "SELECT Lastname, Firstname FROM tbl_employee WHERE Username = ?";
-
             using (OleDbConnection connection = new OleDbConnection(connectionString))
-            {
-                using (OleDbCommand command = new OleDbCommand(query, connection))
-                {
-                    command.Parameters.Add("?", OleDbType.VarWChar, 255).Value = username;
-
-                    try
-                    {
-                        connection.Open();
-                        using (OleDbDataReader reader = command.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                string lastName = reader["Lastname"].ToString();
-                                string firstName = reader["Firstname"].ToString();
-                                fullName = $"{lastName} {firstName}";
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Error retrieving full name: " + ex.Message, "Database Error");
-                    }
-                }
-            }
-            return fullName;
-        }
-
-        public void LoadDataAndStatus()
-        {
-            string createdByFullName = GetFullName(loggedUsername);
-
-            using (var connection = new OleDbConnection(connectionString))
             {
                 try
                 {
                     connection.Open();
 
-                    string dataQuery = @"
-                SELECT *
-                FROM tbl_logpricechange
-                WHERE CreatedBy = ?
-                ORDER BY DocID, CreatedDate ASC";
+                    string query = "SELECT * FROM tbl_logpricechange WHERE DocStatus = @status";
 
-                    using (var dataAdapter = new OleDbDataAdapter(dataQuery, connection))
+                    using (OleDbCommand cmd = new OleDbCommand(query, connection))
                     {
-                        dataAdapter.SelectCommand.Parameters.AddWithValue("?", createdByFullName);
-                        var dataTable = new DataTable();
-                        dataAdapter.Fill(dataTable);
+                        // Add parameter
+                        cmd.Parameters.AddWithValue("@status", docStatus);
 
-                        // Add temporary column for sorting
-                        if (!dataTable.Columns.Contains("SortOrder"))
-                            dataTable.Columns.Add("SortOrder", typeof(int));
+                        // Fill DataTable
+                        OleDbDataAdapter adapter = new OleDbDataAdapter(cmd);
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
 
-                        var grouped = dataTable.AsEnumerable()
-                            .GroupBy(row => row.Field<string>("DocID"))
-                            .SelectMany(group =>
-                            {
-                                // Assign sort order based on row type (normal, _sup, _promo)
-                                foreach (var row in group)
-                                {
-                                    int sortOrder = GetRowType(row); // 0 = normal, 1 = sup, 2 = promo
-                                    row["SortOrder"] = sortOrder;
-                                }
+                        // Bind to DataGridView
+                        dgvDocStat.DataSource = dt;
 
-                                var sortedGroup = group.OrderBy(r => Convert.ToInt32(r["SortOrder"])).ToList();
+                        dgvDocStat.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+                        dgvDocStat.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+                        dgvDocStat.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+                        dgvDocStat.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
 
-                                bool first = true;
-                                return sortedGroup.Select(row =>
-                                {
-                                    var newRow = dataTable.NewRow();
+                        
 
-                                    foreach (DataColumn column in dataTable.Columns)
-                                    {
-                                        if (column.ColumnName == "DocID")
-                                        {
-                                            newRow[column] = first ? row[column] : DBNull.Value;
-                                        }
-                                        else
-                                        {
-                                            newRow[column] = row[column];
-                                        }
-                                    }
-
-                                    first = false;
-                                    return newRow;
-                                });
-                            }).CopyToDataTable();
-
-                        // Remove SortOrder column if present
-                        if (grouped.Columns.Contains("SortOrder"))
-                            grouped.Columns.Remove("SortOrder");
-
-                        bindingSource.DataSource = grouped;
-                        dgvDocStat.DataSource = bindingSource;
-                        dgvDocStat.ReadOnly = true;
-
-                        dgvDocStat.RowPrePaint -= dgvDocStat_RowPrePaint;
-                        dgvDocStat.RowPrePaint += dgvDocStat_RowPrePaint;
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("An error occurred while loading data: " + ex.Message,
-                        "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Error loading data: " + ex.Message);
                 }
             }
         }
-
         // Function to determine the type of row based on column suffixes
-        private int GetRowType(DataRow row)
-        {
-            foreach (DataColumn column in row.Table.Columns)
-            {
-                var colName = column.ColumnName.ToLower();
-                if (colName.EndsWith("_sup") && !string.IsNullOrEmpty(row[column]?.ToString()))
-                    return 1; // sup row
-                if (colName.EndsWith("_promo") && !string.IsNullOrEmpty(row[column]?.ToString()))
-                    return 2; // promo row
-            }
-            return 0; // default: normal
-        }
-
-        
-       
-
+      
         #endregion
 
         public ctrDashboard()
         {
-            InitializeComponent();
-            connection = new OleDbConnection(connectionString);
+            InitializeComponent(); 
+            LoadDataByStatus("DRAFT");
+
         }
         private void ctrDashboard_Load_1(object sender, EventArgs e)
         {
-            LoadDataAndStatus();
+            //LoadDataAndStatus();
+            LoadDataByStatus("DRAFT");
         }
-
-        private void statusComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string selectedDocStatus = statusComboBox.SelectedItem?.ToString();
-
-            if (string.IsNullOrWhiteSpace(statusComboBox.Text))
-            {
-
-                bindingSource.RemoveFilter();
-                return;
-            }
-
-            lblDocStat.Visible = true;
-            dgvDocStat.Visible = true;
-
-            if (selectedDocStatus == "Rejected" || selectedDocStatus == "Draft")
-            {
-                btnUpdate.Visible = true;
-            }
-            else
-            {
-                btnUpdate.Visible = false;
-            }
-
-
-            bindingSource.Filter = $"DocStatus = '{selectedDocStatus}'";
-
-            switch (selectedDocStatus)
-            {
-                case "ForApproval":
-                    lblDocStat.Text = "For Approval";
-
-                    break;
-                case "Approved":
-                    lblDocStat.Text = "Approved";
-                    dgvDocStat.ReadOnly = true;
-                    break;
-                case "Rejected":
-                    lblDocStat.Text = "Rejected";
-                    dgvDocStat.ReadOnly = false;
-                    break;
-                case "Draft":
-                    lblDocStat.Text = "Draft";
-                    dgvDocStat.ReadOnly = false;
-                    break;
-                default:
-                    lblDocStat.Text = "";
-                    dgvDocStat.ReadOnly = true;
-                    break;
-            }
-        }
-
-        private void btnUpdate_Click(object sender, EventArgs e)
-
-        {
-            try
-            {
-                UpdateChangedRows();
-                LoadDataAndStatus();
-
-
-
-                MessageBox.Show("Data updated successfully.", "Update Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred while updating: " + ex.Message, "Update Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-
-            }
-        }
-
         #region ************************** DataGridView Cell Edit Logic **************************
         public class ColumnMapping
         {
@@ -454,75 +195,39 @@ namespace LogPriceChange0._1
 
         private void dgvDocStat_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0) return;
-
-            string docId = dgvDocStat.Rows[e.RowIndex].Cells["DocID"].Value?.ToString();
-            if (string.IsNullOrEmpty(docId)) return;
-
-            var mainForm = this.FindForm() as MainForm;
-            if (mainForm != null)
+            if (e.RowIndex >= 0)
             {
-                mainForm.ShowLogPriceChange(docId);
+                string docId = dgvDocStat.Rows[e.RowIndex].Cells["DocID"].Value?.ToString();
+                int id = Convert.ToInt32(dgvDocStat.Rows[e.RowIndex].Cells["ID"].Value);
+
+                if (!string.IsNullOrEmpty(docId))
+                {
+                    // Pass both DocID (string) and ID (int)
+                    _ctrLogPriceChange = new ctrLogPriceChange(docId);
+                    LoadControl(_ctrLogPriceChange);
+                }
             }
         }
 
-        
-        private void UpdateChangedRows()
+        private void LoadControl(UserControl control)
         {
-            using (OleDbConnection conn = new OleDbConnection(connectionString))
-            {
-                conn.Open();
+            if (control == null) control = new ctrLogPriceChange();
 
-                if (bindingSource.DataSource is DataTable table)
-                {
-                    foreach (DataRow dr in table.Rows)
-                    {
-                        if (dr.RowState == DataRowState.Modified)
-                        {
-                            string pkColumn = dgvDocStat.Columns[0].Name;
+            control.Dock = DockStyle.Fill;
 
-                            // Build SET clause dynamically, skipping DocStatus
-                            List<string> setClauses = new List<string>();
-                            for (int i = 1; i < dgvDocStat.Columns.Count; i++)
-                            {
-                                string colName = dgvDocStat.Columns[i].Name;
-                                if (!colName.Equals("DocStatus", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    setClauses.Add($"{colName} = ?");
-                                }
-                            }
+            // Use the host that contains this dashboard (usually a Panel on the Form)
+            Control host = this.Parent ?? this;
 
-                            // Append DocStatus manually at the end
-                            setClauses.Add("DocStatus = ?");
+            host.SuspendLayout();
+            host.Controls.Clear();
+            host.Controls.Add(control);
+            control.BringToFront();
+            host.ResumeLayout();
+        }
 
-                            string query = $"UPDATE tbl_logpricechange SET {string.Join(", ", setClauses)} WHERE {pkColumn} = ?";
-
-                            using (OleDbCommand cmd = new OleDbCommand(query, conn))
-                            {
-                                // Add parameters for all columns except PK and DocStatus
-                                for (int i = 1; i < dgvDocStat.Columns.Count; i++)
-                                {
-                                    string colName = dgvDocStat.Columns[i].Name;
-                                    if (!colName.Equals("DocStatus", StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        cmd.Parameters.AddWithValue("?", dr[colName] ?? DBNull.Value);
-                                    }
-                                }
-
-                                // Add DocStatus param (fixed)
-                                cmd.Parameters.AddWithValue("?", "ForApproval");
-
-                                // Add PK param
-                                cmd.Parameters.AddWithValue("?", dr[pkColumn] ?? DBNull.Value);
-
-                                cmd.ExecuteNonQuery();
-                            }
-                        }
-                    }
-                }
-            }
-
-            MessageBox.Show("Only changed rows updated, DocStatus set to 'ForApproval'.");
+        private void btnloadForm_Click(object sender, EventArgs e)
+        {
+            LoadDataByStatus("DRAFT");
         }
     }
 }

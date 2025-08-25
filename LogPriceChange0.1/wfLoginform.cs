@@ -38,7 +38,7 @@ namespace LogPriceChange0._1
 
                 // Use a secure and reliable connection to the database
                 // Note: Hardcoding the path is not ideal for a deployed application.
-                using (OleDbConnection conn = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\TanTan\Desktop\SharedDB\pricematrix.accdb;"))
+                using (OleDbConnection conn = new OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=D:\Desktop\CameraHaus\LogPriceChange_Demo\pricematrix.accdb;"))
                 {
                     try
                     {

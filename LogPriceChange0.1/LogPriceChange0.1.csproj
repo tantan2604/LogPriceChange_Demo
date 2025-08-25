@@ -79,6 +79,7 @@
     <Compile Include="AdminForm.Designer.cs">
       <DependentUpon>AdminForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="class\ProductInserter.cs" />
     <Compile Include="UserControl\ctrDashboard.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -111,7 +112,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserSession.cs" />
+    <Compile Include="class\UserSession.cs" />
     <Compile Include="wfLoginform.cs">
       <SubType>Form</SubType>
     </Compile>
